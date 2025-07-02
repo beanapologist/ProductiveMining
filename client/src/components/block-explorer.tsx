@@ -12,6 +12,10 @@ interface BlockExplorerProps {
 export default function BlockExplorer({ blocks = [] }: BlockExplorerProps) {
   // Ensure blocks is always an array and filter out any invalid blocks
   const validBlocks = Array.isArray(blocks) ? blocks.filter(block => block && typeof block.index !== 'undefined') : [];
+  
+  // Debug logging
+  console.log('BlockExplorer received blocks:', blocks);
+  console.log('Valid blocks after filtering:', validBlocks);
   const formatHash = (hash: string) => {
     return `${hash.slice(0, 8)}...${hash.slice(-8)}`;
   };

@@ -1,5 +1,6 @@
 import { useWebSocket } from "@/hooks/use-websocket";
 import { useQuery } from "@tanstack/react-query";
+import type { ProductiveBlock } from "@shared/schema";
 import { Atom, Users, Zap, Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -24,7 +25,18 @@ export default function Dashboard() {
     enabled: !metrics
   });
 
+  const { data: initialBlocks = [] } = useQuery({
+    queryKey: ["/api/blocks"],
+    enabled: !blocks || blocks.length === 0
+  });
+
   const currentMetrics = metrics || initialMetrics;
+  const currentBlocks = blocks && blocks.length > 0 ? blocks : (initialBlocks as any[] || []);
+  
+  // Debug logging
+  console.log('Dashboard - WebSocket blocks:', blocks);
+  console.log('Dashboard - Initial blocks from API:', initialBlocks);
+  console.log('Dashboard - Current blocks to pass to explorer:', currentBlocks);
 
   return (
     <div className="text-slate-100">
@@ -373,7 +385,7 @@ export default function Dashboard() {
           </div>
         </section>
 
-        <BlockExplorer blocks={blocks} />
+        <BlockExplorer blocks={currentBlocks} />
 
         <MiningSimulator />
         <EducationalSection />

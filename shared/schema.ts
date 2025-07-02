@@ -106,7 +106,7 @@ export type InsertDiscoveryValidation = z.infer<typeof insertDiscoveryValidation
 
 // WebSocket message types
 export interface WebSocketMessage {
-  type: 'metrics_update' | 'mining_progress' | 'block_mined' | 'discovery_made';
+  type: 'metrics_update' | 'mining_progress' | 'block_mined' | 'discovery_made' | 'initial_data';
   data: any;
 }
 
