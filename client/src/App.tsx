@@ -4,6 +4,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { BarChart3, Pickaxe, Database } from "lucide-react";
 import Dashboard from "@/pages/dashboard";
 import BlockExplorer from "@/pages/block-explorer";
 import MiningPage from "@/pages/mining";
@@ -27,9 +28,9 @@ function Navigation() {
   const [location] = useLocation();
   
   const navItems = [
-    { path: '/', label: 'Dashboard', icon: '📊' },
-    { path: '/mining', label: 'Mining', icon: '⛏️' },
-    { path: '/blocks', label: 'Block Explorer', icon: '🔗' }
+    { path: '/', label: 'Dashboard', icon: BarChart3 },
+    { path: '/mining', label: 'Mining Operations', icon: Pickaxe },
+    { path: '/blocks', label: 'Block Explorer', icon: Database }
   ];
 
   return (
@@ -42,20 +43,23 @@ function Navigation() {
               <span className="text-xl font-bold text-white">Productive Mining</span>
             </div>
             <div className="hidden md:flex space-x-6">
-              {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  href={item.path}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    location === item.path
-                      ? 'bg-pm-accent text-pm-primary'
-                      : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
-                  }`}
-                >
-                  <span>{item.icon}</span>
-                  <span>{item.label}</span>
-                </Link>
-              ))}
+              {navItems.map((item) => {
+                const IconComponent = item.icon;
+                return (
+                  <Link
+                    key={item.path}
+                    href={item.path}
+                    className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      location === item.path
+                        ? 'bg-pm-accent text-pm-primary'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                  >
+                    <IconComponent className="h-4 w-4" />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </div>
