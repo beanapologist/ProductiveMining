@@ -1,0 +1,158 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(20, 14.3%, 4.1%);
+  --muted: hsl(60, 4.8%, 95.9%);
+  --muted-foreground: hsl(25, 5.3%, 44.7%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(20, 14.3%, 4.1%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(20, 14.3%, 4.1%);
+  --border: hsl(20, 5.9%, 90%);
+  --input: hsl(20, 5.9%, 90%);
+  --primary: hsl(207, 90%, 54%);
+  --primary-foreground: hsl(211, 100%, 99%);
+  --secondary: hsl(60, 4.8%, 95.9%);
+  --secondary-foreground: hsl(24, 9.8%, 10%);
+  --accent: hsl(60, 4.8%, 95.9%);
+  --accent-foreground: hsl(24, 9.8%, 10%);
+  --destructive: hsl(0, 84.2%, 60.2%);
+  --destructive-foreground: hsl(60, 9.1%, 97.8%);
+  --ring: hsl(20, 14.3%, 4.1%);
+  --radius: 0.5rem;
+
+  /* Productive Mining Theme */
+  --pm-primary: hsl(222, 84%, 5%);
+  --pm-secondary: hsl(217, 32%, 17%);
+  --pm-accent: hsl(158, 64%, 52%);
+  --pm-scientific: hsl(217, 91%, 60%);
+  --pm-warning: hsl(43, 96%, 56%);
+  --pm-danger: hsl(0, 84%, 60%);
+}
+
+.dark {
+  --background: hsl(222, 84%, 5%);
+  --foreground: hsl(0, 0%, 98%);
+  --muted: hsl(217, 32%, 17%);
+  --muted-foreground: hsl(215, 20.2%, 65.1%);
+  --popover: hsl(222, 84%, 5%);
+  --popover-foreground: hsl(0, 0%, 98%);
+  --card: hsl(222, 84%, 5%);
+  --card-foreground: hsl(0, 0%, 98%);
+  --border: hsl(217, 32%, 17%);
+  --input: hsl(217, 32%, 17%);
+  --primary: hsl(158, 64%, 52%);
+  --primary-foreground: hsl(222, 84%, 5%);
+  --secondary: hsl(217, 32%, 17%);
+  --secondary-foreground: hsl(0, 0%, 98%);
+  --accent: hsl(217, 32%, 17%);
+  --accent-foreground: hsl(0, 0%, 98%);
+  --destructive: hsl(0, 62.8%, 30.6%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --ring: hsl(212.7, 26.8%, 83.9%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--pm-primary);
+    color: hsl(210, 40%, 98%);
+  }
+
+  .mathematical-formula {
+    font-family: 'Computer Modern', serif;
+    background: linear-gradient(135deg, var(--pm-scientific), var(--pm-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .energy-bar {
+    background: linear-gradient(90deg, var(--pm-danger) 0%, var(--pm-warning) 50%, var(--pm-accent) 100%);
+  }
+
+  .scientific-glow {
+    box-shadow: 0 0 20px hsla(217, 91%, 60%, 0.3);
+  }
+
+  .mining-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .riemann-visualization {
+    background: radial-gradient(circle at 50% 50%, hsla(217, 91%, 60%, 0.1) 0%, transparent 70%);
+  }
+}
+
+@layer utilities {
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animate-bounce-subtle {
+    animation: bounce 2s infinite;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-in;
+  }
+
+  .bg-pm-primary {
+    background-color: var(--pm-primary);
+  }
+
+  .bg-pm-secondary {
+    background-color: var(--pm-secondary);
+  }
+
+  .bg-pm-accent {
+    background-color: var(--pm-accent);
+  }
+
+  .bg-pm-scientific {
+    background-color: var(--pm-scientific);
+  }
+
+  .bg-pm-warning {
+    background-color: var(--pm-warning);
+  }
+
+  .text-pm-accent {
+    color: var(--pm-accent);
+  }
+
+  .text-pm-scientific {
+    color: var(--pm-scientific);
+  }
+
+  .text-pm-warning {
+    color: var(--pm-warning);
+  }
+
+  .border-pm-accent {
+    border-color: var(--pm-accent);
+  }
+
+  .border-pm-scientific {
+    border-color: var(--pm-scientific);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
