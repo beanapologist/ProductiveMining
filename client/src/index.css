@@ -180,10 +180,7 @@ body {
 .metric-value {
   font-size: 2.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--blue-600), var(--purple-600));
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: hsl(var(--foreground));
   margin-bottom: 0.5rem;
   font-family: 'SF Mono', 'Monaco', monospace;
 }
@@ -210,19 +207,19 @@ body {
 
 .status-active {
   background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
-  color: var(--green-600);
+  color: #059669;
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 .status-pending {
   background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1));
-  color: var(--orange-600);
+  color: #d97706;
   border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
 .status-completed {
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1));
-  color: var(--blue-600);
+  color: #1e40af;
   border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
@@ -255,10 +252,7 @@ body {
 .nav-brand {
   font-size: 1.75rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--blue-600), var(--purple-600));
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: hsl(var(--foreground));
 }
 
 .nav-menu {
@@ -331,11 +325,11 @@ body {
 }
 
 /* Work type colors */
-.work-riemann { color: var(--blue-600); }
-.work-prime { color: var(--green-600); }
-.work-yang-mills { color: var(--purple-600); }
-.work-elliptic { color: var(--orange-600); }
-.work-lattice { color: var(--red-600); }
+.work-riemann { color: #1e40af; }
+.work-prime { color: #059669; }
+.work-yang-mills { color: #7c3aed; }
+.work-elliptic { color: #d97706; }
+.work-lattice { color: #dc2626; }
 
 /* Animations */
 @keyframes pulse-dot {

@@ -94,8 +94,8 @@ export default function Dashboard() {
       <div className="modern-header">
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-4xl font-bold mb-3">
-              <span className="nav-brand">Productive Mining</span> Dashboard
+            <h1 className="text-4xl font-bold mb-3 text-foreground">
+              Productive Mining Dashboard
             </h1>
             <p className="text-muted-foreground text-lg">Advanced computational research platform - transforming mining into mathematical discovery</p>
           </div>
