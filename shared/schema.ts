@@ -60,11 +60,35 @@ export const networkMetrics = pgTable("network_metrics", {
   networkHealth: real("network_health").notNull(),
 });
 
+export const stakers = pgTable("stakers", {
+  id: serial("id").primaryKey(),
+  stakerId: text("staker_id").notNull().unique(),
+  institutionName: text("institution_name").notNull(),
+  stakeAmount: real("stake_amount").notNull(),
+  validationReputation: real("validation_reputation").notNull().default(1.0),
+  totalValidations: integer("total_validations").notNull().default(0),
+  correctValidations: integer("correct_validations").notNull().default(0),
+  timestamp: timestamp("timestamp").notNull().defaultNow(),
+});
+
+export const discoveryValidations = pgTable("discovery_validations", {
+  id: serial("id").primaryKey(),
+  workId: integer("work_id").references(() => mathematicalWork.id).notNull(),
+  stakerId: integer("staker_id").references(() => stakers.id).notNull(),
+  validationType: text("validation_type").notNull(), // 'approve', 'reject', 'challenge'
+  validationData: jsonb("validation_data").notNull(),
+  stakeAmount: real("stake_amount").notNull(),
+  status: text("status").notNull().default('pending'), // 'pending', 'confirmed', 'slashed'
+  timestamp: timestamp("timestamp").notNull().defaultNow(),
+});
+
 // Insert schemas
 export const insertMathematicalWorkSchema = createInsertSchema(mathematicalWork);
 export const insertProductiveBlockSchema = createInsertSchema(productiveBlocks);
 export const insertMiningOperationSchema = createInsertSchema(miningOperations);
 export const insertNetworkMetricsSchema = createInsertSchema(networkMetrics);
+export const insertStakerSchema = createInsertSchema(stakers);
+export const insertDiscoveryValidationSchema = createInsertSchema(discoveryValidations);
 
 // Types
 export type MathematicalWork = typeof mathematicalWork.$inferSelect;
@@ -75,6 +99,10 @@ export type MiningOperation = typeof miningOperations.$inferSelect;
 export type InsertMiningOperation = z.infer<typeof insertMiningOperationSchema>;
 export type NetworkMetrics = typeof networkMetrics.$inferSelect;
 export type InsertNetworkMetrics = z.infer<typeof insertNetworkMetricsSchema>;
+export type Staker = typeof stakers.$inferSelect;
+export type InsertStaker = z.infer<typeof insertStakerSchema>;
+export type DiscoveryValidation = typeof discoveryValidations.$inferSelect;
+export type InsertDiscoveryValidation = z.infer<typeof insertDiscoveryValidationSchema>;
 
 // WebSocket message types
 export interface WebSocketMessage {

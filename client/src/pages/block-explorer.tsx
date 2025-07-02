@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Search, ExternalLink, Shield, Calculator, Zap, Database, Home, BarChart3 } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "wouter";
+import StakingValidations from "@/components/staking-validations";
 import type { ProductiveBlock, MathematicalWork } from "@shared/schema";
 
 interface BlockWithWork {
@@ -27,7 +28,7 @@ export default function BlockExplorer() {
 
   // Fetch specific block with mathematical work
   const { data: blockDetails, isLoading: detailsLoading } = useQuery<BlockWithWork>({
-    queryKey: ['/api/blocks', selectedBlockId, 'work'],
+    queryKey: [`/api/blocks/${selectedBlockId}/work`],
     enabled: !!selectedBlockId,
   });
 
@@ -363,6 +364,16 @@ export default function BlockExplorer() {
                             
                             <div className="mb-3">
                               {renderMathematicalResult(work)}
+                            </div>
+                            
+                            <Separator className="bg-slate-600 my-3" />
+                            
+                            {/* Staking Validations */}
+                            <div className="mb-3">
+                              <StakingValidations 
+                                workId={work.id} 
+                                workTitle={getWorkTypeLabel(work.workType)}
+                              />
                             </div>
                             
                             <Separator className="bg-slate-600 my-3" />

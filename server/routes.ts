@@ -109,7 +109,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get block by index with mathematical work
-  app.get("/api/blocks/:index", async (req, res) => {
+  app.get("/api/blocks/index/:index", async (req, res) => {
     try {
       const index = parseInt(req.params.index);
       const block = await storage.getBlockByIndex(index);
@@ -179,6 +179,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(discoveries);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch discoveries" });
+    }
+  });
+
+  // Staking validation routes
+  app.get("/api/stakers", async (req, res) => {
+    try {
+      const stakers = await storage.getActiveStakers();
+      res.json(stakers);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch stakers" });
+    }
+  });
+
+  app.get("/api/validations/:workId", async (req, res) => {
+    try {
+      const workId = parseInt(req.params.workId);
+      const validations = await storage.getValidationsForWork(workId);
+      res.json(validations);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch validations" });
+    }
+  });
+
+  app.post("/api/validations", async (req, res) => {
+    try {
+      const validation = await storage.createDiscoveryValidation(req.body);
+      res.json(validation);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create validation" });
     }
   });
 
