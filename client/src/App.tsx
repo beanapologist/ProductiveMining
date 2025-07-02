@@ -15,7 +15,29 @@ import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pm-primary via-pm-primary to-slate-900">
+    <div className="min-h-screen relative">
+      {/* Matrix Background Effect */}
+      <div className="matrix-background">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div
+            key={i}
+            className="matrix-column"
+            style={{
+              left: `${i * 5}%`,
+              animationDelay: `${Math.random() * 20}s`,
+              animationDuration: `${20 + Math.random() * 10}s`
+            }}
+          >
+            {Array.from({ length: 50 }).map((_, j) => (
+              <div key={j}>
+                {Math.random() > 0.5 ? '1' : '0'}
+                <br />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+      
       <Navigation />
       <Switch>
         <Route path="/" component={Dashboard} />
@@ -34,12 +56,12 @@ function Navigation() {
   const [location] = useLocation();
   
   const navItems = [
-    { path: '/', label: 'Dashboard', icon: BarChart3 },
-    { path: '/mining', label: 'Mining Operations', icon: Pickaxe },
-    { path: '/discoveries', label: 'Discoveries', icon: Brain },
-    { path: '/security', label: 'Enhanced Security', icon: Shield },
-    { path: '/blocks', label: 'Block Explorer', icon: Database },
-    { path: '/about', label: 'About', icon: Info }
+    { path: '/', label: 'Neural Hub', icon: BarChart3 },
+    { path: '/mining', label: 'Quantum Mining', icon: Pickaxe },
+    { path: '/discoveries', label: 'Data Vaults', icon: Brain },
+    { path: '/security', label: 'Crypto Core', icon: Shield },
+    { path: '/blocks', label: 'Chain Explorer', icon: Database },
+    { path: '/about', label: 'System Info', icon: Info }
   ];
 
   return (
