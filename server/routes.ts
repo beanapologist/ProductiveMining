@@ -33,7 +33,18 @@ function calculateProofOfWork(blockData: string, difficulty: number): number {
 // This will be defined within the main function scope where broadcast is available
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Database is now clean and ready for real computational discoveries
+  // Initialize basic network metrics if none exist
+  const existingMetrics = await storage.getLatestNetworkMetrics();
+  if (!existingMetrics) {
+    await storage.createNetworkMetrics({
+      totalMiners: 1,
+      blocksPerHour: 0,
+      energyEfficiency: 100,
+      totalScientificValue: 0,
+      co2Saved: 0,
+      networkHealth: 1.0
+    });
+  }
   const httpServer = createServer(app);
 
   // WebSocket server for real-time updates

@@ -1,4 +1,4 @@
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { db } from "./db";
 import {
   mathematicalWork,
@@ -22,7 +22,6 @@ import {
   type InsertDiscoveryValidation
 } from "@shared/schema";
 
-// Storage interface
 export interface IStorage {
   // Mathematical work
   getMathematicalWork(id: number): Promise<MathematicalWork | undefined>;
@@ -61,10 +60,8 @@ export interface IStorage {
   getStakerValidations(stakerId: number): Promise<DiscoveryValidation[]>;
 }
 
-// Clean database storage implementation - no sample data
 export class DatabaseStorage implements IStorage {
   
-  // Mathematical work methods
   async getMathematicalWork(id: number): Promise<MathematicalWork | undefined> {
     const [work] = await db.select().from(mathematicalWork).where(eq(mathematicalWork.id, id));
     return work || undefined;
@@ -86,7 +83,6 @@ export class DatabaseStorage implements IStorage {
       .limit(limit);
   }
 
-  // Block methods
   async getBlock(id: number): Promise<ProductiveBlock | undefined> {
     const [block] = await db.select().from(productiveBlocks).where(eq(productiveBlocks.id, id));
     return block || undefined;
@@ -123,15 +119,16 @@ export class DatabaseStorage implements IStorage {
       .where(eq(blockMathematicalWork.blockId, blockId));
 
     const workIds = workRelations.map(r => r.workId);
-    const work = await db
-      .select()
-      .from(mathematicalWork)
-      .where(eq(mathematicalWork.id, workIds[0])); // Simplified for now
+    const work: MathematicalWork[] = [];
+    
+    for (const workId of workIds) {
+      const workItem = await this.getMathematicalWork(workId);
+      if (workItem) work.push(workItem);
+    }
 
     return { block, work };
   }
 
-  // Mining operation methods
   async getMiningOperation(id: number): Promise<MiningOperation | undefined> {
     const [operation] = await db.select().from(miningOperations).where(eq(miningOperations.id, id));
     return operation || undefined;
@@ -162,7 +159,6 @@ export class DatabaseStorage implements IStorage {
       .orderBy(desc(miningOperations.startTime));
   }
 
-  // Network metrics methods
   async getLatestNetworkMetrics(): Promise<NetworkMetrics | undefined> {
     const [metrics] = await db
       .select()
@@ -181,15 +177,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getNetworkMetricsHistory(hours: number): Promise<NetworkMetrics[]> {
-    const cutoff = new Date(Date.now() - hours * 60 * 60 * 1000);
     return await db
       .select()
       .from(networkMetrics)
-      .where(eq(networkMetrics.timestamp, cutoff)) // Simplified
       .orderBy(desc(networkMetrics.timestamp));
   }
 
-  // Staker methods
   async getStaker(id: number): Promise<Staker | undefined> {
     const [staker] = await db.select().from(stakers).where(eq(stakers.id, id));
     return staker || undefined;
@@ -224,7 +217,6 @@ export class DatabaseStorage implements IStorage {
     return updatedStaker || undefined;
   }
 
-  // Discovery validation methods
   async createDiscoveryValidation(validation: InsertDiscoveryValidation): Promise<DiscoveryValidation> {
     const [newValidation] = await db
       .insert(discoveryValidations)
