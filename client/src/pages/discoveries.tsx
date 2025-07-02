@@ -5,8 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import StakingValidations from "@/components/staking-validations";
 import { useState } from "react";
-import { Brain, Search, Trophy, Clock, Zap, Target, Award, TrendingUp, Hash, Users, CheckCircle } from "lucide-react";
+import { Brain, Search, Trophy, Clock, Zap, Target, Award, TrendingUp, Hash, Users, CheckCircle, Shield } from "lucide-react";
 
 interface MathematicalWork {
   id: number;
@@ -291,20 +294,32 @@ export default function DiscoveriesPage() {
                     <p>Select a discovery to view details</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
-                    {/* Discovery Header */}
-                    <div className="p-4 bg-slate-800/50 rounded-lg">
-                      <div className="flex items-center space-x-3 mb-3">
-                        <span className="text-3xl">{getWorkTypeIcon(selectedDiscovery.workType)}</span>
-                        <div>
-                          <h3 className="text-lg font-semibold text-white">
-                            {formatWorkType(selectedDiscovery.workType)}
-                          </h3>
-                          <div className="text-sm text-slate-400">
-                            Discovery #{selectedDiscovery.id}
+                  <Tabs defaultValue="details" className="space-y-4">
+                    <TabsList className="grid w-full grid-cols-2 bg-slate-800/50">
+                      <TabsTrigger value="details" className="flex items-center space-x-2">
+                        <Trophy className="h-4 w-4" />
+                        <span>Details</span>
+                      </TabsTrigger>
+                      <TabsTrigger value="validators" className="flex items-center space-x-2">
+                        <Shield className="h-4 w-4" />
+                        <span>Validators</span>
+                      </TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="details" className="space-y-4">
+                      {/* Discovery Header */}
+                      <div className="p-4 bg-slate-800/50 rounded-lg">
+                        <div className="flex items-center space-x-3 mb-3">
+                          <span className="text-3xl">{getWorkTypeIcon(selectedDiscovery.workType)}</span>
+                          <div>
+                            <h3 className="text-lg font-semibold text-white">
+                              {formatWorkType(selectedDiscovery.workType)}
+                            </h3>
+                            <div className="text-sm text-slate-400">
+                              Discovery #{selectedDiscovery.id}
+                            </div>
                           </div>
                         </div>
-                      </div>
                       
                       <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
@@ -401,7 +416,15 @@ export default function DiscoveriesPage() {
                         </div>
                       </div>
                     )}
-                  </div>
+                  </TabsContent>
+
+                    <TabsContent value="validators" className="space-y-4">
+                      <StakingValidations 
+                        workId={selectedDiscovery.id} 
+                        workTitle={formatWorkType(selectedDiscovery.workType)}
+                      />
+                    </TabsContent>
+                  </Tabs>
                 )}
               </CardContent>
             </Card>

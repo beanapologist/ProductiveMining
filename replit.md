@@ -108,6 +108,8 @@ Changelog:
 - July 02, 2025. Implemented unified design system with reusable CSS component classes for consistent styling
 - July 02, 2025. Fixed Block Explorer updating by adding automatic block creation when mathematical discoveries complete
 - July 02, 2025. Cleaned up dashboard and created unique focused pages: Mining Operations, Block Explorer, and Discoveries with dedicated functionality
+- July 02, 2025. Fixed mining button functionality and added proper error handling with toast notifications
+- July 02, 2025. Added validators back to the Discoveries page with tabbed interface for details and validation system
 ```
 
 ## User Preferences
