@@ -2,6 +2,7 @@ import { Box, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "wouter";
 import type { ProductiveBlock } from "@shared/schema";
 
 interface BlockExplorerProps {
@@ -94,6 +95,19 @@ export default function BlockExplorer({ blocks = [] }: BlockExplorerProps) {
                       ${Math.round(block.totalScientificValue * 0.25).toLocaleString()}
                     </div>
                   </div>
+                </div>
+                
+                {/* View Details Link */}
+                <div className="flex justify-center">
+                  <Link href={`/blocks`}>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      className="border-pm-accent text-pm-accent hover:bg-pm-accent hover:text-pm-primary"
+                    >
+                      View Full Block Details
+                    </Button>
+                  </Link>
                 </div>
                 
                 {/* Block Hash and Technical Details */}
