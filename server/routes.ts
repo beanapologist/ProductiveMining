@@ -933,8 +933,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       for (const operation of operations) {
         // Simulate progress
-        const progressIncrement = Math.random() * 0.05; // 0-5% progress per update
+        const progressIncrement = Math.random() * 0.15; // 0-15% progress per update for faster testing
         const newProgress = Math.min(operation.progress + progressIncrement, 1.0);
+        const wasActive = operation.status === 'active';
         
         const updatedOperation = await storage.updateMiningOperation(operation.id, {
           progress: newProgress,
@@ -947,8 +948,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
             data: updatedOperation
           });
 
-          // If operation completed, create real mathematical discovery
-          if (newProgress >= 1.0 && operation.status === 'active') {
+          // If operation just completed, create real mathematical discovery  
+          console.log(`Operation ${operation.id}: progress=${newProgress}, wasActive=${wasActive}, condition=${newProgress >= 1.0 && wasActive}`);
+          if (newProgress >= 1.0 && wasActive) {
+            console.log(`Operation ${operation.id} completing, creating discovery...`);
             let discovery;
             
             if (operation.operationType === 'riemann_zero') {
@@ -1039,6 +1042,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
             // Mark operation as completed and create new block
             await storage.updateMiningOperation(operation.id, { status: 'completed' });
+            console.log(`Mining operation ${operation.id} completed. Creating new block...`);
             
             // Create new productive block with mathematical discovery
             try {
