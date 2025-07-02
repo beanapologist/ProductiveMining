@@ -368,7 +368,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Cryptographic safety analysis endpoint using mathematical discoveries
-  app.post("/api/crypto/analyze", async (req, res) => {
+  app.get("/api/crypto/analysis", async (req, res) => {
     try {
       const discoveries = await storage.getRecentMathematicalWork(50);
       
@@ -378,11 +378,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const { cryptoEngine } = await import('./crypto-engine');
 
-      // Generate post-quantum keys using Riemann discoveries
-      const riemannDiscoveries = discoveries.filter(d => d.workType === 'riemann_zero');
-      let postQuantumKey = null;
-      if (riemannDiscoveries.length > 0) {
-        postQuantumKey = cryptoEngine.generatePostQuantumKey(riemannDiscoveries);
+      // Generate enhanced cryptographic keys using all mathematical discoveries
+      let enhancedCryptoKey = null;
+      if (discoveries.length > 0) {
+        enhancedCryptoKey = cryptoEngine.generateEnhancedCryptoKey(discoveries);
       }
 
       // Create cryptographic signatures using prime patterns
@@ -401,7 +400,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({
         analysis: {
           discoveryCount: discoveries.length,
-          postQuantumKey,
+          enhancedCryptoKey,
           primeSignature,
           securityHash,
           timestamp: new Date().toISOString()
