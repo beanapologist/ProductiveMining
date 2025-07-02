@@ -69,8 +69,29 @@ export default function Dashboard() {
                 Network Health: {currentMetrics ? (currentMetrics.networkHealth * 100).toFixed(1) : '99.8'}%
               </Badge>
               
-              <Button className="bg-pm-accent hover:bg-pm-accent/80 text-pm-primary">
-                Start Mining
+              <Button 
+                className="bg-pm-accent hover:bg-pm-accent/80 text-pm-primary"
+                onClick={async () => {
+                  try {
+                    const response = await fetch('/api/mining/start-real', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ 
+                        workType: 'riemann_zero', 
+                        difficulty: 10 
+                      })
+                    });
+                    
+                    if (response.ok) {
+                      const operation = await response.json();
+                      console.log('Real mining started:', operation);
+                    }
+                  } catch (error) {
+                    console.error('Failed to start mining:', error);
+                  }
+                }}
+              >
+                Start Real Mining
               </Button>
             </div>
           </div>
