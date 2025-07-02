@@ -367,12 +367,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Test PoS validator initialization
+  // Initialize PoS validator network
   app.post("/api/validators/initialize", async (req, res) => {
     try {
-      await createInitialValidators();
+      // Create initial validators directly
+      const validators = [
+        {
+          stakerId: 'validator_alpha',
+          institutionName: 'Mathematical Institute Alpha',
+          stakeAmount: 1000000,
+          validationReputation: 1.0,
+          totalValidations: 0,
+          correctValidations: 0
+        },
+        {
+          stakerId: 'validator_beta',
+          institutionName: 'Computational Research Beta',
+          stakeAmount: 800000,
+          validationReputation: 0.95,
+          totalValidations: 0,
+          correctValidations: 0
+        },
+        {
+          stakerId: 'validator_gamma',
+          institutionName: 'Quantum Computing Gamma',
+          stakeAmount: 1200000,
+          validationReputation: 0.98,
+          totalValidations: 0,
+          correctValidations: 0
+        }
+      ];
+
+      const createdValidators = [];
+      for (const validator of validators) {
+        try {
+          const created = await storage.createStaker(validator);
+          createdValidators.push(created);
+        } catch (err) {
+          console.log(`Validator ${validator.stakerId} may already exist`);
+        }
+      }
+
       const stakers = await storage.getActiveStakers();
-      res.json({ message: "Validators initialized", count: stakers.length, stakers });
+      console.log('🏛️ VALIDATORS: Initialized PoS validator network with', stakers.length, 'validators');
+      
+      res.json({ 
+        message: "PoS validator network initialized", 
+        count: stakers.length, 
+        validators: stakers 
+      });
     } catch (error) {
       console.error('Validator initialization error:', error);
       res.status(500).json({ error: "Failed to initialize validators" });
@@ -1539,6 +1582,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.log(`🧮 DISCOVERY MADE: ${discovery.workType} - Value: ${discovery.scientificValue} - Result: ${JSON.stringify(discovery.result).substring(0, 100)}...`);
             
             // Initiate PoS validation for the new discovery
+            console.log(`🔍 TRIGGERING PoS VALIDATION for discovery ID: ${discovery.id}`);
             await initiatePoSValidation(discovery);
             
             broadcast({

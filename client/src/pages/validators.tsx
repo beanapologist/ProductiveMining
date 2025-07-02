@@ -1,11 +1,13 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Shield, Users, CheckCircle, Clock, AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Shield, Users, CheckCircle, Clock, AlertCircle, Play } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 
 interface Staker {
   id: number;
@@ -31,12 +33,41 @@ interface ValidationRecord {
 }
 
 export default function ValidatorsPage() {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+  
   const { data: stakers = [], isLoading: stakersLoading } = useQuery<Staker[]>({
     queryKey: ['/api/stakers'],
   });
 
   const { data: validations = [], isLoading: validationsLoading } = useQuery<ValidationRecord[]>({
     queryKey: ['/api/validations'],
+  });
+
+  const initializeValidators = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/validators/initialize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (!response.ok) throw new Error('Failed to initialize validators');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['/api/stakers'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/validations'] });
+      toast({
+        title: "Validators Initialized",
+        description: `Created ${data.count} validator nodes for PoS consensus`,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Initialization Failed",
+        description: "Could not initialize validator network",
+        variant: "destructive",
+      });
+    },
   });
 
   const totalStake = stakers.reduce((sum, staker) => sum + staker.stakeAmount, 0);
@@ -82,6 +113,20 @@ export default function ValidatorsPage() {
             <p className="text-gray-600">Mathematical Discovery Validation System</p>
           </div>
         </div>
+
+        {/* Initialize Button */}
+        {stakers.length === 0 && (
+          <div className="mb-4">
+            <Button 
+              onClick={() => initializeValidators.mutate()}
+              disabled={initializeValidators.isPending}
+              className="flex items-center space-x-2"
+            >
+              <Play className="w-4 h-4" />
+              <span>{initializeValidators.isPending ? 'Initializing...' : 'Initialize PoS Network'}</span>
+            </Button>
+          </div>
+        )}
 
         {/* Network Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
