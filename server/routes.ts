@@ -936,6 +936,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const progressIncrement = Math.random() * 0.15; // 0-15% progress per update for faster testing
         const newProgress = Math.min(operation.progress + progressIncrement, 1.0);
         const wasActive = operation.status === 'active';
+        const justCompleted = newProgress >= 1.0 && wasActive;
         
         const updatedOperation = await storage.updateMiningOperation(operation.id, {
           progress: newProgress,
@@ -949,7 +950,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
 
           // If operation just completed, create real mathematical discovery  
-          if (newProgress >= 1.0 && wasActive) {
+          if (justCompleted) {
             console.log(`✅ OPERATION COMPLETING: ${operation.id} (${operation.operationType}) - Progress: ${newProgress}`);
             let discovery;
             
