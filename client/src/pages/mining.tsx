@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Pickaxe, Play, Pause, Clock, Zap, Brain, Award, TrendingUp } from "lucide-react";
 
@@ -24,6 +25,7 @@ interface MiningOperation {
 export default function MiningPage() {
   const { operations, discoveries } = useWebSocket();
   const queryClient = useQueryClient();
+  const { toast } = useToast();
   
   const [selectedWorkType, setSelectedWorkType] = useState("riemann_zero");
   const [difficulty, setDifficulty] = useState([8]);
@@ -43,13 +45,34 @@ export default function MiningPage() {
 
   const startMiningMutation = useMutation({
     mutationFn: async (params: { workType: string; difficulty: number }) => {
-      return apiRequest("/api/mining/start-real", {
+      const response = await fetch("/api/mining/start-real", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(params),
       });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/mining/operations"] });
+      toast({
+        title: "Mining Started!",
+        description: "Your mathematical computation has begun.",
+      });
+    },
+    onError: (error) => {
+      console.error("Mining error:", error);
+      toast({
+        title: "Mining Failed",
+        description: `Error starting mining: ${error.message}`,
+        variant: "destructive",
+      });
     },
   });
 
@@ -69,6 +92,7 @@ export default function MiningPage() {
   const completedOperations = currentOperations.filter((op: MiningOperation) => op.status === 'completed');
 
   const handleStartMining = () => {
+    console.log('Starting mining with:', { workType: selectedWorkType, difficulty: difficulty[0] });
     startMiningMutation.mutate({
       workType: selectedWorkType,
       difficulty: difficulty[0]
