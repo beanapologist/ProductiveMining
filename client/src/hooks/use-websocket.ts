@@ -64,6 +64,7 @@ export function useWebSocket() {
         if (message.data.metrics) setMetrics(message.data.metrics);
         if (message.data.operations) setOperations(message.data.operations);
         if (message.data.blocks) setBlocks(message.data.blocks);
+        if (message.data.discoveries) setDiscoveries(message.data.discoveries);
         break;
 
       case 'metrics_update':

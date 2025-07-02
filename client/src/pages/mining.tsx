@@ -1,327 +1,347 @@
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { 
-  Pickaxe, 
-  Settings, 
-  Zap, 
-  Brain, 
-  Calculator, 
-  Trophy,
-  Clock,
-  Target,
-  Activity,
-  DollarSign
-} from 'lucide-react';
-import type { MiningOperation, MathematicalWork } from '@shared/schema';
+import { useWebSocket } from "@/hooks/use-websocket";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { apiRequest } from "@/lib/queryClient";
+import { useState } from "react";
+import { Pickaxe, Play, Pause, Clock, Zap, Brain, Award, TrendingUp } from "lucide-react";
+
+interface MiningOperation {
+  id: number;
+  operationType: string;
+  minerId: string;
+  startTime: Date;
+  estimatedCompletion: Date | null;
+  progress: number;
+  currentResult: any;
+  difficulty: number;
+  status: string;
+}
 
 export default function MiningPage() {
-  const [workType, setWorkType] = useState('riemann_zero');
-  const [difficulty, setDifficulty] = useState(10);
+  const { operations, discoveries } = useWebSocket();
   const queryClient = useQueryClient();
+  
+  const [selectedWorkType, setSelectedWorkType] = useState("riemann_zero");
+  const [difficulty, setDifficulty] = useState([8]);
 
-  // Fetch active mining operations
-  const { data: operations = [] } = useQuery<MiningOperation[]>({
-    queryKey: ['/api/mining/operations'],
-    refetchInterval: 2000
+  const { data: initialOperations = [] } = useQuery({
+    queryKey: ["/api/mining/operations"],
+    enabled: !operations
   });
 
-  // Fetch recent discoveries
-  const { data: discoveries = [] } = useQuery<MathematicalWork[]>({
-    queryKey: ['/api/discoveries'],
-    refetchInterval: 5000
+  const { data: initialDiscoveries = [] } = useQuery({
+    queryKey: ["/api/discoveries"],
+    enabled: !discoveries
   });
 
-  // Start mining mutation
-  const startMining = useMutation({
+  const currentOperations = operations || initialOperations;
+  const currentDiscoveries = discoveries || initialDiscoveries;
+
+  const startMiningMutation = useMutation({
     mutationFn: async (params: { workType: string; difficulty: number }) => {
-      const response = await fetch('/api/mining/start-real', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(params)
+      return apiRequest("/api/mining/start-real", {
+        method: "POST",
+        body: JSON.stringify(params),
       });
-      if (!response.ok) throw new Error('Failed to start mining');
-      return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/mining/operations'] });
-    }
+      queryClient.invalidateQueries({ queryKey: ["/api/mining/operations"] });
+    },
   });
 
+  const workTypes = [
+    { value: "riemann_zero", label: "🧮 Riemann Hypothesis", description: "Find zeros of the zeta function" },
+    { value: "prime_pattern", label: "🔢 Prime Patterns", description: "Discover prime number sequences" },
+    { value: "goldbach_verification", label: "➕ Goldbach Conjecture", description: "Verify even number sums" },
+    { value: "birch_swinnerton_dyer", label: "📐 Birch-Swinnerton-Dyer", description: "Elliptic curve analysis" },
+    { value: "navier_stokes", label: "🌊 Navier-Stokes", description: "Fluid dynamics equations" },
+    { value: "yang_mills", label: "⚛️ Yang-Mills Theory", description: "Quantum field theory" },
+    { value: "poincare_conjecture", label: "🌐 Poincaré Conjecture", description: "Topology problems" },
+    { value: "elliptic_curve_crypto", label: "🔐 Elliptic Curve Crypto", description: "Cryptographic security" },
+    { value: "lattice_crypto", label: "🔒 Lattice Cryptography", description: "Post-quantum encryption" }
+  ];
+
+  const activeOperations = currentOperations.filter((op: MiningOperation) => op.status === 'active');
+  const completedOperations = currentOperations.filter((op: MiningOperation) => op.status === 'completed');
+
   const handleStartMining = () => {
-    startMining.mutate({ workType, difficulty });
+    startMiningMutation.mutate({
+      workType: selectedWorkType,
+      difficulty: difficulty[0]
+    });
   };
 
-  const getWorkTypeInfo = (type: string) => {
-    switch (type) {
-      case 'riemann_zero':
-        return {
-          icon: <Calculator className="h-5 w-5" />,
-          title: 'Riemann Zero Computation',
-          description: 'Calculate zeros of the Riemann zeta function using Euler-Maclaurin series',
-          value: '$2-5M per discovery',
-          timeEstimate: '2-5 minutes'
-        };
-      case 'prime_pattern':
-        return {
-          icon: <Brain className="h-5 w-5" />,
-          title: 'Prime Pattern Discovery',
-          description: 'Find twin primes and prime constellations using Sieve of Eratosthenes',
-          value: '$1-3M per pattern',
-          timeEstimate: '1-3 minutes'
-        };
-      case 'goldbach_verification':
-        return {
-          icon: <Target className="h-5 w-5" />,
-          title: 'Goldbach Verification',
-          description: 'Verify Goldbach conjecture for even numbers via exhaustive search',
-          value: '$0.5-2M per verification',
-          timeEstimate: '30s-2 minutes'
-        };
-      default:
-        return {
-          icon: <Calculator className="h-5 w-5" />,
-          title: 'Mathematical Work',
-          description: 'Unknown work type',
-          value: 'Variable',
-          timeEstimate: 'Unknown'
-        };
-    }
+  const getOperationDescription = (operation: MiningOperation) => {
+    const workType = workTypes.find(wt => wt.value === operation.operationType);
+    return workType?.description || "Mathematical computation";
   };
 
-  const formatTimestamp = (timestamp: Date) => {
-    return new Date(timestamp).toLocaleString();
-  };
-
-  const getOperationStatus = (operation: MiningOperation) => {
-    if (operation.status === 'completed') return 'secondary';
-    if (operation.status === 'failed') return 'destructive';
-    return 'default';
+  const formatTimestamp = (timestamp: Date | string) => {
+    const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
+    if (!date || isNaN(date.getTime())) return 'Unknown';
+    return date.toLocaleTimeString();
   };
 
   return (
-    <div className="text-white">
-      <div className="container mx-auto px-4 py-8">
+    <div className="text-slate-100">
+      <div className="container mx-auto px-4 py-6">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 flex items-center space-x-3">
-            <Pickaxe className="text-pm-accent h-8 w-8" />
-            <span>Mathematical Mining Operations</span>
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center">
+            <Pickaxe className="h-10 w-10 mr-3 text-orange-400" />
+            Mining Operations
           </h1>
-          <p className="text-slate-300 text-lg">
-            Contribute to scientific discovery while earning rewards through real mathematical computation
+          <p className="text-xl text-slate-300">
+            Start mathematical computations to discover new knowledge and mine blocks
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Mining Control Panel */}
-          <div className="lg:col-span-1">
-            <Card className="bg-pm-secondary/50 backdrop-blur border-slate-700/50">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Settings className="text-pm-accent h-5 w-5" />
-                  <span>Start New Mining Operation</span>
-                </CardTitle>
-                <CardDescription>
-                  Configure and launch real mathematical computation
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="workType">Mathematical Work Type</Label>
-                  <Select value={workType} onValueChange={setWorkType}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select work type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="riemann_zero">Riemann Zero Computation</SelectItem>
-                      <SelectItem value="prime_pattern">Prime Pattern Discovery</SelectItem>
-                      <SelectItem value="goldbach_verification">Goldbach Verification</SelectItem>
-                    </SelectContent>
-                  </Select>
+        {/* Mining Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="pm-card border-orange-500/30">
+            <CardContent className="pt-6">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 rounded-full bg-orange-500/20">
+                  <Play className="h-5 w-5 text-orange-400" />
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="difficulty">Difficulty Level</Label>
-                  <Input
-                    id="difficulty"
-                    type="number"
-                    min={1}
-                    max={50}
-                    value={difficulty}
-                    onChange={(e) => setDifficulty(parseInt(e.target.value) || 10)}
-                    className="bg-pm-primary/30 border-slate-600"
-                  />
-                  <p className="text-xs text-slate-400">
-                    Higher difficulty = longer computation time = higher rewards
-                  </p>
+                <div>
+                  <div className="text-2xl font-bold text-white">{activeOperations.length}</div>
+                  <div className="text-sm text-slate-400">Active Operations</div>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
 
-                {/* Work Type Preview */}
-                <div className="bg-pm-primary/30 rounded-lg p-4 border border-slate-700/30">
-                  <div className="flex items-center space-x-3 mb-3">
-                    <div className="bg-pm-accent/20 p-2 rounded">
-                      {getWorkTypeInfo(workType).icon}
-                    </div>
-                    <div>
-                      <h4 className="font-medium">{getWorkTypeInfo(workType).title}</h4>
-                      <p className="text-sm text-slate-400">{getWorkTypeInfo(workType).description}</p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <div className="flex items-center space-x-1 text-slate-400">
-                        <DollarSign className="h-3 w-3" />
-                        <span>Expected Value</span>
-                      </div>
-                      <p className="font-medium text-pm-accent">{getWorkTypeInfo(workType).value}</p>
-                    </div>
-                    <div>
-                      <div className="flex items-center space-x-1 text-slate-400">
-                        <Clock className="h-3 w-3" />
-                        <span>Time Estimate</span>
-                      </div>
-                      <p className="font-medium">{getWorkTypeInfo(workType).timeEstimate}</p>
-                    </div>
-                  </div>
+          <Card className="pm-card border-green-500/30">
+            <CardContent className="pt-6">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 rounded-full bg-green-500/20">
+                  <Award className="h-5 w-5 text-green-400" />
                 </div>
+                <div>
+                  <div className="text-2xl font-bold text-white">{completedOperations.length}</div>
+                  <div className="text-sm text-slate-400">Completed</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-                <Button 
-                  onClick={handleStartMining}
-                  disabled={startMining.isPending}
-                  className="w-full bg-pm-accent hover:bg-pm-accent/80 text-pm-primary font-semibold"
-                >
-                  {startMining.isPending ? (
-                    <>
-                      <Activity className="mr-2 h-4 w-4 animate-spin" />
-                      Starting Mining...
-                    </>
-                  ) : (
-                    <>
-                      <Zap className="mr-2 h-4 w-4" />
-                      Start Real Mining
-                    </>
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
+          <Card className="pm-card border-purple-500/30">
+            <CardContent className="pt-6">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 rounded-full bg-purple-500/20">
+                  <Brain className="h-5 w-5 text-purple-400" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-white">{currentDiscoveries.length}</div>
+                  <div className="text-sm text-slate-400">Total Discoveries</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-          {/* Operations and Discoveries */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Active Operations */}
-            <Card className="bg-pm-secondary/50 backdrop-blur border-slate-700/50">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Activity className="text-pm-accent h-5 w-5" />
-                    <span>Active Mining Operations</span>
+          <Card className="pm-card border-blue-500/30">
+            <CardContent className="pt-6">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 rounded-full bg-blue-500/20">
+                  <TrendingUp className="h-5 w-5 text-blue-400" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-white">
+                    ${currentDiscoveries.reduce((sum: number, d: any) => sum + (d.scientificValue || 0), 0).toLocaleString()}
                   </div>
-                  <Badge variant="outline" className="border-pm-accent text-pm-accent">
-                    {operations.filter(op => op.status === 'active').length} Active
-                  </Badge>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {operations.length === 0 ? (
-                  <div className="text-center py-8 text-slate-400">
-                    <Settings className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No active mining operations</p>
-                    <p className="text-sm">Start a new operation to begin mathematical computation</p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {operations.slice(0, 5).map((operation) => (
-                      <div key={`operation-${operation.id}`} className="bg-pm-primary/30 border border-slate-700/30 rounded-lg p-4">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center space-x-3">
-                            <div className="bg-pm-scientific/20 p-2 rounded">
-                              {getWorkTypeInfo(operation.operationType).icon}
-                            </div>
-                            <div>
-                              <h4 className="font-medium text-slate-200">
-                                {getWorkTypeInfo(operation.operationType).title}
-                              </h4>
-                              <p className="text-sm text-slate-400">
-                                Started: {formatTimestamp(operation.startTime)}
-                              </p>
-                            </div>
-                          </div>
-                          <Badge variant={getOperationStatus(operation)}>
-                            {operation.status}
-                          </Badge>
-                        </div>
-                        
-                        {operation.status === 'active' && (
-                          <div className="space-y-2">
-                            <div className="flex justify-between text-sm">
-                              <span>Progress</span>
-                              <span>{Math.round(operation.progress * 100)}%</span>
-                            </div>
-                            <Progress 
-                              value={operation.progress * 100} 
-                              className="h-2 bg-slate-700"
-                            />
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* Recent Discoveries */}
-            <Card className="bg-pm-secondary/50 backdrop-blur border-slate-700/50">
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Trophy className="text-pm-warning h-5 w-5" />
-                  <span>Recent Mathematical Discoveries</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {discoveries.length === 0 ? (
-                  <div className="text-center py-8 text-slate-400">
-                    <Trophy className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No recent discoveries</p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {discoveries.slice(0, 5).map((discovery, index) => (
-                      <div key={`discovery-${discovery.id}-${index}`} className="flex items-center space-x-4 p-3 bg-pm-primary/30 rounded-lg border border-slate-700/30">
-                        <div className="bg-pm-accent/20 p-2 rounded-lg">
-                          {getWorkTypeInfo(discovery.workType).icon}
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-medium text-slate-200">
-                            {getWorkTypeInfo(discovery.workType).title}
-                          </h4>
-                          <p className="text-sm text-slate-400">
-                            {formatTimestamp(discovery.timestamp)}
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <div className="text-sm font-medium text-pm-accent">
-                            ${discovery.scientificValue.toLocaleString()}
-                          </div>
-                          <div className="text-xs text-slate-400">
-                            Scientific Value
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+                  <div className="text-sm text-slate-400">Total Value</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Start New Mining Operation */}
+          <Card className="pm-card">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <Pickaxe className="h-5 w-5 mr-2 text-orange-400" />
+                Start Mining Operation
+              </CardTitle>
+              <CardDescription>
+                Choose a mathematical problem to solve and earn scientific value
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <label className="text-sm font-medium text-slate-300 mb-2 block">
+                  Mathematical Problem Type
+                </label>
+                <Select value={selectedWorkType} onValueChange={setSelectedWorkType}>
+                  <SelectTrigger className="bg-slate-800 border-slate-600">
+                    <SelectValue placeholder="Select work type" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-800 border-slate-600">
+                    {workTypes.map((workType) => (
+                      <SelectItem key={workType.value} value={workType.value}>
+                        <div>
+                          <div className="font-medium">{workType.label}</div>
+                          <div className="text-xs text-slate-400">{workType.description}</div>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-slate-300 mb-2 block">
+                  Difficulty Level: {difficulty[0]}
+                </label>
+                <Slider
+                  value={difficulty}
+                  onValueChange={setDifficulty}
+                  max={20}
+                  min={1}
+                  step={1}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-slate-400 mt-1">
+                  <span>Easy (1)</span>
+                  <span>Medium (10)</span>
+                  <span>Hard (20)</span>
+                </div>
+              </div>
+
+              <div className="p-4 bg-slate-800/50 rounded-lg">
+                <div className="text-sm text-slate-300 mb-2">
+                  <strong>Estimated Completion:</strong> ~2 minutes
+                </div>
+                <div className="text-sm text-slate-300 mb-2">
+                  <strong>Energy Cost:</strong> {(difficulty[0] * 0.05).toFixed(2)} kWh
+                </div>
+                <div className="text-sm text-slate-300">
+                  <strong>Expected Value:</strong> ${(difficulty[0] * 10000).toLocaleString()}
+                </div>
+              </div>
+
+              <Button 
+                onClick={handleStartMining}
+                disabled={startMiningMutation.isPending}
+                className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+              >
+                {startMiningMutation.isPending ? (
+                  <>
+                    <Clock className="h-4 w-4 mr-2 animate-spin" />
+                    Starting...
+                  </>
+                ) : (
+                  <>
+                    <Play className="h-4 w-4 mr-2" />
+                    Start Mining
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Active Operations */}
+          <Card className="pm-card">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <Clock className="h-5 w-5 mr-2 text-blue-400" />
+                Active Operations
+              </CardTitle>
+              <CardDescription>
+                Currently running mathematical computations
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {activeOperations.length === 0 ? (
+                <div className="text-center py-8 text-slate-400">
+                  <Pause className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                  <p>No active mining operations</p>
+                  <p className="text-sm">Start a new operation to begin</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {activeOperations.map((operation: MiningOperation) => (
+                    <div key={operation.id} className="p-4 bg-slate-800/50 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center space-x-2">
+                          <Badge variant="outline" className="text-orange-400 border-orange-400">
+                            {operation.operationType.replace('_', ' ').toUpperCase()}
+                          </Badge>
+                          <span className="text-sm text-slate-400">
+                            Difficulty {operation.difficulty}
+                          </span>
+                        </div>
+                        <div className="text-sm text-slate-400">
+                          {formatTimestamp(operation.startTime)}
+                        </div>
+                      </div>
+                      
+                      <div className="mb-3">
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="text-slate-300">Progress</span>
+                          <span className="text-slate-300">{Math.round(operation.progress * 100)}%</span>
+                        </div>
+                        <div className="w-full bg-slate-700 rounded-full h-2">
+                          <div 
+                            className="bg-gradient-to-r from-orange-500 to-red-500 h-2 rounded-full transition-all duration-500"
+                            style={{ width: `${operation.progress * 100}%` }}
+                          ></div>
+                        </div>
+                      </div>
+
+                      <div className="text-sm text-slate-400">
+                        {getOperationDescription(operation)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Completed Operations */}
+        {completedOperations.length > 0 && (
+          <Card className="pm-card mt-8">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <Award className="h-5 w-5 mr-2 text-green-400" />
+                Recent Completions
+              </CardTitle>
+              <CardDescription>
+                Successfully completed mathematical computations
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {completedOperations.slice(0, 6).map((operation: MiningOperation) => (
+                  <div key={operation.id} className="p-4 bg-slate-800/30 rounded-lg border border-green-500/20">
+                    <div className="flex items-center justify-between mb-2">
+                      <Badge variant="outline" className="text-green-400 border-green-400">
+                        ✓ COMPLETED
+                      </Badge>
+                      <span className="text-xs text-slate-400">
+                        Diff: {operation.difficulty}
+                      </span>
+                    </div>
+                    <div className="text-sm font-medium text-white mb-1">
+                      {operation.operationType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    </div>
+                    <div className="text-xs text-slate-400">
+                      {formatTimestamp(operation.startTime)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

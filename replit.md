@@ -107,6 +107,7 @@ Changelog:
 - July 02, 2025. Made app user-friendly with simple explanations, emoji icons, and clear comparisons to Bitcoin
 - July 02, 2025. Implemented unified design system with reusable CSS component classes for consistent styling
 - July 02, 2025. Fixed Block Explorer updating by adding automatic block creation when mathematical discoveries complete
+- July 02, 2025. Cleaned up dashboard and created unique focused pages: Mining Operations, Block Explorer, and Discoveries with dedicated functionality
 ```
 
 ## User Preferences

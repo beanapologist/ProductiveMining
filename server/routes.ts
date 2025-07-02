@@ -126,11 +126,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const metrics = await storage.getLatestNetworkMetrics();
       const operations = await storage.getActiveMiningOperations();
       const blocks = await storage.getRecentBlocks(5);
+      const discoveries = await storage.getRecentMathematicalWork(10);
 
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({
           type: 'initial_data',
-          data: { metrics, operations, blocks }
+          data: { metrics, operations, blocks, discoveries }
         }));
       }
     } catch (error) {

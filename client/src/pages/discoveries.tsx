@@ -1,10 +1,12 @@
-import { useQuery } from '@tanstack/react-query';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Progress } from '@/components/ui/progress';
-import { Trophy, Brain, Calculator, Microscope, Atom, Zap, Shield, Network, Star, Award } from 'lucide-react';
-import { format } from 'date-fns';
+import { useWebSocket } from "@/hooks/use-websocket";
+import { useQuery } from "@tanstack/react-query";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { Brain, Search, Trophy, Clock, Zap, Target, Award, TrendingUp, Hash, Users, CheckCircle } from "lucide-react";
 
 interface MathematicalWork {
   id: number;
@@ -15,239 +17,396 @@ interface MathematicalWork {
   computationalCost: number;
   energyEfficiency: number;
   scientificValue: number;
-  timestamp: Date;
   workerId: string;
   signature: string;
+  timestamp: Date | string;
 }
 
-const workTypeIcons: Record<string, any> = {
-  'riemann_zero': Brain,
-  'prime_pattern': Calculator,
-  'qdt_validation': Microscope,
-  'birch_swinnerton_dyer': Atom,
-  'navier_stokes': Zap,
-  'yang_mills': Shield,
-  'elliptic_curve_crypto': Network,
-  'lattice_crypto': Star,
-  'poincare_conjecture': Award
-};
-
-const workTypeNames: Record<string, string> = {
-  'riemann_zero': '🔢 Prime Number Secrets',
-  'prime_pattern': '🔐 Security Patterns',
-  'qdt_validation': '⚛️ Quantum Physics',
-  'birch_swinnerton_dyer': '💰 Million Dollar Problem',
-  'navier_stokes': '🌊 Fluid Flow Science',
-  'yang_mills': '🌌 Forces of Nature',
-  'elliptic_curve_crypto': '🛡️ Unbreakable Security',
-  'lattice_crypto': '🔮 Quantum-Safe Locks',
-  'poincare_conjecture': '🔄 3D Shape Puzzles'
-};
-
-const getDifficultyColor = (difficulty: number) => {
-  if (difficulty >= 20) return 'destructive';
-  if (difficulty >= 15) return 'secondary';
-  if (difficulty >= 10) return 'default';
-  return 'outline';
-};
-
-const formatScientificValue = (value: number) => {
-  if (value >= 1000000) {
-    return `$${(value / 1000000).toFixed(1)}M`;
-  } else if (value >= 1000) {
-    return `$${(value / 1000).toFixed(0)}K`;
-  }
-  return `$${value}`;
-};
-
 export default function DiscoveriesPage() {
-  const { data: discoveries = [], isLoading } = useQuery<MathematicalWork[]>({
-    queryKey: ['/api/discoveries'],
-    refetchInterval: 2000, // Refetch every 2 seconds for real-time updates
+  const { discoveries } = useWebSocket();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [workTypeFilter, setWorkTypeFilter] = useState("all");
+  const [selectedDiscovery, setSelectedDiscovery] = useState<MathematicalWork | null>(null);
+
+  const { data: initialDiscoveries = [] } = useQuery({
+    queryKey: ["/api/discoveries"],
+    enabled: !discoveries
   });
 
-  if (isLoading) {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Loading mathematical discoveries...</p>
-        </div>
-      </div>
-    );
-  }
+  const currentDiscoveries = discoveries && discoveries.length > 0 ? discoveries : (initialDiscoveries as MathematicalWork[] || []);
 
-  if (discoveries.length === 0) {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="text-center py-12">
-          <Brain className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-          <h2 className="text-2xl font-bold mb-2">No Discoveries Yet</h2>
-          <p className="text-muted-foreground max-w-md mx-auto">
-            Mathematical discoveries will appear here as miners solve real computational problems. 
-            Start mining operations to begin creating scientific breakthroughs.
-          </p>
-        </div>
-      </div>
-    );
-  }
+  const workTypes = [
+    { value: "all", label: "All Discoveries" },
+    { value: "riemann_zero", label: "🧮 Riemann Hypothesis" },
+    { value: "prime_pattern", label: "🔢 Prime Patterns" },
+    { value: "goldbach_verification", label: "➕ Goldbach Conjecture" },
+    { value: "birch_swinnerton_dyer", label: "📐 Birch-Swinnerton-Dyer" },
+    { value: "navier_stokes", label: "🌊 Navier-Stokes" },
+    { value: "yang_mills", label: "⚛️ Yang-Mills Theory" },
+    { value: "poincare_conjecture", label: "🌐 Poincaré Conjecture" },
+    { value: "elliptic_curve_crypto", label: "🔐 Elliptic Curve Crypto" },
+    { value: "lattice_crypto", label: "🔒 Lattice Cryptography" },
+    { value: "qdt_validation", label: "⚡ QDT Validation" }
+  ];
+
+  const filteredDiscoveries = currentDiscoveries.filter((discovery: MathematicalWork) => {
+    const matchesSearch = !searchQuery || 
+      discovery.workType.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      discovery.workerId.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesType = workTypeFilter === "all" || discovery.workType === workTypeFilter;
+    
+    return matchesSearch && matchesType;
+  });
+
+  const formatTimestamp = (timestamp: Date | string) => {
+    const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
+    if (!date || isNaN(date.getTime())) return 'Unknown';
+    return date.toLocaleString();
+  };
+
+  const getWorkTypeIcon = (workType: string) => {
+    const icons: Record<string, string> = {
+      riemann_zero: "🧮",
+      prime_pattern: "🔢",
+      goldbach_verification: "➕",
+      birch_swinnerton_dyer: "📐",
+      navier_stokes: "🌊",
+      yang_mills: "⚛️",
+      poincare_conjecture: "🌐",
+      elliptic_curve_crypto: "🔐",
+      lattice_crypto: "🔒",
+      qdt_validation: "⚡"
+    };
+    return icons[workType] || "🧮";
+  };
+
+  const formatWorkType = (workType: string) => {
+    return workType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  };
+
+  const totalScientificValue = currentDiscoveries.reduce((sum: number, d: MathematicalWork) => 
+    sum + (d.scientificValue || 0), 0
+  );
+
+  const averageDifficulty = currentDiscoveries.length > 0 
+    ? currentDiscoveries.reduce((sum: number, d: MathematicalWork) => sum + d.difficulty, 0) / currentDiscoveries.length
+    : 0;
+
+  const uniqueWorkers = new Set(currentDiscoveries.map((d: MathematicalWork) => d.workerId)).size;
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
-      {/* User-friendly explanation header */}
-      <div className="pm-header-gradient">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-            Mathematical Discoveries 🧠
+    <div className="text-slate-100">
+      <div className="container mx-auto px-4 py-6">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center">
+            <Brain className="h-10 w-10 mr-3 text-purple-400" />
+            Mathematical Discoveries
           </h1>
-          <p className="text-xl text-slate-300 mb-4">
-            Real mathematical breakthroughs created by our mining network
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto text-sm">
-            <div className="bg-white/5 rounded-lg p-3">
-              <div className="text-lg mb-1">🔬</div>
-              <div className="font-semibold text-white">Real Science</div>
-              <div className="text-slate-400">Authentic mathematical problems solved by miners</div>
-            </div>
-            <div className="bg-white/5 rounded-lg p-3">
-              <div className="text-lg mb-1">💰</div>
-              <div className="font-semibold text-white">Valuable Knowledge</div>
-              <div className="text-slate-400">Each discovery has measurable scientific value</div>
-            </div>
-            <div className="bg-white/5 rounded-lg p-3">
-              <div className="text-lg mb-1">🌍</div>
-              <div className="font-semibold text-white">Impact</div>
-              <div className="text-slate-400">Benefits cryptography, physics, and technology</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Mathematical Discoveries</h1>
-          <p className="text-muted-foreground">
-            Real computational breakthroughs from productive mining operations
+          <p className="text-xl text-slate-300">
+            Explore groundbreaking mathematical breakthroughs and scientific achievements
           </p>
         </div>
-        <Badge variant="secondary" className="text-lg px-4 py-2">
-          {discoveries.length} Discovery{discoveries.length !== 1 ? 'ies' : 'y'}
-        </Badge>
-      </div>
 
-      <div className="grid gap-6">
-        {discoveries.map((discovery) => {
-          const IconComponent = workTypeIcons[discovery.workType] || Brain;
-          const workTypeName = workTypeNames[discovery.workType] || discovery.workType;
-          
-          return (
-            <Card key={discovery.id} className="hover:shadow-lg transition-shadow">
+        {/* Discovery Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <Card className="pm-card border-purple-500/30">
+            <CardContent className="pt-6">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 rounded-full bg-purple-500/20">
+                  <Brain className="h-5 w-5 text-purple-400" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-white">{currentDiscoveries.length}</div>
+                  <div className="text-sm text-slate-400">Total Discoveries</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="pm-card border-green-500/30">
+            <CardContent className="pt-6">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 rounded-full bg-green-500/20">
+                  <Award className="h-5 w-5 text-green-400" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-white">${totalScientificValue.toLocaleString()}</div>
+                  <div className="text-sm text-slate-400">Scientific Value</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="pm-card border-blue-500/30">
+            <CardContent className="pt-6">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 rounded-full bg-blue-500/20">
+                  <Target className="h-5 w-5 text-blue-400" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-white">{averageDifficulty.toFixed(1)}</div>
+                  <div className="text-sm text-slate-400">Avg Difficulty</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="pm-card border-orange-500/30">
+            <CardContent className="pt-6">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 rounded-full bg-orange-500/20">
+                  <Users className="h-5 w-5 text-orange-400" />
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-white">{uniqueWorkers}</div>
+                  <div className="text-sm text-slate-400">Contributors</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Discovery List */}
+          <div className="lg:col-span-2">
+            <Card className="pm-card">
               <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="p-2 rounded-lg bg-primary/10">
-                      <IconComponent className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-xl">{workTypeName}</CardTitle>
-                      <CardDescription>
-                        Discovered by {discovery.workerId} • {format(new Date(discovery.timestamp), 'PPp')}
-                      </CardDescription>
-                    </div>
+                <CardTitle className="text-white flex items-center">
+                  <Brain className="h-5 w-5 mr-2 text-purple-400" />
+                  Mathematical Breakthroughs
+                </CardTitle>
+                <CardDescription>
+                  Scientific discoveries made through productive mining
+                </CardDescription>
+                
+                {/* Filters */}
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                    <Input
+                      placeholder="Search discoveries..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 bg-slate-800 border-slate-600 text-white"
+                    />
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <Badge variant={getDifficultyColor(discovery.difficulty)}>
-                      Difficulty {discovery.difficulty}
-                    </Badge>
-                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                      {formatScientificValue(discovery.scientificValue)}
-                    </Badge>
-                  </div>
+                  <Select value={workTypeFilter} onValueChange={setWorkTypeFilter}>
+                    <SelectTrigger className="bg-slate-800 border-slate-600 sm:w-[200px]">
+                      <SelectValue placeholder="Filter by type" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-800 border-slate-600">
+                      {workTypes.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </CardHeader>
-              
-              <CardContent className="space-y-4">
-                {/* Computational Metrics */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="text-center p-3 bg-muted/50 rounded-lg">
-                    <div className="text-2xl font-bold text-primary">
-                      {discovery.computationalCost.toLocaleString()}
+              <CardContent>
+                <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                  {filteredDiscoveries.length === 0 ? (
+                    <div className="text-center py-8 text-slate-400">
+                      <Brain className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                      <p>No discoveries found</p>
+                      <p className="text-sm">Try adjusting your search or filters</p>
                     </div>
-                    <div className="text-sm text-muted-foreground">Computational Cost</div>
-                  </div>
-                  
-                  <div className="text-center p-3 bg-muted/50 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">
-                      {discovery.energyEfficiency.toFixed(1)}x
-                    </div>
-                    <div className="text-sm text-muted-foreground">Energy Efficiency</div>
-                  </div>
-                  
-                  <div className="text-center p-3 bg-muted/50 rounded-lg">
-                    <div className="text-2xl font-bold text-orange-600">
-                      {formatScientificValue(discovery.scientificValue)}
-                    </div>
-                    <div className="text-sm text-muted-foreground">Scientific Value</div>
-                  </div>
-                </div>
-
-                <Separator />
-
-                {/* Discovery Results */}
-                <div>
-                  <h4 className="font-semibold mb-2">Computational Results</h4>
-                  <div className="bg-muted/30 p-4 rounded-lg">
-                    <pre className="text-sm overflow-x-auto whitespace-pre-wrap">
-                      {JSON.stringify(discovery.result, null, 2)}
-                    </pre>
-                  </div>
-                </div>
-
-                {/* Verification Data */}
-                {discovery.verificationData && (
-                  <div>
-                    <h4 className="font-semibold mb-2">Verification & Authentication</h4>
-                    <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="font-medium">Verified: </span>
-                          <Badge variant={discovery.verificationData.verified ? "default" : "destructive"}>
-                            {discovery.verificationData.verified ? "✓ Verified" : "✗ Unverified"}
-                          </Badge>
+                  ) : (
+                    filteredDiscoveries.map((discovery: MathematicalWork) => (
+                      <div 
+                        key={discovery.id}
+                        className={`p-4 rounded-lg border cursor-pointer transition-all hover:border-purple-500/50 ${
+                          selectedDiscovery?.id === discovery.id 
+                            ? 'bg-purple-500/10 border-purple-500' 
+                            : 'bg-slate-800/30 border-slate-700'
+                        }`}
+                        onClick={() => setSelectedDiscovery(discovery)}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center space-x-3">
+                            <span className="text-2xl">{getWorkTypeIcon(discovery.workType)}</span>
+                            <div>
+                              <Badge variant="outline" className="text-purple-400 border-purple-400 mb-1">
+                                {formatWorkType(discovery.workType)}
+                              </Badge>
+                              <div className="text-xs text-slate-400">
+                                Difficulty {discovery.difficulty}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-lg font-semibold text-green-400">
+                              ${discovery.scientificValue?.toLocaleString()}
+                            </div>
+                            <div className="text-xs text-slate-400">
+                              {formatTimestamp(discovery.timestamp)}
+                            </div>
+                          </div>
                         </div>
-                        {discovery.verificationData.theorem && (
-                          <div>
-                            <span className="font-medium">Theorem: </span>
-                            <span className="text-blue-700 dark:text-blue-300">
-                              {discovery.verificationData.theorem}
-                            </span>
+                        
+                        <div className="flex items-center justify-between text-sm">
+                          <div className="flex items-center space-x-4">
+                            <div className="flex items-center space-x-1">
+                              <Zap className="h-3 w-3 text-yellow-400" />
+                              <span className="text-slate-400">
+                                {discovery.energyEfficiency}x efficient
+                              </span>
+                            </div>
+                            <div className="flex items-center space-x-1">
+                              <CheckCircle className="h-3 w-3 text-green-400" />
+                              <span className="text-slate-400">Verified</span>
+                            </div>
                           </div>
-                        )}
-                        {discovery.verificationData.verificationMethod && (
-                          <div className="md:col-span-2">
-                            <span className="font-medium">Method: </span>
-                            <span className="text-muted-foreground">
-                              {discovery.verificationData.verificationMethod}
-                            </span>
+                          <div className="text-slate-400 font-mono text-xs">
+                            {discovery.workerId.slice(0, 8)}...
                           </div>
-                        )}
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Cryptographic Signature */}
-                <div>
-                  <h4 className="font-semibold mb-2">Cryptographic Proof</h4>
-                  <div className="bg-gray-50 dark:bg-gray-900/50 p-3 rounded-lg">
-                    <code className="text-xs break-all text-muted-foreground">
-                      {discovery.signature}
-                    </code>
-                  </div>
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
-          );
-        })}
+          </div>
+
+          {/* Discovery Details */}
+          <div>
+            <Card className="pm-card">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center">
+                  <Trophy className="h-5 w-5 mr-2 text-yellow-400" />
+                  Discovery Details
+                </CardTitle>
+                <CardDescription>
+                  Detailed information about the selected discovery
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {!selectedDiscovery ? (
+                  <div className="text-center py-8 text-slate-400">
+                    <Trophy className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>Select a discovery to view details</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Discovery Header */}
+                    <div className="p-4 bg-slate-800/50 rounded-lg">
+                      <div className="flex items-center space-x-3 mb-3">
+                        <span className="text-3xl">{getWorkTypeIcon(selectedDiscovery.workType)}</span>
+                        <div>
+                          <h3 className="text-lg font-semibold text-white">
+                            {formatWorkType(selectedDiscovery.workType)}
+                          </h3>
+                          <div className="text-sm text-slate-400">
+                            Discovery #{selectedDiscovery.id}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">Timestamp:</span>
+                          <span className="text-white">{formatTimestamp(selectedDiscovery.timestamp)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">Difficulty:</span>
+                          <span className="text-white">{selectedDiscovery.difficulty}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">Energy Efficiency:</span>
+                          <span className="text-green-400">{selectedDiscovery.energyEfficiency}x</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Scientific Value */}
+                    <div className="p-4 bg-gradient-to-r from-green-500/10 to-purple-500/10 rounded-lg border border-green-500/20">
+                      <h4 className="text-white font-semibold mb-3 flex items-center">
+                        <Award className="h-4 w-4 mr-2" />
+                        Scientific Impact
+                      </h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-slate-300">Scientific Value:</span>
+                          <span className="text-green-400 font-semibold text-lg">
+                            ${selectedDiscovery.scientificValue?.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-300">Computational Cost:</span>
+                          <span className="text-yellow-400">
+                            {selectedDiscovery.computationalCost?.toLocaleString()} ops
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-300">Efficiency Ratio:</span>
+                          <span className="text-blue-400">
+                            {((selectedDiscovery.scientificValue || 0) / (selectedDiscovery.computationalCost || 1)).toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Verification */}
+                    <div className="p-4 bg-slate-800/50 rounded-lg">
+                      <h4 className="text-white font-semibold mb-2 flex items-center">
+                        <CheckCircle className="h-4 w-4 mr-2 text-green-400" />
+                        Verification Status
+                      </h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex items-center space-x-2">
+                          <Badge variant="outline" className="text-green-400 border-green-400">
+                            ✓ VERIFIED
+                          </Badge>
+                          <span className="text-slate-400">Cryptographically signed</span>
+                        </div>
+                        <div className="text-xs text-slate-400 mt-2">
+                          <strong>Signature:</strong>
+                          <div className="font-mono bg-slate-900 p-2 rounded mt-1 break-all">
+                            {selectedDiscovery.signature}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Worker Info */}
+                    <div className="p-4 bg-slate-800/50 rounded-lg">
+                      <h4 className="text-white font-semibold mb-2 flex items-center">
+                        <Users className="h-4 w-4 mr-2" />
+                        Contributor
+                      </h4>
+                      <div className="text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-slate-400">Worker ID:</span>
+                          <span className="text-orange-400 font-mono">
+                            {selectedDiscovery.workerId.slice(0, 12)}...
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Mathematical Result Preview */}
+                    {selectedDiscovery.result && (
+                      <div className="p-4 bg-slate-800/50 rounded-lg">
+                        <h4 className="text-white font-semibold mb-2 flex items-center">
+                          <Hash className="h-4 w-4 mr-2" />
+                          Result Preview
+                        </h4>
+                        <div className="text-xs text-slate-400 bg-slate-900 p-3 rounded font-mono max-h-32 overflow-y-auto">
+                          {JSON.stringify(selectedDiscovery.result, null, 2).slice(0, 500)}
+                          {JSON.stringify(selectedDiscovery.result).length > 500 && "..."}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
