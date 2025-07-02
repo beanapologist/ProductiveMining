@@ -4,11 +4,12 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { BarChart3, Pickaxe, Database, Brain } from "lucide-react";
+import { BarChart3, Pickaxe, Database, Brain, Info } from "lucide-react";
 import Dashboard from "@/pages/dashboard";
 import BlockExplorer from "@/pages/block-explorer";
 import MiningPage from "@/pages/mining";
 import DiscoveriesPage from "@/pages/discoveries";
+import About from "@/pages/about";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -20,6 +21,7 @@ function Router() {
         <Route path="/mining" component={MiningPage} />
         <Route path="/blocks" component={BlockExplorer} />
         <Route path="/discoveries" component={DiscoveriesPage} />
+        <Route path="/about" component={About} />
         <Route component={NotFound} />
       </Switch>
     </div>
@@ -33,7 +35,8 @@ function Navigation() {
     { path: '/', label: 'Dashboard', icon: BarChart3 },
     { path: '/mining', label: 'Mining Operations', icon: Pickaxe },
     { path: '/discoveries', label: 'Discoveries', icon: Brain },
-    { path: '/blocks', label: 'Block Explorer', icon: Database }
+    { path: '/blocks', label: 'Block Explorer', icon: Database },
+    { path: '/about', label: 'About', icon: Info }
   ];
 
   return (

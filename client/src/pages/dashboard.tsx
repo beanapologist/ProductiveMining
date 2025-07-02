@@ -109,41 +109,6 @@ export default function Dashboard() {
             </Button>
           </div>
         </div>
-        
-        {/* What Makes This Different */}
-        <div className="bg-gradient-to-r from-amber-600/20 to-orange-600/20 rounded-2xl p-6 mb-8 border border-amber-500/30">
-          <h2 className="text-2xl font-bold text-center mb-4 text-amber-300">
-            ✨ What Makes Us Different From Bitcoin?
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-            <div className="space-y-3">
-              <div className="text-center">
-                <h3 className="font-semibold text-red-400 mb-2">❌ Traditional Mining (Bitcoin)</h3>
-                <div className="bg-red-900/20 rounded-lg p-3 border border-red-500/30">
-                  <div className="space-y-2 text-slate-300">
-                    <div>• Solves meaningless hash puzzles</div>
-                    <div>• Wastes massive amounts of energy</div>
-                    <div>• Creates no scientific value</div>
-                    <div>• Only enriches miners</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div className="text-center">
-                <h3 className="font-semibold text-green-400 mb-2">✅ Productive Mining (Our Way)</h3>
-                <div className="bg-green-900/20 rounded-lg p-3 border border-green-500/30">
-                  <div className="space-y-2 text-slate-300">
-                    <div>• Solves real mathematical problems</div>
-                    <div>• 99% more energy efficient</div>
-                    <div>• Creates valuable scientific knowledge</div>
-                    <div>• Benefits all of humanity</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
         <section className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-pm-scientific/10 via-pm-primary to-pm-accent/5" />
