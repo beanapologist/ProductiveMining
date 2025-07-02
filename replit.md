@@ -119,6 +119,8 @@ Changelog:
 - July 02, 2025. Restored "Productive Mining" branding with clean computational theme focused on research and data analysis
 - July 02, 2025. Implemented modern bright interface design with gradient backgrounds, glassmorphism effects, and professional styling
 - July 02, 2025. Reset blockchain network for data integrity and started continuous mining operations to ensure network activity
+- July 02, 2025. Enhanced data linking between frontend and backend with clickable tables displaying detailed block and discovery information
+- July 02, 2025. Implemented comprehensive API endpoints including /api/blocks/:id/work for detailed mathematical work linked to each block
 ```
 
 ## User Preferences

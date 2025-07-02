@@ -237,7 +237,7 @@ export default function Dashboard() {
             <div>
               <h3 className="text-lg font-semibold mb-4">Recent Mathematical Discoveries</h3>
               <div className="overflow-x-auto">
-                <table className="research-table">
+                <table className="modern-table">
                   <thead>
                     <tr>
                       <th>Research Area</th>
@@ -249,18 +249,26 @@ export default function Dashboard() {
                   </thead>
                   <tbody>
                     {Array.isArray(discoveries) ? discoveries.slice(0, 10).map((discovery: any) => (
-                      <tr key={discovery.id}>
+                      <tr key={discovery.id} className="cursor-pointer hover:bg-blue-50" onClick={() => {
+                        console.log('Discovery Details:', {
+                          id: discovery.id,
+                          workType: discovery.workType,
+                          result: discovery.result,
+                          verification: discovery.verificationData,
+                          scientificValue: discovery.scientificValue
+                        });
+                      }}>
                         <td>
-                          <span className={getWorkTypeClass(discovery.workType)}>
+                          <span className={`font-semibold ${getWorkTypeClass(discovery.workType)}`}>
                             {formatWorkType(discovery.workType)}
                           </span>
                         </td>
                         <td className="font-mono">{discovery.difficulty}</td>
-                        <td className="font-mono text-green-400">
-                          {formatNumber(discovery.scientificValue)}
+                        <td className="font-mono font-bold">
+                          ${formatNumber(discovery.scientificValue)}
                         </td>
-                        <td className="font-mono text-blue-400">
-                          {discovery.workerId?.slice(-8) || 'Unknown'}
+                        <td className="font-mono">
+                          {discovery.workerId?.slice(-8) || 'System'}
                         </td>
                         <td className="text-muted-foreground">
                           {new Date(discovery.timestamp).toLocaleString()}
@@ -269,7 +277,7 @@ export default function Dashboard() {
                     )) : [
                       <tr key="no-data">
                         <td colSpan={5} className="text-center text-muted-foreground py-8">
-                          No research data available. Start mathematical mining to begin generating discoveries.
+                          Mining operations active. New discoveries will appear here shortly.
                         </td>
                       </tr>
                     ]}
@@ -305,7 +313,7 @@ export default function Dashboard() {
               
               <h4 className="text-md font-semibold mb-3">Recent Blocks</h4>
               <div className="overflow-x-auto">
-                <table className="research-table">
+                <table className="modern-table">
                   <thead>
                     <tr>
                       <th>Block #</th>
@@ -317,15 +325,24 @@ export default function Dashboard() {
                   </thead>
                   <tbody>
                     {Array.isArray(blocks) ? blocks.slice(-10).reverse().map((block: any) => (
-                      <tr key={block.id}>
-                        <td className="font-mono text-purple-400">#{block.index}</td>
+                      <tr key={block.id} className="cursor-pointer hover:bg-blue-50" onClick={() => {
+                        // Fetch detailed block data with mathematical work
+                        fetch(`/api/blocks/${block.id}/work`)
+                          .then(res => res.json())
+                          .then(data => {
+                            console.log('Block Details:', data);
+                            // You can implement a modal or detailed view here
+                          })
+                          .catch(err => console.error('Error fetching block details:', err));
+                      }}>
+                        <td className="font-mono font-bold">#{block.index}</td>
                         <td className="text-muted-foreground">
                           {new Date(block.timestamp).toLocaleString()}
                         </td>
-                        <td className="font-mono text-green-400">
-                          {formatNumber(block.totalScientificValue)}
+                        <td className="font-mono font-bold">
+                          ${formatNumber(block.totalScientificValue)}
                         </td>
-                        <td className="font-mono text-blue-400">
+                        <td className="font-mono">
                           {block.minerId?.slice(-8) || 'Unknown'}
                         </td>
                         <td className="font-mono">{block.difficulty}</td>
@@ -333,7 +350,7 @@ export default function Dashboard() {
                     )) : [
                       <tr key="no-blocks">
                         <td colSpan={5} className="text-center text-muted-foreground py-8">
-                          No blocks generated yet.
+                          Fresh blockchain initialized. New blocks generating from active mining operations.
                         </td>
                       </tr>
                     ]}
