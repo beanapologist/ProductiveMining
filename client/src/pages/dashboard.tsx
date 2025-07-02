@@ -89,13 +89,15 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="research-container fade-in">
+    <div className="modern-container fade-in">
       {/* Header */}
-      <div className="research-header">
+      <div className="modern-header">
         <div className="flex justify-between items-start">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Productive Mining Research Interface</h1>
-            <p className="text-muted-foreground">Mathematical computation network analysis and monitoring</p>
+            <h1 className="text-4xl font-bold mb-3">
+              <span className="nav-brand">Productive Mining</span> Dashboard
+            </h1>
+            <p className="text-muted-foreground text-lg">Advanced computational research platform - transforming mining into mathematical discovery</p>
           </div>
           <div className="flex items-center space-x-4">
             <div className="status-badge status-active">
@@ -157,14 +159,14 @@ export default function Dashboard() {
       </div>
 
       {/* Tabbed Interface */}
-      <div className="research-card">
-        <div className="research-tabs">
+      <div className="modern-card">
+        <div className="modern-tabs">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             return (
               <button
                 key={tab.id}
-                className={`research-tab ${activeTab === tab.id ? 'active' : ''}`}
+                className={`modern-tab ${activeTab === tab.id ? 'active' : ''}`}
                 onClick={() => setActiveTab(tab.id)}
               >
                 <Icon className="h-4 w-4 inline mr-2" />

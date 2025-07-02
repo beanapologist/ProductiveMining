@@ -43,10 +43,10 @@ function Navigation() {
   ];
 
   return (
-    <nav className="nav-research sticky top-0 z-50">
+    <nav className="nav-modern sticky top-0 z-50">
       <div className="flex justify-between items-center h-16">
         <div className="nav-brand">
-          Productive<span className="accent">Mining</span>
+          Productive Mining
         </div>
         
         <div className="nav-menu">
@@ -74,7 +74,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <div className="dark min-h-screen bg-pm-primary">
+        <div className="min-h-screen">
           <Toaster />
           <Router />
         </div>
