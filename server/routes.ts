@@ -235,6 +235,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Ensure all discoveries have corresponding blocks
+  app.post("/api/blocks/sync", async (req, res) => {
+    try {
+      const { db } = await import('./db');
+      const { mathematicalWork, productiveBlocks, blockMathematicalWork } = await import('@shared/schema');
+      const { notInArray } = await import('drizzle-orm');
+      
+      // Find discoveries without blocks
+      const blocksWithWork = await db.select({ workId: blockMathematicalWork.workId })
+        .from(blockMathematicalWork);
+      const linkedWorkIds = blocksWithWork.map(b => b.workId);
+      
+      const unlinkedDiscoveries = linkedWorkIds.length > 0 
+        ? await db.select().from(mathematicalWork)
+            .where(notInArray(mathematicalWork.id, linkedWorkIds))
+        : await db.select().from(mathematicalWork);
+      
+      console.log(`🔗 BLOCK SYNC: Found ${unlinkedDiscoveries.length} discoveries without blocks`);
+      
+      let createdBlocks = 0;
+      
+      for (const discovery of unlinkedDiscoveries) {
+        // Get latest block for proper indexing
+        const latestBlocks = await storage.getRecentBlocks(1);
+        const previousHash = latestBlocks.length > 0 ? latestBlocks[0].blockHash : '0'.repeat(64);
+        const blockIndex = latestBlocks.length > 0 ? latestBlocks[0].index + 1 : 2;
+
+        // Generate block hash from discovery
+        const workData = `${discovery.workType}${discovery.scientificValue}${discovery.signature}`;
+        const merkleRoot = generateSimpleHash(workData).padStart(64, '0');
+        const blockData = `${blockIndex}${previousHash}${merkleRoot}${discovery.scientificValue}`;
+        const nonce = calculateProofOfWork(blockData, discovery.difficulty || 10);
+        const blockHash = generateSimpleHash(`${blockData}${nonce}`).padStart(64, '0');
+        
+        // Create block
+        const newBlock = await storage.createBlock({
+          index: blockIndex,
+          previousHash,
+          merkleRoot,
+          difficulty: discovery.difficulty || 10,
+          nonce,
+          blockHash,
+          minerId: discovery.workerId || `system_${Date.now()}`,
+          totalScientificValue: discovery.scientificValue,
+          energyConsumed: discovery.computationalCost / 100000,
+          knowledgeCreated: discovery.scientificValue
+        });
+
+        // Link discovery to block
+        await db.insert(blockMathematicalWork).values({
+          blockId: newBlock.id,
+          workId: discovery.id
+        });
+
+        createdBlocks++;
+        console.log(`📦 BLOCK CREATED: #${blockIndex} for ${discovery.workType} (ID: ${discovery.id})`);
+      }
+
+      broadcast({
+        type: 'block_mined',
+        data: { message: `Synchronized ${createdBlocks} blocks from discoveries` }
+      });
+
+      res.json({
+        synchronized: {
+          discoveredUnlinked: unlinkedDiscoveries.length,
+          blocksCreated: createdBlocks
+        }
+      });
+    } catch (error) {
+      console.error('Block sync error:', error);
+      res.status(500).json({ error: "Block synchronization failed" });
+    }
+  });
+
   // Manual cleanup endpoint
   app.post("/api/cleanup", async (req, res) => {
     try {
