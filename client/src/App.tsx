@@ -15,29 +15,7 @@ import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
-    <div className="min-h-screen relative">
-      {/* Matrix Background Effect */}
-      <div className="matrix-background">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <div
-            key={i}
-            className="matrix-column"
-            style={{
-              left: `${i * 5}%`,
-              animationDelay: `${Math.random() * 20}s`,
-              animationDuration: `${20 + Math.random() * 10}s`
-            }}
-          >
-            {Array.from({ length: 50 }).map((_, j) => (
-              <div key={j}>
-                {Math.random() > 0.5 ? '1' : '0'}
-                <br />
-              </div>
-            ))}
-          </div>
-        ))}
-      </div>
-      
+    <div className="min-h-screen">
       <Navigation />
       <Switch>
         <Route path="/" component={Dashboard} />
@@ -56,48 +34,44 @@ function Navigation() {
   const [location] = useLocation();
   
   const navItems = [
-    { path: '/', label: 'Neural Hub', icon: BarChart3 },
-    { path: '/mining', label: 'Quantum Mining', icon: Pickaxe },
-    { path: '/discoveries', label: 'Data Vaults', icon: Brain },
-    { path: '/security', label: 'Crypto Core', icon: Shield },
-    { path: '/blocks', label: 'Chain Explorer', icon: Database },
-    { path: '/about', label: 'System Info', icon: Info }
+    { path: '/', label: 'Computation Dashboard', icon: BarChart3 },
+    { path: '/mining', label: 'Mathematical Mining', icon: Pickaxe },
+    { path: '/discoveries', label: 'Research Results', icon: Brain },
+    { path: '/security', label: 'Cryptographic Security', icon: Shield },
+    { path: '/blocks', label: 'Blockchain Explorer', icon: Database },
+    { path: '/about', label: 'About', icon: Info }
   ];
 
   return (
-    <nav className="bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 backdrop-blur border-b border-purple-500/30 sticky top-0 z-50 shadow-lg">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-8">
-            <div className="flex items-center space-x-3">
-              <div className="relative">
-                <div className="text-3xl">🧮</div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-ping"></div>
+    <nav className="nav-clean border-b sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex items-center">
+            <div className="flex-shrink-0 flex items-center space-x-3">
+              <div className="text-2xl font-bold text-white">
+                Mathematical<span className="text-math-green">Mining</span>
               </div>
-              <div>
-                <span className="text-xl font-bold text-white">Productive Mining</span>
-                <div className="text-xs text-yellow-300 font-medium">Real Math • Real Value</div>
-              </div>
+              <div className="status-indicator status-active"></div>
             </div>
-            <div className="hidden md:flex space-x-2">
-              {navItems.map((item) => {
-                const IconComponent = item.icon;
-                return (
-                  <Link
-                    key={item.path}
-                    href={item.path}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                      location === item.path
-                        ? 'bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 font-semibold shadow-lg transform scale-105' 
-                        : 'text-white/80 hover:text-white hover:bg-white/10 hover:scale-105'
-                    }`}
-                  >
-                    <IconComponent className={`h-4 w-4 ${location === item.path ? 'text-gray-900' : ''}`} />
-                    <span>{item.label}</span>
-                  </Link>
-                );
-              })}
-            </div>
+          </div>
+          
+          <div className="flex items-center space-x-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location === item.path;
+              return (
+                <Link
+                  key={item.path}
+                  href={item.path}
+                  className={`nav-item flex items-center space-x-2 text-sm font-medium ${
+                    isActive ? 'active' : ''
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  <span className="hidden sm:inline">{item.label}</span>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </div>

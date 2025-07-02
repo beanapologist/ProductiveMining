@@ -3,35 +3,35 @@
 @tailwind utilities;
 
 :root {
-  /* Modern Cyberpunk Theme */
-  --background: hsl(0, 0%, 4%);
-  --foreground: hsl(0, 0%, 98%);
-  --card: hsl(0, 0%, 6%);
-  --card-foreground: hsl(0, 0%, 98%);
-  --popover: hsl(0, 0%, 6%);
-  --popover-foreground: hsl(0, 0%, 98%);
-  --primary: hsl(195, 100%, 50%);
-  --primary-foreground: hsl(0, 0%, 4%);
-  --secondary: hsl(0, 0%, 10%);
-  --secondary-foreground: hsl(0, 0%, 98%);
-  --muted: hsl(0, 0%, 10%);
-  --muted-foreground: hsl(0, 0%, 65%);
-  --accent: hsl(145, 100%, 50%);
-  --accent-foreground: hsl(0, 0%, 4%);
+  /* Clean Computational Theme */
+  --background: hsl(220, 27%, 6%);
+  --foreground: hsl(210, 40%, 95%);
+  --card: hsl(220, 27%, 8%);
+  --card-foreground: hsl(210, 40%, 95%);
+  --popover: hsl(220, 27%, 8%);
+  --popover-foreground: hsl(210, 40%, 95%);
+  --primary: hsl(142, 76%, 36%);
+  --primary-foreground: hsl(220, 27%, 6%);
+  --secondary: hsl(220, 14%, 14%);
+  --secondary-foreground: hsl(210, 40%, 95%);
+  --muted: hsl(220, 14%, 14%);
+  --muted-foreground: hsl(215, 20%, 65%);
+  --accent: hsl(216, 87%, 52%);
+  --accent-foreground: hsl(220, 27%, 6%);
   --destructive: hsl(0, 84%, 60%);
   --destructive-foreground: hsl(0, 0%, 98%);
-  --border: hsl(0, 0%, 15%);
-  --input: hsl(0, 0%, 15%);
-  --ring: hsl(195, 100%, 50%);
-  --radius: 0.75rem;
+  --border: hsl(220, 14%, 18%);
+  --input: hsl(220, 14%, 18%);
+  --ring: hsl(142, 76%, 36%);
+  --radius: 0.5rem;
 
-  /* Cyberpunk Colors */
-  --cyber-blue: #00d4ff;
-  --cyber-green: #00ff88;
-  --cyber-purple: #8b5cf6;
-  --cyber-orange: #f97316;
-  --cyber-pink: #f472b6;
-  --cyber-yellow: #fbbf24;
+  /* Mathematical Colors */
+  --math-green: #22c55e;
+  --math-blue: #3b82f6;
+  --math-purple: #8b5cf6;
+  --math-orange: #f97316;
+  --math-yellow: #eab308;
+  --math-red: #ef4444;
 }
 
 /* Global styles */
@@ -40,286 +40,215 @@
 }
 
 body {
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
+  background: hsl(var(--background));
   color: hsl(var(--foreground));
   font-feature-settings: "rlig" 1, "calt" 1;
-  overflow-x: hidden;
 }
 
-/* Modern animations */
-@keyframes glow {
-  0%, 100% { box-shadow: 0 0 5px currentColor; }
-  50% { box-shadow: 0 0 20px currentColor, 0 0 30px currentColor; }
-}
-
-@keyframes pulse-glow {
+/* Clean animations */
+@keyframes pulse-data {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
 }
 
-@keyframes slide-up {
-  from { transform: translateY(20px); opacity: 0; }
+@keyframes slide-in {
+  from { transform: translateY(10px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 
-@keyframes matrix-flow {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100vh); }
+@keyframes progress-fill {
+  from { width: 0%; }
+  to { width: var(--progress-value); }
 }
 
-@keyframes hologram-scan {
-  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-}
-
-@keyframes circuit-pulse {
-  0%, 100% { stroke-dashoffset: 0; }
-  50% { stroke-dashoffset: -20; }
-}
-
-/* Modern component classes */
-.cyber-card {
-  background: linear-gradient(145deg, rgba(26, 26, 26, 0.95), rgba(10, 10, 10, 0.95));
-  border: 1px solid rgba(0, 212, 255, 0.2);
-  backdrop-filter: blur(20px);
-  border-radius: 1rem;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.cyber-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    135deg,
-    transparent 0%,
-    rgba(0, 212, 255, 0.05) 50%,
-    transparent 100%
-  );
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.cyber-card:hover {
-  border-color: rgba(0, 212, 255, 0.5);
-  transform: translateY(-4px);
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.3),
-    0 0 20px rgba(0, 212, 255, 0.2);
-}
-
-.cyber-card:hover::before {
-  opacity: 1;
-}
-
-.neon-glow {
-  box-shadow: 
-    0 0 10px var(--cyber-green),
-    0 0 20px var(--cyber-green),
-    0 0 30px var(--cyber-green);
-  animation: pulse-glow 2s infinite;
-}
-
-.neon-text {
-  color: var(--cyber-blue);
-  text-shadow: 
-    0 0 5px var(--cyber-blue),
-    0 0 10px var(--cyber-blue),
-    0 0 15px var(--cyber-blue);
-}
-
-.holographic {
-  background: linear-gradient(135deg, var(--cyber-blue) 0%, var(--cyber-green) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+/* Computational component classes */
+.compute-card {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
   position: relative;
 }
 
-.cyber-button {
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(0, 255, 136, 0.1));
-  border: 1px solid var(--cyber-blue);
-  color: var(--cyber-blue);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.cyber-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  transition: left 0.5s ease;
-}
-
-.cyber-button:hover {
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 255, 136, 0.2));
-  box-shadow: 
-    0 0 20px rgba(0, 212, 255, 0.3),
-    inset 0 0 20px rgba(0, 212, 255, 0.1);
-  color: white;
-}
-
-.cyber-button:hover::before {
-  left: 100%;
-}
-
-.matrix-background {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: -1;
-  overflow: hidden;
-}
-
-.matrix-column {
-  position: absolute;
-  color: var(--cyber-green);
-  font-family: 'Courier New', monospace;
-  font-size: 12px;
-  opacity: 0.1;
-  white-space: nowrap;
-  animation: matrix-flow 20s linear infinite;
-}
-
-.circuit-pattern {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  opacity: 0.1;
-}
-
-.progress-cyber {
-  background: linear-gradient(90deg, 
-    transparent 0%,
-    var(--cyber-blue) 50%,
-    transparent 100%
-  );
-  box-shadow: 0 0 10px var(--cyber-blue);
-}
-
-.status-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  animation: pulse-glow 2s infinite;
+.compute-card:hover {
+  border-color: hsl(var(--accent) / 0.5);
+  box-shadow: 0 4px 12px hsl(var(--background) / 0.4);
 }
 
 .status-active {
-  background: var(--cyber-green);
-  box-shadow: 0 0 10px var(--cyber-green);
+  background: var(--math-green);
+  animation: pulse-data 2s infinite;
 }
 
 .status-pending {
-  background: var(--cyber-yellow);
-  box-shadow: 0 0 10px var(--cyber-yellow);
+  background: var(--math-yellow);
+  animation: pulse-data 2s infinite;
 }
 
 .status-error {
-  background: #ef4444;
-  box-shadow: 0 0 10px #ef4444;
+  background: var(--math-red);
+  animation: pulse-data 2s infinite;
 }
 
-.metric-card {
-  background: linear-gradient(135deg, 
-    rgba(0, 212, 255, 0.05) 0%,
-    rgba(139, 92, 246, 0.05) 100%
-  );
-  border: 1px solid rgba(0, 212, 255, 0.2);
-  backdrop-filter: blur(10px);
+.status-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
 }
 
-.data-stream {
-  font-family: 'Courier New', monospace;
-  color: var(--cyber-green);
-  background: rgba(0, 0, 0, 0.8);
-  border: 1px solid var(--cyber-green);
+.math-display {
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  background: hsl(var(--muted) / 0.3);
+  border: 1px solid hsl(var(--border));
   border-radius: 0.5rem;
-  padding: 1rem;
+  padding: 0.75rem;
   overflow-x: auto;
 }
 
-.nav-cyber {
-  background: rgba(10, 10, 10, 0.95);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+.computation-grid {
+  display: grid;
+  gap: 1rem;
+  animation: slide-in 0.4s ease-out;
 }
 
-.nav-link {
-  transition: all 0.3s ease;
-  position: relative;
+.metric-value {
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  font-weight: 600;
+  letter-spacing: -0.025em;
 }
 
-.nav-link:hover {
-  color: var(--cyber-blue);
-  text-shadow: 0 0 10px var(--cyber-blue);
+.progress-computational {
+  background: linear-gradient(90deg, 
+    hsl(var(--accent)) 0%,
+    hsl(var(--primary)) 100%
+  );
+  border-radius: 0.25rem;
+  height: 0.5rem;
 }
 
-.nav-link.active {
-  color: var(--cyber-green);
-  text-shadow: 0 0 10px var(--cyber-green);
+.nav-clean {
+  background: hsl(var(--background) / 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid hsl(var(--border));
 }
 
-.nav-link.active::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
+.nav-item {
+  transition: all 0.2s ease;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+}
+
+.nav-item:hover {
+  background: hsl(var(--muted) / 0.5);
+  color: hsl(var(--accent));
+}
+
+.nav-item.active {
+  background: hsl(var(--accent) / 0.15);
+  color: hsl(var(--accent));
+  border: 1px solid hsl(var(--accent) / 0.3);
+}
+
+.data-table {
+  border-collapse: collapse;
   width: 100%;
-  height: 2px;
-  background: var(--cyber-green);
-  box-shadow: 0 0 10px var(--cyber-green);
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+  font-size: 0.875rem;
+}
+
+.data-table th,
+.data-table td {
+  border: 1px solid hsl(var(--border));
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+.data-table th {
+  background: hsl(var(--muted) / 0.5);
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+}
+
+.formula-display {
+  font-family: 'Times New Roman', serif;
+  font-style: italic;
+  background: hsl(var(--card));
+  border-left: 3px solid hsl(var(--accent));
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.computation-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid;
+}
+
+.badge-riemann {
+  background: hsl(var(--accent) / 0.1);
+  color: var(--math-blue);
+  border-color: hsl(var(--accent) / 0.3);
+}
+
+.badge-prime {
+  background: hsl(var(--primary) / 0.1);
+  color: var(--math-green);
+  border-color: hsl(var(--primary) / 0.3);
+}
+
+.badge-yang-mills {
+  background: hsl(274, 44%, 20%);
+  color: var(--math-purple);
+  border-color: hsl(274, 44%, 30%);
+}
+
+.badge-elliptic {
+  background: hsl(25, 50%, 15%);
+  color: var(--math-orange);
+  border-color: hsl(25, 50%, 25%);
 }
 
 /* Scrollbar styling */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(26, 26, 26, 0.3);
+  background: hsl(var(--muted) / 0.3);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, var(--cyber-blue), var(--cyber-green));
-  border-radius: 4px;
+  background: hsl(var(--accent) / 0.5);
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  box-shadow: 0 0 10px var(--cyber-blue);
+  background: hsl(var(--accent) / 0.7);
 }
 
 /* Utility classes */
 .fade-in {
-  animation: slide-up 0.5s ease-out;
+  animation: slide-in 0.3s ease-out;
 }
 
-.text-cyber-blue { color: var(--cyber-blue); }
-.text-cyber-green { color: var(--cyber-green); }
-.text-cyber-purple { color: var(--cyber-purple); }
-.text-cyber-orange { color: var(--cyber-orange); }
-.text-cyber-pink { color: var(--cyber-pink); }
-.text-cyber-yellow { color: var(--cyber-yellow); }
+.text-math-green { color: var(--math-green); }
+.text-math-blue { color: var(--math-blue); }
+.text-math-purple { color: var(--math-purple); }
+.text-math-orange { color: var(--math-orange); }
+.text-math-yellow { color: var(--math-yellow); }
+.text-math-red { color: var(--math-red); }
 
-.border-cyber-blue { border-color: var(--cyber-blue); }
-.border-cyber-green { border-color: var(--cyber-green); }
-.border-cyber-purple { border-color: var(--cyber-purple); }
+.border-math-green { border-color: var(--math-green); }
+.border-math-blue { border-color: var(--math-blue); }
+.border-math-purple { border-color: var(--math-purple); }
 
-.bg-cyber-blue { background-color: var(--cyber-blue); }
-.bg-cyber-green { background-color: var(--cyber-green); }
-.bg-cyber-purple { background-color: var(--cyber-purple); }
+.bg-math-green { background-color: var(--math-green); }
+.bg-math-blue { background-color: var(--math-blue); }
+.bg-math-purple { background-color: var(--math-purple); }

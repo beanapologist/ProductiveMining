@@ -4,15 +4,15 @@ import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { 
   Activity, 
-  Zap, 
+  Calculator, 
   Shield, 
   TrendingUp, 
   Cpu, 
-  Globe,
-  Layers,
-  Clock,
+  Users,
   Database,
-  Settings
+  Clock,
+  Zap,
+  BarChart3
 } from 'lucide-react';
 
 interface NetworkMetrics {
@@ -57,27 +57,51 @@ export default function Dashboard() {
 
   const getSystemStatus = () => {
     const activeOps = operations?.filter((op: any) => op.status === 'active')?.length || 0;
-    if (activeOps >= 3) return { label: 'OPTIMAL', color: 'text-cyber-green', bg: 'bg-cyber-green/10' };
-    if (activeOps >= 1) return { label: 'ACTIVE', color: 'text-cyber-blue', bg: 'bg-cyber-blue/10' };
-    return { label: 'STANDBY', color: 'text-cyber-yellow', bg: 'bg-cyber-yellow/10' };
+    if (activeOps >= 3) return { label: 'High Performance', color: 'text-math-green', indicator: 'status-active' };
+    if (activeOps >= 1) return { label: 'Active Computing', color: 'text-math-blue', indicator: 'status-active' };
+    return { label: 'Standby', color: 'text-math-yellow', indicator: 'status-pending' };
   };
 
   const systemStatus = getSystemStatus();
 
+  const getWorkTypeBadgeClass = (workType: string) => {
+    switch (workType) {
+      case 'riemann_zero': return 'badge-riemann';
+      case 'prime_pattern': return 'badge-prime';
+      case 'yang_mills': return 'badge-yang-mills';
+      case 'elliptic_curve_crypto': return 'badge-elliptic';
+      default: return 'badge-riemann';
+    }
+  };
+
+  const formatWorkType = (workType: string) => {
+    const typeMap: Record<string, string> = {
+      riemann_zero: 'Riemann Hypothesis',
+      prime_pattern: 'Prime Patterns',
+      yang_mills: 'Yang-Mills Theory',
+      elliptic_curve_crypto: 'Elliptic Curves',
+      lattice_crypto: 'Lattice Cryptography',
+      poincare_conjecture: 'Poincaré Conjecture',
+      birch_swinnerton_dyer: 'BSD Conjecture',
+      navier_stokes: 'Navier-Stokes'
+    };
+    return typeMap[workType] || workType.replace('_', ' ').toUpperCase();
+  };
+
   return (
-    <div className="min-h-screen p-6 space-y-6">
+    <div className="min-h-screen p-6 space-y-6 fade-in">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold holographic">Neural Hub</h1>
-          <p className="text-gray-400 mt-2">Quantum mathematical mining network status</p>
+          <h1 className="text-4xl font-bold text-white">Computation Dashboard</h1>
+          <p className="text-muted-foreground mt-2">Mathematical mining network overview</p>
         </div>
         <div className="flex items-center space-x-4">
-          <Badge className={`${systemStatus.bg} ${systemStatus.color} border-current`}>
-            <div className="w-2 h-2 bg-current rounded-full mr-2 animate-pulse"></div>
+          <Badge variant="outline" className={`${systemStatus.color} border-current`}>
+            <div className={`status-indicator ${systemStatus.indicator} mr-2`}></div>
             {systemStatus.label}
           </Badge>
-          <div className="text-sm text-gray-400">
+          <div className="text-sm text-muted-foreground">
             <Clock className="h-4 w-4 inline mr-1" />
             {new Date().toLocaleTimeString()}
           </div>
@@ -85,44 +109,44 @@ export default function Dashboard() {
       </div>
 
       {/* Main Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="cyber-card">
+      <div className="computation-grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+        <Card className="compute-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-300">Network Power</CardTitle>
-            <Zap className="h-4 w-4 text-cyber-yellow" />
+            <CardTitle className="text-sm font-medium">Scientific Value</CardTitle>
+            <Calculator className="h-4 w-4 text-math-green" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold neon-text mb-2">
+            <div className="metric-value text-3xl font-bold text-math-green mb-2">
               {formatNumber(metrics?.totalScientificValue || 0)}
             </div>
-            <p className="text-xs text-gray-400">Scientific units generated</p>
+            <p className="text-xs text-muted-foreground">Mathematical units generated</p>
             <div className="mt-3">
               <Progress 
                 value={Math.min(100, (metrics?.totalScientificValue || 0) / 1000000 * 100)} 
-                className="h-2 progress-cyber"
+                className="h-2"
               />
             </div>
           </CardContent>
         </Card>
 
-        <Card className="cyber-card">
+        <Card className="compute-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-300">Active Miners</CardTitle>
-            <Cpu className="h-4 w-4 text-cyber-blue" />
+            <CardTitle className="text-sm font-medium">Active Computers</CardTitle>
+            <Cpu className="h-4 w-4 text-math-blue" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-cyber-blue mb-2">
+            <div className="metric-value text-3xl font-bold text-math-blue mb-2">
               {operations?.filter((op: any) => op.status === 'active').length || 0}
             </div>
-            <p className="text-xs text-gray-400">Quantum processors online</p>
+            <p className="text-xs text-muted-foreground">Computing mathematical proofs</p>
             <div className="mt-3 flex space-x-1">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div 
                   key={i}
                   className={`h-2 w-2 rounded-full ${
                     i < (operations?.filter((op: any) => op.status === 'active').length || 0)
-                      ? 'bg-cyber-blue status-active'
-                      : 'bg-gray-700'
+                      ? 'status-active'
+                      : 'bg-muted'
                   }`}
                 />
               ))}
@@ -130,159 +154,172 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
-        <Card className="cyber-card">
+        <Card className="compute-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-300">Chain Blocks</CardTitle>
-            <Database className="h-4 w-4 text-cyber-green" />
+            <CardTitle className="text-sm font-medium">Blockchain</CardTitle>
+            <Database className="h-4 w-4 text-math-purple" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-cyber-green mb-2">
+            <div className="metric-value text-3xl font-bold text-math-purple mb-2">
               {blocks?.length || 0}
             </div>
-            <p className="text-xs text-gray-400">Verified mathematical blocks</p>
+            <p className="text-xs text-muted-foreground">Mathematical blocks</p>
             <div className="mt-3">
-              <div className="text-xs text-cyber-green">
+              <div className="text-xs text-math-purple">
                 +{metrics?.blocksPerHour || 0} blocks/hour
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="cyber-card">
+        <Card className="compute-card">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-300">Efficiency Rate</CardTitle>
-            <TrendingUp className="h-4 w-4 text-cyber-purple" />
+            <CardTitle className="text-sm font-medium">Efficiency</CardTitle>
+            <TrendingUp className="h-4 w-4 text-math-orange" />
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-cyber-purple mb-2">
+            <div className="metric-value text-3xl font-bold text-math-orange mb-2">
               {metrics?.energyEfficiency || 0}%
             </div>
-            <p className="text-xs text-gray-400">vs traditional mining</p>
+            <p className="text-xs text-muted-foreground">vs traditional mining</p>
             <div className="mt-3">
               <Progress 
                 value={metrics?.energyEfficiency || 0} 
-                className="h-2 bg-gray-800"
+                className="h-2"
               />
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Secondary Metrics */}
+      {/* Secondary Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="cyber-card lg:col-span-2">
+        <Card className="compute-card lg:col-span-2">
           <CardHeader>
             <CardTitle className="text-white flex items-center">
-              <Activity className="mr-2 h-5 w-5 text-cyber-blue" />
-              Recent Mathematical Discoveries
+              <Activity className="mr-2 h-5 w-5 text-math-blue" />
+              Recent Mathematical Research
             </CardTitle>
-            <CardDescription className="text-gray-400">
-              Latest breakthroughs from the quantum network
+            <CardDescription>
+              Latest computational discoveries and proofs
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {discoveries?.slice(0, 4).map((discovery: any, index: number) => (
-              <div key={discovery.id} className="flex items-center justify-between p-3 bg-gray-900/50 rounded-lg border border-gray-800">
+            {discoveries?.slice(0, 5).map((discovery: any) => (
+              <div key={discovery.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border">
                 <div className="flex items-center space-x-3">
-                  <div className="w-3 h-3 bg-cyber-green rounded-full status-active"></div>
+                  <div className="status-indicator status-active"></div>
                   <div>
                     <div className="text-white font-medium">
-                      {discovery.workType.replace('_', ' ').toUpperCase()}
+                      {formatWorkType(discovery.workType)}
                     </div>
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-muted-foreground">
                       Difficulty: {discovery.difficulty} • Worker: {discovery.workerId?.slice(-6)}
                     </div>
                   </div>
+                  <Badge className={`computation-badge ${getWorkTypeBadgeClass(discovery.workType)}`}>
+                    {discovery.workType.split('_')[0]}
+                  </Badge>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm text-cyber-green">
-                    +{formatNumber(discovery.scientificValue)} units
+                  <div className="metric-value text-sm text-math-green">
+                    +{formatNumber(discovery.scientificValue)}
                   </div>
-                  <div className="text-xs text-gray-400">
+                  <div className="text-xs text-muted-foreground">
                     {new Date(discovery.timestamp).toLocaleTimeString()}
                   </div>
                 </div>
               </div>
             )) || (
-              <div className="text-center py-8 text-gray-400">
-                <Globe className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p>No discoveries yet. Start quantum mining to begin.</p>
+              <div className="text-center py-8 text-muted-foreground">
+                <BarChart3 className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                <p>No mathematical work completed yet.</p>
+                <p className="text-sm">Start mining to begin generating discoveries.</p>
               </div>
             )}
           </CardContent>
         </Card>
 
-        <Card className="cyber-card">
+        <Card className="compute-card">
           <CardHeader>
             <CardTitle className="text-white flex items-center">
-              <Shield className="mr-2 h-5 w-5 text-cyber-purple" />
-              System Statistics
+              <Shield className="mr-2 h-5 w-5 text-math-green" />
+              Network Statistics
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-400">CO₂ Prevented</span>
-              <span className="text-cyber-green font-medium">
+              <span className="text-sm text-muted-foreground">CO₂ Saved</span>
+              <span className="metric-value text-math-green">
                 {formatNumber(metrics?.co2Saved || 0)} kg
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-400">Avg Difficulty</span>
-              <span className="text-cyber-blue font-medium">
+              <span className="text-sm text-muted-foreground">Avg Difficulty</span>
+              <span className="metric-value text-math-blue">
                 {metrics?.avgDifficulty?.toFixed(1) || '0.0'}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-400">Knowledge Units</span>
-              <span className="text-cyber-yellow font-medium">
+              <span className="text-sm text-muted-foreground">Knowledge Units</span>
+              <span className="metric-value text-math-yellow">
                 {formatNumber(metrics?.knowledgeCreated || 0)}
               </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-400">Network Uptime</span>
-              <span className="text-cyber-green font-medium">99.9%</span>
+              <span className="text-sm text-muted-foreground">Research Areas</span>
+              <span className="metric-value text-math-purple">
+                {new Set(discoveries?.map((d: any) => d.workType)).size || 0}
+              </span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-400">Quantum State</span>
-              <span className="text-cyber-purple font-medium">STABLE</span>
+              <span className="text-sm text-muted-foreground">Network Health</span>
+              <span className="metric-value text-math-green">Optimal</span>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* System Overview */}
-      <Card className="cyber-card">
+      {/* Computational Summary */}
+      <Card className="compute-card">
         <CardHeader>
           <CardTitle className="text-white flex items-center">
-            <Layers className="mr-2 h-5 w-5 text-cyber-orange" />
-            Quantum Network Overview
+            <Zap className="mr-2 h-5 w-5 text-math-yellow" />
+            Mathematical Mining Overview
           </CardTitle>
-          <CardDescription className="text-gray-400">
-            Real-time mathematical computation replacing wasteful proof-of-work
+          <CardDescription>
+            Productive computation replacing wasteful proof-of-work algorithms
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-4 bg-gray-900/30 rounded-lg border border-gray-800">
-              <div className="text-2xl font-bold text-cyber-blue mb-2">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="text-center p-4 bg-muted/20 rounded-lg border">
+              <div className="metric-value text-2xl font-bold text-math-blue mb-2">
                 {discoveries?.length || 0}
               </div>
-              <div className="text-sm text-gray-400">Mathematical Proofs</div>
-              <div className="text-xs text-cyber-blue mt-1">Riemann • Prime • Yang-Mills</div>
+              <div className="text-sm text-muted-foreground">Proofs Generated</div>
+              <div className="text-xs text-math-blue mt-1">Mathematical theorems</div>
             </div>
-            <div className="text-center p-4 bg-gray-900/30 rounded-lg border border-gray-800">
-              <div className="text-2xl font-bold text-cyber-green mb-2">
-                {formatNumber((metrics?.totalScientificValue || 0) * 0.1)}
+            <div className="text-center p-4 bg-muted/20 rounded-lg border">
+              <div className="metric-value text-2xl font-bold text-math-green mb-2">
+                ${formatNumber((metrics?.totalScientificValue || 0) * 0.001)}
               </div>
-              <div className="text-sm text-gray-400">Economic Value</div>
-              <div className="text-xs text-cyber-green mt-1">USD Equivalent</div>
+              <div className="text-sm text-muted-foreground">Research Value</div>
+              <div className="text-xs text-math-green mt-1">Economic equivalent</div>
             </div>
-            <div className="text-center p-4 bg-gray-900/30 rounded-lg border border-gray-800">
-              <div className="text-2xl font-bold text-cyber-purple mb-2">
-                {(blocks?.length || 0) * 256}KB
+            <div className="text-center p-4 bg-muted/20 rounded-lg border">
+              <div className="metric-value text-2xl font-bold text-math-purple mb-2">
+                {(blocks?.length || 0) * 512}MB
               </div>
-              <div className="text-sm text-gray-400">Chain Storage</div>
-              <div className="text-xs text-cyber-purple mt-1">Mathematical Data</div>
+              <div className="text-sm text-muted-foreground">Data Storage</div>
+              <div className="text-xs text-math-purple mt-1">Mathematical records</div>
+            </div>
+            <div className="text-center p-4 bg-muted/20 rounded-lg border">
+              <div className="metric-value text-2xl font-bold text-math-orange mb-2">
+                {operations?.length || 0}
+              </div>
+              <div className="text-sm text-muted-foreground">Total Operations</div>
+              <div className="text-xs text-math-orange mt-1">Computation jobs</div>
             </div>
           </div>
         </CardContent>
