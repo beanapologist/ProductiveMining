@@ -10,6 +10,7 @@ import MiningOperations from "@/components/mining-operations";
 import BlockExplorer from "@/components/block-explorer";
 import MiningSimulator from "@/components/mining-simulator";
 import EducationalSection from "@/components/educational-section";
+import RealComputationalDashboard from "@/components/real-computational-dashboard";
 
 export default function Dashboard() {
   const { 
@@ -172,20 +173,25 @@ export default function Dashboard() {
         </div>
       </section>
 
-      {/* Metrics Dashboard */}
-      <MetricsDashboard metrics={currentMetrics} />
-
-      {/* Real-time Dashboard */}
+      {/* Real Computational Findings Dashboard */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-12">
           <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-            Real-time <span className="text-pm-accent">Scientific Mining</span> Dashboard
+            Real Mathematical <span className="text-pm-accent">Computational</span> Results
           </h2>
           <p className="text-xl text-slate-300 max-w-3xl mx-auto">
-            Monitor productive mining operations, scientific discoveries, and energy efficiency metrics in real-time.
+            Authentic mathematical computations and verified research results stored immutably on the blockchain.
           </p>
         </div>
         
+        <RealComputationalDashboard />
+      </section>
+
+      {/* Traditional Metrics Dashboard */}
+      <MetricsDashboard metrics={currentMetrics} />
+
+      {/* Mining Operations Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Mining Operations */}
           <div className="lg:col-span-2">
