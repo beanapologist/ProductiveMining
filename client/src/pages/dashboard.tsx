@@ -46,8 +46,32 @@ export default function Dashboard() {
               Network Health: {currentMetrics ? (currentMetrics.networkHealth * 100).toFixed(1) : '99.8'}%
             </Badge>
             
-            <Button className="bg-pm-accent hover:bg-pm-accent/80 text-pm-primary">
-              Start Real Mining
+            <Button 
+              className="bg-pm-accent hover:bg-pm-accent/80 text-pm-primary"
+              onClick={async () => {
+                try {
+                  const workTypes = ['riemann_zero', 'prime_pattern', 'qdt_validation'];
+                  const randomWorkType = workTypes[Math.floor(Math.random() * workTypes.length)];
+                  
+                  const response = await fetch('/api/mining/start-real', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                      workType: randomWorkType, 
+                      difficulty: Math.floor(Math.random() * 15) + 5 
+                    })
+                  });
+                  
+                  if (response.ok) {
+                    const operation = await response.json();
+                    console.log('Real mining started:', operation);
+                  }
+                } catch (error) {
+                  console.error('Failed to start mining:', error);
+                }
+              }}
+            >
+              {operations && operations.some(op => op.status === 'active') ? 'Mining Active' : 'Start Real Mining'}
             </Button>
           </div>
         </div>
@@ -92,28 +116,112 @@ export default function Dashboard() {
                   <h3 className="text-lg font-semibold mb-4 flex items-center space-x-2">
                     <Zap className="text-pm-scientific h-5 w-5" />
                     <span>Live Mathematical Mining</span>
+                    {discoveries && discoveries.length > 0 && (
+                      <div className="bg-pm-accent/20 text-pm-accent px-2 py-1 rounded-full text-xs font-medium animate-pulse">
+                        +{discoveries.length} new
+                      </div>
+                    )}
                   </h3>
                   
                   <div className="space-y-4 mb-6">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-slate-400">Riemann Zero #16 (Clay Institute)</span>
+                      <span className="text-sm text-slate-400">
+                        {operations && operations.length > 0 
+                          ? operations.find(op => op.operationType === 'riemann_zero')
+                            ? `Riemann Zero #${operations.find(op => op.operationType === 'riemann_zero')?.currentResult?.zeroIndex || 16} (Clay Institute)`
+                            : "Riemann Zero #16 (Clay Institute)"
+                          : "Riemann Zero #16 (Clay Institute)"
+                        }
+                      </span>
                       <div className="flex items-center space-x-2">
-                        <div className="w-2 h-2 bg-pm-accent rounded-full mining-pulse" />
-                        <span className="text-xs text-pm-accent">Computing</span>
+                        <div className={`w-2 h-2 rounded-full ${
+                          operations && operations.some(op => op.operationType === 'riemann_zero' && op.status === 'active')
+                            ? 'bg-pm-accent animate-pulse' 
+                            : 'bg-slate-500'
+                        }`} />
+                        <span className="text-xs text-pm-accent">
+                          {operations && operations.some(op => op.operationType === 'riemann_zero' && op.status === 'active')
+                            ? 'Computing' 
+                            : 'Ready'
+                          }
+                        </span>
                       </div>
                     </div>
                     
                     <div className="bg-pm-primary/50 p-4 rounded-lg border border-slate-700/30">
                       <div className="mathematical-formula text-lg mb-2">
-                        ζ(1/2 + 67.0798i) ≈ 0
+                        ζ(1/2 + {operations?.find(op => op.operationType === 'riemann_zero')?.currentResult?.zeroValue?.imag?.toFixed(4) || '67.0798'}i) ≈ 0
                       </div>
                       <div className="text-sm text-slate-400">
-                        t = <span className="text-pm-scientific font-mono">67.0798105950026142...</span>
+                        t = <span className="text-pm-scientific font-mono">
+                          {operations?.find(op => op.operationType === 'riemann_zero')?.currentResult?.zeroValue?.imag?.toFixed(12) || '67.0798105950026142'}...
+                        </span>
                       </div>
-                      <div className="text-xs text-pm-accent mt-1">Scientific Value: $2.8M</div>
+                      <div className="text-xs text-pm-accent mt-1">
+                        Scientific Value: ${(
+                          operations?.find(op => op.operationType === 'riemann_zero')?.currentResult?.scientificValue 
+                          ? (operations.find(op => op.operationType === 'riemann_zero')?.currentResult?.scientificValue / 1000000).toFixed(1) + 'M'
+                          : '2.8M'
+                        )}
+                      </div>
                       <div className="mt-2 bg-slate-800 rounded-full h-2">
-                        <div className="bg-pm-accent h-2 rounded-full transition-all duration-1000" style={{ width: '91%' }} />
+                        <div 
+                          className="bg-pm-accent h-2 rounded-full transition-all duration-1000" 
+                          style={{ 
+                            width: `${
+                              operations?.find(op => op.operationType === 'riemann_zero')?.progress 
+                                ? Math.round(operations.find(op => op.operationType === 'riemann_zero')?.progress * 100)
+                                : 91
+                            }%` 
+                          }} 
+                        />
                       </div>
+                    </div>
+                  </div>
+                  
+                  {/* Live Prime Pattern Discovery */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-slate-400">
+                        {operations?.find(op => op.operationType === 'prime_pattern')
+                          ? `${operations.find(op => op.operationType === 'prime_pattern')?.currentResult?.patternType || 'Cousin'} Prime Search (Range: ${
+                              operations.find(op => op.operationType === 'prime_pattern')?.currentResult?.searchRange?.[0]?.toLocaleString() || '2M'
+                            }-${
+                              operations.find(op => op.operationType === 'prime_pattern')?.currentResult?.searchRange?.[1]?.toLocaleString() || '3M'
+                            })`
+                          : "Cousin Prime Search (Range: 2M-3M)"
+                        }
+                      </span>
+                      <span className="text-xs text-pm-accent">
+                        {operations?.find(op => op.operationType === 'prime_pattern')?.currentResult?.patternsFound || 127} Patterns Found
+                      </span>
+                    </div>
+                    
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="bg-pm-primary/50 p-2 rounded text-center border border-slate-700/30">
+                        <div className="text-pm-scientific font-mono text-sm">
+                          {discoveries && discoveries.length > 0 && discoveries.find(d => d.workType === 'prime_pattern')?.result?.firstPrime || '2000003'}
+                        </div>
+                        <div className="text-xs text-slate-400">p</div>
+                      </div>
+                      <div className="flex items-center justify-center">
+                        <span className="text-slate-500">+4</span>
+                      </div>
+                      <div className="bg-pm-primary/50 p-2 rounded text-center border border-slate-700/30">
+                        <div className="text-pm-scientific font-mono text-sm">
+                          {discoveries && discoveries.length > 0 && discoveries.find(d => d.workType === 'prime_pattern')?.result?.secondPrime || '2000007'}
+                        </div>
+                        <div className="text-xs text-slate-400">p+4</div>
+                      </div>
+                    </div>
+                    <div className="text-xs text-pm-accent text-center">
+                      QDT Resonance: {
+                        operations?.find(op => op.operationType === 'prime_pattern')?.currentResult?.qdtResonance?.toFixed(3) || '0.834'
+                      } | Value: ${(
+                        discoveries?.find(d => d.workType === 'prime_pattern')?.scientificValue 
+                          ? (discoveries.find(d => d.workType === 'prime_pattern')?.scientificValue / 1000000).toFixed(1) + 'M'
+                          : '2.1M'
+                      )}
                     </div>
                   </div>
                 </div>
