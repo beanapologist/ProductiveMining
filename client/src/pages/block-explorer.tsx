@@ -31,11 +31,11 @@ export default function BlockExplorer() {
     enabled: !!selectedBlockId,
   });
 
-  const filteredBlocks = blocks.filter((block: ProductiveBlock) =>
-    block.blockHash.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    block.minerId.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    block.index.toString().includes(searchTerm)
-  );
+  const filteredBlocks = blocks?.filter((block: ProductiveBlock) =>
+    block?.blockHash?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    block?.minerId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    block?.index?.toString().includes(searchTerm)
+  ) || [];
 
   const formatScientificValue = (value: number) => {
     if (value >= 1000000) {

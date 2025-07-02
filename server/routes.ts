@@ -4,6 +4,34 @@ import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { insertMiningOperationSchema, type WebSocketMessage, type MiningProgressMessage, type BlockMinedMessage } from "@shared/schema";
 
+// Blockchain utility functions
+function generateSimpleHash(input: string): string {
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    const char = input.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return Math.abs(hash).toString(36);
+}
+
+function calculateProofOfWork(blockData: string, difficulty: number): number {
+  const target = '0'.repeat(Math.floor(difficulty / 4));
+  let nonce = 0;
+  
+  while (nonce < 100000) { // Reasonable limit for productive mining
+    const hash = generateSimpleHash(blockData + nonce);
+    if (hash.startsWith(target)) {
+      return nonce;
+    }
+    nonce++;
+  }
+  
+  return nonce;
+}
+
+// This will be defined within the main function scope where broadcast is available
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize database with sample data
   if (storage instanceof (await import('./storage')).DatabaseStorage) {
@@ -264,6 +292,58 @@ export async function registerRoutes(app: Express): Promise<Server> {
               type: 'discovery_made',
               data: discovery
             });
+
+            // Mark operation as completed and create new block
+            await storage.updateMiningOperation(operation.id, { status: 'completed' });
+            
+            // Create new productive block with mathematical discovery
+            try {
+              const latestBlocks = await storage.getRecentBlocks(1);
+              const previousHash = latestBlocks.length > 0 ? latestBlocks[0].blockHash : '0'.repeat(64);
+              const blockIndex = latestBlocks.length > 0 ? latestBlocks[0].index + 1 : 2;
+
+              // Generate proper blockchain hash from mathematical content
+              const workData = `${discovery.workType}${discovery.scientificValue}${discovery.signature}`;
+              const merkleRoot = generateSimpleHash(workData).padStart(64, '0');
+              const blockData = `${blockIndex}${previousHash}${merkleRoot}${discovery.scientificValue}`;
+              const nonce = calculateProofOfWork(blockData, operation.difficulty);
+              const blockHash = generateSimpleHash(`${blockData}${nonce}`).padStart(64, '0');
+              
+              const newBlock = await storage.createBlock({
+                index: blockIndex,
+                previousHash,
+                merkleRoot,
+                difficulty: operation.difficulty,
+                nonce,
+                blockHash,
+                minerId: operation.minerId,
+                totalScientificValue: discovery.scientificValue,
+                energyConsumed: discovery.computationalCost / 100000,
+                knowledgeCreated: discovery.scientificValue
+              });
+
+              // Link mathematical work to block
+              const { db } = await import('./db');
+              const { blockMathematicalWork } = await import('@shared/schema');
+              
+              await db.insert(blockMathematicalWork).values({
+                blockId: newBlock.id,
+                workId: discovery.id
+              });
+
+              // Broadcast new block
+              broadcast({
+                type: 'block_mined',
+                data: {
+                  block: newBlock,
+                  mathematicalWork: [discovery]
+                }
+              });
+
+              console.log(`New productive block #${blockIndex} mined with ${discovery.workType} worth $${discovery.scientificValue.toLocaleString()}`);
+            } catch (error) {
+              console.error('Error creating productive block:', error);
+            }
           }
         }
       }
