@@ -949,9 +949,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
 
           // If operation just completed, create real mathematical discovery  
-          console.log(`Operation ${operation.id}: progress=${newProgress}, wasActive=${wasActive}, condition=${newProgress >= 1.0 && wasActive}`);
           if (newProgress >= 1.0 && wasActive) {
-            console.log(`Operation ${operation.id} completing, creating discovery...`);
+            console.log(`✅ OPERATION COMPLETING: ${operation.id} (${operation.operationType}) - Progress: ${newProgress}`);
             let discovery;
             
             if (operation.operationType === 'riemann_zero') {
@@ -1035,6 +1034,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
               });
             }
 
+            console.log(`🧮 DISCOVERY MADE: ${discovery.workType} - Value: ${discovery.scientificValue} - Result: ${JSON.stringify(discovery.result).substring(0, 100)}...`);
+            
             broadcast({
               type: 'discovery_made',
               data: discovery
@@ -1042,7 +1043,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
             // Mark operation as completed and create new block
             await storage.updateMiningOperation(operation.id, { status: 'completed' });
-            console.log(`Mining operation ${operation.id} completed. Creating new block...`);
+            console.log(`⛏️  MINING COMPLETED: Operation ${operation.id} finished. Creating new block...`);
             
             // Create new productive block with mathematical discovery
             try {
