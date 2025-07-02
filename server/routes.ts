@@ -525,7 +525,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
             currentResult: result.computationResult
           });
 
-          // Broadcast completion
+          // Create new block with this discovery
+          try {
+            const recentBlocks = await storage.getRecentBlocks(1);
+            const lastBlock = recentBlocks[0];
+            const newIndex = lastBlock ? lastBlock.index + 1 : 0;
+            const previousHash = lastBlock ? lastBlock.blockHash : "0000000000000000000000000000000000000000000000000000000000000000";
+            
+            const blockData = {
+              index: newIndex,
+              previousHash,
+              minerId,
+              difficulty,
+              totalScientificValue: result.scientificValue,
+              energyConsumed: result.computationalCost / 1000000, // Convert to reasonable energy units
+              knowledgeCreated: result.scientificValue
+            };
+            
+            const merkleRoot = generateSimpleHash(`work_${work.id}_${work.workType}_${work.signature}`);
+            const nonce = calculateProofOfWork(JSON.stringify(blockData), difficulty);
+            const blockHash = generateSimpleHash(`${JSON.stringify(blockData)}_${merkleRoot}_${nonce}`);
+            
+            const newBlock = await storage.createBlock({
+              ...blockData,
+              merkleRoot,
+              nonce,
+              blockHash
+            });
+            
+            // Link the mathematical work to the block
+            const { db } = await import('./db');
+            const { blockMathematicalWork } = await import('@shared/schema');
+            await db.insert(blockMathematicalWork).values({
+              blockId: newBlock.id,
+              workId: work.id
+            });
+            
+            console.log(`🔗 NEW BLOCK CREATED: Block #${newIndex} with discovery ID ${work.id}`);
+            
+            // Broadcast block creation
+            broadcast({
+              type: 'block_mined',
+              data: { block: newBlock, mathematicalWork: [work] }
+            });
+            
+          } catch (blockError) {
+            console.error('Block creation failed:', blockError);
+          }
+
+          // Broadcast discovery completion
           broadcast({
             type: 'discovery_made',
             data: { discovery: work, scientificValue: result.scientificValue }

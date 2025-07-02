@@ -33,10 +33,7 @@ export default function Dashboard() {
   const currentMetrics = metrics || initialMetrics;
   const currentBlocks = blocks && blocks.length > 0 ? blocks : (initialBlocks as any[] || []);
   
-  // Debug logging
-  console.log('Dashboard - WebSocket blocks:', blocks);
-  console.log('Dashboard - Initial blocks from API:', initialBlocks);
-  console.log('Dashboard - Current blocks to pass to explorer:', currentBlocks);
+
 
   return (
     <div className="text-slate-100">

@@ -106,6 +106,7 @@ Changelog:
 - July 02, 2025. Integrated post-quantum cryptography using Riemann zeros and prime patterns
 - July 02, 2025. Made app user-friendly with simple explanations, emoji icons, and clear comparisons to Bitcoin
 - July 02, 2025. Implemented unified design system with reusable CSS component classes for consistent styling
+- July 02, 2025. Fixed Block Explorer updating by adding automatic block creation when mathematical discoveries complete
 ```
 
 ## User Preferences
