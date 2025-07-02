@@ -30,6 +30,18 @@ export default function MiningOperations({ operations = [], discoveries = [] }: 
         return 'Prime Constellation';
       case 'qdt_validation':
         return 'QDT Validation';
+      case 'birch_swinnerton_dyer':
+        return 'Birch & Swinnerton-Dyer';
+      case 'navier_stokes':
+        return 'Navier-Stokes Equation';
+      case 'elliptic_curve_crypto':
+        return 'Elliptic Curve Cryptography';
+      case 'lattice_crypto':
+        return 'Lattice Cryptography';
+      case 'yang_mills':
+        return 'Yang-Mills Theory';
+      case 'poincare_conjecture':
+        return 'Poincaré Conjecture';
       default:
         return 'Mathematical Work';
     }
@@ -43,6 +55,18 @@ export default function MiningOperations({ operations = [], discoveries = [] }: 
         return `${operation.currentResult?.patternType || 'Pattern'} primes discovery`;
       case 'qdt_validation':
         return 'Quantum field constraints';
+      case 'birch_swinnerton_dyer':
+        return 'Elliptic curve L-function analysis';
+      case 'navier_stokes':
+        return '3D fluid dynamics simulation';
+      case 'elliptic_curve_crypto':
+        return 'ECDSA cryptographic operations';
+      case 'lattice_crypto':
+        return 'Post-quantum lattice reduction';
+      case 'yang_mills':
+        return 'SU(3) gauge field theory';
+      case 'poincare_conjecture':
+        return '3-manifold Ricci flow analysis';
       default:
         return 'Mathematical computation';
     }

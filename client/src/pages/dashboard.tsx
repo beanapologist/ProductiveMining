@@ -50,7 +50,11 @@ export default function Dashboard() {
               className="bg-pm-accent hover:bg-pm-accent/80 text-pm-primary"
               onClick={async () => {
                 try {
-                  const workTypes = ['riemann_zero', 'prime_pattern', 'qdt_validation'];
+                  const workTypes = [
+                    'riemann_zero', 'prime_pattern', 'qdt_validation',
+                    'birch_swinnerton_dyer', 'navier_stokes', 'elliptic_curve_crypto',
+                    'lattice_crypto', 'yang_mills', 'poincare_conjecture'
+                  ];
                   const randomWorkType = workTypes[Math.floor(Math.random() * workTypes.length)];
                   
                   const response = await fetch('/api/mining/start-real', {
