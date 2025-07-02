@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { Database, Search, Hash, Clock, Zap, Award, Link as LinkIcon, ExternalLink } from "lucide-react";
+import { Database, Search, Hash, Clock, Zap, Award, Link as LinkIcon, ExternalLink, Brain } from "lucide-react";
 
 interface ProductiveBlock {
   id: number;
@@ -57,6 +57,43 @@ export default function BlockExplorerPage() {
     const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
     if (!date || isNaN(date.getTime())) return 'Unknown';
     return date.toLocaleString();
+  };
+
+  const getWorkTypeIcon = (workType: string) => {
+    const icons: Record<string, string> = {
+      'riemann_zero': '🧮',
+      'prime_pattern': '🔢',
+      'goldbach_verification': '➕',
+      'birch_swinnerton_dyer': '📐',
+      'navier_stokes': '🌊',
+      'yang_mills': '⚛️',
+      'poincare_conjecture': '🌐',
+      'elliptic_curve_crypto': '🔐',
+      'lattice_crypto': '🔒',
+      'qdt_validation': '⚡'
+    };
+    return icons[workType] || '📊';
+  };
+
+  const formatWorkType = (workType: string) => {
+    const formatted = workType
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, l => l.toUpperCase());
+    
+    const typeMap: Record<string, string> = {
+      'Riemann Zero': 'Riemann Hypothesis',
+      'Prime Pattern': 'Prime Patterns',
+      'Goldbach Verification': 'Goldbach Conjecture',
+      'Birch Swinnerton Dyer': 'Birch-Swinnerton-Dyer',
+      'Navier Stokes': 'Navier-Stokes',
+      'Yang Mills': 'Yang-Mills Theory',
+      'Poincare Conjecture': 'Poincaré Conjecture',
+      'Elliptic Curve Crypto': 'Elliptic Curve Crypto',
+      'Lattice Crypto': 'Lattice Cryptography',
+      'Qdt Validation': 'QDT Validation'
+    };
+    
+    return typeMap[formatted] || formatted;
   };
 
   const totalScientificValue = currentBlocks.reduce((sum: number, block: ProductiveBlock) => 
@@ -335,23 +372,57 @@ export default function BlockExplorerPage() {
                       </div>
                     </div>
 
-                    {/* Mathematical Work */}
+                    {/* Mathematical Discoveries */}
                     {blockWork && (
                       <div className="p-4 bg-slate-800/50 rounded-lg">
-                        <h4 className="text-white font-semibold mb-2 flex items-center">
+                        <h4 className="text-white font-semibold mb-3 flex items-center">
                           <LinkIcon className="h-4 w-4 mr-2" />
-                          Mathematical Work
+                          Mathematical Discoveries ({blockWork.work?.length || 0})
                         </h4>
-                        <div className="text-sm space-y-1">
-                          {blockWork.work?.map((work: any, index: number) => (
-                            <div key={index} className="flex justify-between">
-                              <span className="text-slate-400">
-                                {work.workType?.replace('_', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}:
-                              </span>
-                              <span className="text-green-400">${work.scientificValue?.toLocaleString()}</span>
-                            </div>
-                          ))}
-                        </div>
+                        {blockWork.work && blockWork.work.length > 0 ? (
+                          <div className="space-y-3">
+                            {blockWork.work.map((work: any, index: number) => (
+                              <div key={index} className="p-3 bg-slate-700/50 rounded-lg border border-slate-600 hover:border-purple-500/50 transition-colors">
+                                <div className="flex items-center justify-between mb-2">
+                                  <div className="flex items-center space-x-2">
+                                    <span className="text-lg">{getWorkTypeIcon(work.workType)}</span>
+                                    <Badge variant="outline" className="text-purple-400 border-purple-400">
+                                      {formatWorkType(work.workType)}
+                                    </Badge>
+                                  </div>
+                                  <span className="text-green-400 font-semibold">
+                                    ${work.scientificValue?.toLocaleString()}
+                                  </span>
+                                </div>
+                                <div className="text-xs text-slate-400 space-y-1">
+                                  <div className="flex justify-between">
+                                    <span>Discovery ID:</span>
+                                    <span className="font-mono">#{work.id}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span>Difficulty:</span>
+                                    <span>{work.difficulty}</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span>Energy Efficiency:</span>
+                                    <span className="text-green-400">{work.energyEfficiency}x</span>
+                                  </div>
+                                  <div className="flex justify-between">
+                                    <span>Worker:</span>
+                                    <span className="font-mono text-orange-400">
+                                      {work.workerId?.slice(0, 12)}...
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center py-4 text-slate-400">
+                            <Brain className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                            <p className="text-sm">No mathematical discoveries linked to this block</p>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

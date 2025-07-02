@@ -110,6 +110,7 @@ Changelog:
 - July 02, 2025. Cleaned up dashboard and created unique focused pages: Mining Operations, Block Explorer, and Discoveries with dedicated functionality
 - July 02, 2025. Fixed mining button functionality and added proper error handling with toast notifications
 - July 02, 2025. Added validators back to the Discoveries page with tabbed interface for details and validation system
+- July 02, 2025. Enhanced Block Explorer with detailed mathematical discovery information linked to each block
 ```
 
 ## User Preferences
