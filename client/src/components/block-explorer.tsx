@@ -10,6 +10,8 @@ interface BlockExplorerProps {
 }
 
 export default function BlockExplorer({ blocks = [] }: BlockExplorerProps) {
+  // Ensure blocks is always an array and filter out any invalid blocks
+  const validBlocks = Array.isArray(blocks) ? blocks.filter(block => block && typeof block.index !== 'undefined') : [];
   const formatHash = (hash: string) => {
     return `${hash.slice(0, 8)}...${hash.slice(-8)}`;
   };
@@ -52,14 +54,14 @@ export default function BlockExplorer({ blocks = [] }: BlockExplorerProps) {
         
         {/* Recent Blocks */}
         <div className="space-y-6">
-          {blocks.length === 0 ? (
+          {validBlocks.length === 0 ? (
             <div className="bg-pm-secondary/50 backdrop-blur border border-slate-700/50 rounded-xl p-12 text-center">
               <Box className="h-16 w-16 mx-auto mb-4 text-slate-400 opacity-50" />
               <h3 className="text-xl font-semibold mb-2">No blocks available</h3>
               <p className="text-slate-400">Blocks will appear here as they are mined</p>
             </div>
           ) : (
-            blocks.map((block) => (
+            validBlocks.map((block) => (
               <div key={block.id} className="bg-pm-secondary/50 backdrop-blur border border-slate-700/50 rounded-xl p-6">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
                   <div className="flex items-center space-x-4 mb-4 lg:mb-0">
