@@ -43,36 +43,27 @@ function Navigation() {
   ];
 
   return (
-    <nav className="nav-clean border-b sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <div className="flex-shrink-0 flex items-center space-x-3">
-              <div className="text-2xl font-bold text-white">
-                Mathematical<span className="text-math-green">Mining</span>
-              </div>
-              <div className="status-indicator status-active"></div>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-1">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = location === item.path;
-              return (
-                <Link
-                  key={item.path}
-                  href={item.path}
-                  className={`nav-item flex items-center space-x-2 text-sm font-medium ${
-                    isActive ? 'active' : ''
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  <span className="hidden sm:inline">{item.label}</span>
-                </Link>
-              );
-            })}
-          </div>
+    <nav className="nav-research sticky top-0 z-50">
+      <div className="flex justify-between items-center h-16">
+        <div className="nav-brand">
+          Productive<span className="accent">Mining</span>
+        </div>
+        
+        <div className="nav-menu">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location === item.path;
+            return (
+              <Link
+                key={item.path}
+                href={item.path}
+                className={`nav-link ${isActive ? 'active' : ''}`}
+              >
+                <Icon className="h-4 w-4" />
+                <span className="hidden md:inline">{item.label}</span>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </nav>
