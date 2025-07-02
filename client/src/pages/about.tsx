@@ -6,8 +6,8 @@ export default function About() {
   return (
     <div className="container mx-auto p-6 space-y-8">
       {/* Hero Section */}
-      <div className="text-center mb-12">
-        <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+      <div className="pm-header-gradient text-center mb-12">
+        <h1 className="text-5xl pm-text-gradient mb-4">
           ✨ What Makes Us Different?
         </h1>
         <p className="text-xl text-slate-300 max-w-3xl mx-auto">

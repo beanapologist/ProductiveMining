@@ -95,7 +95,7 @@ export default function DiscoveriesPage() {
   return (
     <div className="container mx-auto p-6 space-y-6">
       {/* User-friendly explanation header */}
-      <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-2xl p-6 border border-purple-500/30">
+      <div className="pm-header-gradient">
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
             Mathematical Discoveries 🧠

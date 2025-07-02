@@ -62,7 +62,7 @@ export default function BlockExplorer({ blocks = [] }: BlockExplorerProps) {
             </div>
           ) : (
             validBlocks.map((block) => (
-              <div key={block.id} className="bg-pm-secondary/50 backdrop-blur border border-slate-700/50 rounded-xl p-6">
+              <div key={block.id} className="pm-card">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6">
                   <div className="flex items-center space-x-4 mb-4 lg:mb-0">
                     <div className="bg-pm-accent/20 p-3 rounded-lg">

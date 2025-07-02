@@ -30,7 +30,7 @@ export default function Dashboard() {
     <div className="text-slate-100">
       <div className="container mx-auto px-4 py-6">
         {/* Welcome Section */}
-        <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-2xl p-6 mb-8 border border-purple-500/30">
+        <div className="pm-header-gradient mb-8">
           <div className="text-center mb-6">
             <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
               Welcome to Productive Mining! 🚀

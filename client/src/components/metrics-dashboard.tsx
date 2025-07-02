@@ -35,7 +35,7 @@ export default function MetricsDashboard({ metrics }: MetricsDashboardProps) {
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-gradient-to-br from-green-600/20 to-emerald-600/20 backdrop-blur border border-green-500/30 rounded-xl p-6">
+        <div className="pm-card pm-metric-card-green">
           <div className="flex items-center justify-between mb-4">
             <div className="bg-green-400/20 p-3 rounded-lg">
               <Leaf className="text-green-400 h-6 w-6" />
@@ -51,7 +51,7 @@ export default function MetricsDashboard({ metrics }: MetricsDashboardProps) {
           <p className="text-sm text-green-300 mt-1">How much more efficient than Bitcoin mining</p>
         </div>
         
-        <div className="bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur border border-purple-500/30 rounded-xl p-6">
+        <div className="pm-card pm-metric-card-purple">
           <div className="flex items-center justify-between mb-4">
             <div className="bg-purple-400/20 p-3 rounded-lg">
               <Brain className="text-purple-400 h-6 w-6" />
@@ -67,7 +67,7 @@ export default function MetricsDashboard({ metrics }: MetricsDashboardProps) {
           <p className="text-sm text-purple-300 mt-1">Real mathematical discoveries worth money</p>
         </div>
         
-        <div className="bg-pm-secondary/50 backdrop-blur border border-slate-700/50 rounded-xl p-6">
+        <div className="pm-card pm-metric-card-orange">
           <div className="flex items-center justify-between mb-4">
             <div className="bg-pm-warning/20 p-2 rounded-lg">
               <Box className="text-pm-warning h-5 w-5" />
@@ -83,7 +83,7 @@ export default function MetricsDashboard({ metrics }: MetricsDashboardProps) {
           <p className="text-sm text-slate-400 mt-1">Productive blocks per hour</p>
         </div>
         
-        <div className="bg-pm-secondary/50 backdrop-blur border border-slate-700/50 rounded-xl p-6">
+        <div className="pm-card pm-metric-card-blue">
           <div className="flex items-center justify-between mb-4">
             <div className="bg-purple-500/20 p-2 rounded-lg">
               <Users className="text-purple-400 h-5 w-5" />

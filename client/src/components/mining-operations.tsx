@@ -135,7 +135,7 @@ export default function MiningOperations({ operations = [], discoveries = [] }: 
   return (
     <div className="space-y-6">
       {/* Active Mining Operations */}
-      <div className="bg-pm-secondary/50 backdrop-blur border border-slate-700/50 rounded-xl p-6">
+      <div className="pm-card">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-xl font-semibold flex items-center space-x-2">
             <Settings className="text-pm-accent h-5 w-5" />
@@ -191,7 +191,7 @@ export default function MiningOperations({ operations = [], discoveries = [] }: 
       </div>
       
       {/* Recent Scientific Discoveries */}
-      <div className="bg-pm-secondary/50 backdrop-blur border border-slate-700/50 rounded-xl p-6">
+      <div className="pm-card">
         <h3 className="text-xl font-semibold mb-6 flex items-center space-x-2">
           <Trophy className="text-pm-warning h-5 w-5" />
           <span>Recent Discoveries</span>
