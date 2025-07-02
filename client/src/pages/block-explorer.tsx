@@ -183,32 +183,32 @@ export default function BlockExplorer() {
               </div>
             ) : (
               <div className="space-y-4 max-h-[600px] overflow-y-auto">
-                {filteredBlocks.map((block: ProductiveBlock) => (
+                {filteredBlocks?.length > 0 ? filteredBlocks.map((block: ProductiveBlock) => (
                   <Card 
-                    key={block.id} 
+                    key={block?.id || Math.random()} 
                     className={`bg-slate-800/50 border-slate-700 hover:border-pm-accent/50 transition-colors cursor-pointer ${
-                      selectedBlockId === block.id ? 'border-pm-accent' : ''
+                      selectedBlockId === block?.id ? 'border-pm-accent' : ''
                     }`}
-                    onClick={() => setSelectedBlockId(block.id)}
+                    onClick={() => block?.id && setSelectedBlockId(block.id)}
                   >
                     <CardContent className="p-4">
                       <div className="flex justify-between items-start mb-3">
                         <div>
                           <div className="flex items-center gap-2 mb-1">
                             <Badge variant="outline" className="text-pm-scientific border-pm-scientific">
-                              Block #{block.index}
+                              Block #{block?.index || 'N/A'}
                             </Badge>
                             <Badge variant="secondary" className="text-xs">
-                              {format(new Date(block.timestamp), 'MMM dd, HH:mm')}
+                              {block?.timestamp ? format(new Date(block.timestamp), 'MMM dd, HH:mm') : 'N/A'}
                             </Badge>
                           </div>
                           <div className="font-mono text-xs text-slate-400 truncate max-w-[300px]">
-                            {block.blockHash}
+                            {block?.blockHash || 'No hash available'}
                           </div>
                         </div>
                         <div className="text-right">
                           <div className="text-lg font-bold text-pm-accent">
-                            {formatScientificValue(block.totalScientificValue)}
+                            {formatScientificValue(block?.totalScientificValue || 0)}
                           </div>
                           <div className="text-xs text-slate-400">Scientific Value</div>
                         </div>
@@ -217,22 +217,30 @@ export default function BlockExplorer() {
                       <div className="grid grid-cols-3 gap-4 text-xs">
                         <div>
                           <div className="text-slate-400">Miner</div>
-                          <div className="font-medium truncate">{block.minerId}</div>
+                          <div className="font-medium truncate">{block?.minerId || 'Unknown'}</div>
                         </div>
                         <div>
                           <div className="text-slate-400">Energy</div>
-                          <div className="font-medium text-green-400">{block.energyConsumed.toFixed(3)} kWh</div>
+                          <div className="font-medium text-green-400">{(block?.energyConsumed || 0).toFixed(3)} kWh</div>
                         </div>
                         <div>
                           <div className="text-slate-400">Knowledge</div>
                           <div className="font-medium text-pm-scientific">
-                            {formatScientificValue(block.knowledgeCreated)}
+                            {formatScientificValue(block?.knowledgeCreated || 0)}
                           </div>
                         </div>
                       </div>
                     </CardContent>
                   </Card>
-                ))}
+                )) : (
+                  <Card className="bg-slate-800/30 border-slate-700">
+                    <CardContent className="p-8 text-center">
+                      <div className="text-slate-400">
+                        No blocks found
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             )}
           </div>
@@ -262,37 +270,37 @@ export default function BlockExplorer() {
                   </div>
                 </CardContent>
               </Card>
-            ) : blockDetails ? (
+            ) : blockDetails?.block ? (
               <div className="space-y-4">
                 {/* Block Info */}
                 <Card className="bg-slate-800/50 border-slate-700">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Database className="h-5 w-5 text-pm-accent" />
-                      Block #{blockDetails.block.index}
+                      Block #{blockDetails.block?.index || 'N/A'}
                     </CardTitle>
                     <CardDescription>
-                      Mined by {blockDetails.block.minerId} on{' '}
-                      {format(new Date(blockDetails.block.timestamp), 'PPP at p')}
+                      Mined by {blockDetails.block?.minerId || 'Unknown'} on{' '}
+                      {blockDetails.block?.timestamp ? format(new Date(blockDetails.block.timestamp), 'PPP at p') : 'Unknown date'}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <div className="text-slate-400">Block Hash</div>
-                        <div className="font-mono break-all">{blockDetails.block.blockHash}</div>
+                        <div className="font-mono break-all">{blockDetails.block?.blockHash || 'N/A'}</div>
                       </div>
                       <div>
                         <div className="text-slate-400">Previous Hash</div>
-                        <div className="font-mono break-all">{blockDetails.block.previousHash}</div>
+                        <div className="font-mono break-all">{blockDetails.block?.previousHash || 'N/A'}</div>
                       </div>
                       <div>
                         <div className="text-slate-400">Merkle Root</div>
-                        <div className="font-mono break-all">{blockDetails.block.merkleRoot}</div>
+                        <div className="font-mono break-all">{blockDetails.block?.merkleRoot || 'N/A'}</div>
                       </div>
                       <div>
                         <div className="text-slate-400">Nonce</div>
-                        <div className="font-mono">{blockDetails.block.nonce}</div>
+                        <div className="font-mono">{blockDetails.block?.nonce || 'N/A'}</div>
                       </div>
                     </div>
                     
@@ -301,19 +309,19 @@ export default function BlockExplorer() {
                     <div className="grid grid-cols-3 gap-4 text-center">
                       <div>
                         <div className="text-2xl font-bold text-pm-accent">
-                          {formatScientificValue(blockDetails.block.totalScientificValue)}
+                          {formatScientificValue(blockDetails.block?.totalScientificValue || 0)}
                         </div>
                         <div className="text-xs text-slate-400">Scientific Value</div>
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-green-400">
-                          {blockDetails.block.energyConsumed.toFixed(3)}
+                          {(blockDetails.block?.energyConsumed || 0).toFixed(3)}
                         </div>
                         <div className="text-xs text-slate-400">kWh Used</div>
                       </div>
                       <div>
                         <div className="text-2xl font-bold text-pm-scientific">
-                          {blockDetails.work.length}
+                          {blockDetails.work?.length || 0}
                         </div>
                         <div className="text-xs text-slate-400">Discoveries</div>
                       </div>
@@ -326,60 +334,66 @@ export default function BlockExplorer() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Calculator className="h-5 w-5 text-pm-scientific" />
-                      Mathematical Discoveries ({blockDetails.work.length})
+                      Mathematical Discoveries ({blockDetails.work?.length || 0})
                     </CardTitle>
                     <CardDescription>
                       Real scientific breakthroughs contained within this block
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {blockDetails.work.map((work: MathematicalWork) => (
-                      <Card key={work.id} className="bg-slate-700/30 border-slate-600">
-                        <CardContent className="p-4">
-                          <div className="flex justify-between items-start mb-3">
-                            <div className="flex items-center gap-2">
-                              {getWorkTypeIcon(work.workType)}
-                              <span className="font-medium">{getWorkTypeLabel(work.workType)}</span>
-                              <Badge variant="outline" className="text-xs">
-                                Difficulty {work.difficulty}
-                              </Badge>
-                            </div>
-                            <div className="text-right">
-                              <div className="text-lg font-bold text-pm-accent">
-                                {formatScientificValue(work.scientificValue)}
+                    {blockDetails.work?.length > 0 ? (
+                      blockDetails.work.map((work: MathematicalWork) => (
+                        <Card key={work.id} className="bg-slate-700/30 border-slate-600">
+                          <CardContent className="p-4">
+                            <div className="flex justify-between items-start mb-3">
+                              <div className="flex items-center gap-2">
+                                {getWorkTypeIcon(work.workType)}
+                                <span className="font-medium">{getWorkTypeLabel(work.workType)}</span>
+                                <Badge variant="outline" className="text-xs">
+                                  Difficulty {work.difficulty}
+                                </Badge>
                               </div>
-                              <div className="text-xs text-slate-400">Value</div>
+                              <div className="text-right">
+                                <div className="text-lg font-bold text-pm-accent">
+                                  {formatScientificValue(work.scientificValue)}
+                                </div>
+                                <div className="text-xs text-slate-400">Value</div>
+                              </div>
                             </div>
-                          </div>
-                          
-                          <div className="mb-3">
-                            {renderMathematicalResult(work)}
-                          </div>
-                          
-                          <Separator className="bg-slate-600 my-3" />
-                          
-                          <div className="grid grid-cols-3 gap-4 text-xs">
-                            <div>
-                              <div className="text-slate-400">Worker</div>
-                              <div className="font-medium truncate">{work.workerId}</div>
+                            
+                            <div className="mb-3">
+                              {renderMathematicalResult(work)}
                             </div>
-                            <div>
-                              <div className="text-slate-400">Cost</div>
-                              <div className="font-medium">{work.computationalCost.toLocaleString()} ops</div>
+                            
+                            <Separator className="bg-slate-600 my-3" />
+                            
+                            <div className="grid grid-cols-3 gap-4 text-xs">
+                              <div>
+                                <div className="text-slate-400">Worker</div>
+                                <div className="font-medium truncate">{work.workerId}</div>
+                              </div>
+                              <div>
+                                <div className="text-slate-400">Cost</div>
+                                <div className="font-medium">{work.computationalCost.toLocaleString()} ops</div>
+                              </div>
+                              <div>
+                                <div className="text-slate-400">Efficiency</div>
+                                <div className="font-medium text-green-400">{work.energyEfficiency.toFixed(1)}</div>
+                              </div>
                             </div>
-                            <div>
-                              <div className="text-slate-400">Efficiency</div>
-                              <div className="font-medium text-green-400">{work.energyEfficiency.toFixed(1)}</div>
+                            
+                            <div className="mt-3 p-2 bg-slate-800/50 rounded text-xs">
+                              <div className="text-slate-400 mb-1">Cryptographic Signature</div>
+                              <div className="font-mono break-all">{work.signature}</div>
                             </div>
-                          </div>
-                          
-                          <div className="mt-3 p-2 bg-slate-800/50 rounded text-xs">
-                            <div className="text-slate-400 mb-1">Cryptographic Signature</div>
-                            <div className="font-mono break-all">{work.signature}</div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                          </CardContent>
+                        </Card>
+                      ))
+                    ) : (
+                      <div className="text-center text-slate-400 py-8">
+                        No mathematical discoveries found in this block
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </div>
