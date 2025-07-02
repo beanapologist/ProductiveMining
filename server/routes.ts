@@ -33,10 +33,7 @@ function calculateProofOfWork(blockData: string, difficulty: number): number {
 // This will be defined within the main function scope where broadcast is available
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Initialize database with sample data
-  if (storage instanceof (await import('./storage')).DatabaseStorage) {
-    await (storage as any).initializeSampleData();
-  }
+  // Database is now clean and ready for real computational discoveries
   const httpServer = createServer(app);
 
   // WebSocket server for real-time updates
