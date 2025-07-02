@@ -5,6 +5,10 @@ import { storage } from "./storage";
 import { insertMiningOperationSchema, type WebSocketMessage, type MiningProgressMessage, type BlockMinedMessage } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Initialize database with sample data
+  if (storage instanceof (await import('./storage')).DatabaseStorage) {
+    await (storage as any).initializeSampleData();
+  }
   const httpServer = createServer(app);
 
   // WebSocket server for real-time updates

@@ -53,7 +53,7 @@ export const networkMetrics = pgTable("network_metrics", {
   id: serial("id").primaryKey(),
   timestamp: timestamp("timestamp").notNull().defaultNow(),
   totalMiners: integer("total_miners").notNull(),
-  blocksPerHour: integer("blocks_per_hour").notNull(),
+  blocksPerHour: real("blocks_per_hour").notNull(),
   energyEfficiency: real("energy_efficiency").notNull(),
   totalScientificValue: real("total_scientific_value").notNull(),
   co2Saved: real("co2_saved").notNull(),
