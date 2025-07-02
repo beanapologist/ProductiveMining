@@ -35,36 +35,36 @@ export default function MetricsDashboard({ metrics }: MetricsDashboardProps) {
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-pm-secondary/50 backdrop-blur border border-slate-700/50 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-green-600/20 to-emerald-600/20 backdrop-blur border border-green-500/30 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <div className="bg-pm-accent/20 p-2 rounded-lg">
-              <Leaf className="text-pm-accent h-5 w-5" />
+            <div className="bg-green-400/20 p-3 rounded-lg">
+              <Leaf className="text-green-400 h-6 w-6" />
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold text-pm-accent">
+              <div className="text-3xl font-bold text-green-400">
                 {Math.round(metrics.energyEfficiency)}x
               </div>
               <div className="text-sm text-slate-400">vs Bitcoin</div>
             </div>
           </div>
-          <h3 className="font-semibold text-slate-200">Energy Efficiency</h3>
-          <p className="text-sm text-slate-400 mt-1">Computational power utilization</p>
+          <h3 className="font-semibold text-white">⚡ Energy Efficiency</h3>
+          <p className="text-sm text-green-300 mt-1">How much more efficient than Bitcoin mining</p>
         </div>
         
-        <div className="bg-pm-secondary/50 backdrop-blur border border-slate-700/50 rounded-xl p-6">
+        <div className="bg-gradient-to-br from-purple-600/20 to-pink-600/20 backdrop-blur border border-purple-500/30 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <div className="bg-pm-scientific/20 p-2 rounded-lg">
-              <Brain className="text-pm-scientific h-5 w-5" />
+            <div className="bg-purple-400/20 p-3 rounded-lg">
+              <Brain className="text-purple-400 h-6 w-6" />
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold text-pm-scientific">
+              <div className="text-3xl font-bold text-purple-400">
                 {formatValue(metrics.totalScientificValue)}
               </div>
               <div className="text-sm text-slate-400">value created</div>
             </div>
           </div>
-          <h3 className="font-semibold text-slate-200">Scientific Value</h3>
-          <p className="text-sm text-slate-400 mt-1">Research contribution worth</p>
+          <h3 className="font-semibold text-white">🧠 Scientific Value</h3>
+          <p className="text-sm text-purple-300 mt-1">Real mathematical discoveries worth money</p>
         </div>
         
         <div className="bg-pm-secondary/50 backdrop-blur border border-slate-700/50 rounded-xl p-6">

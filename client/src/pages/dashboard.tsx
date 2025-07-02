@@ -29,6 +29,36 @@ export default function Dashboard() {
   return (
     <div className="text-slate-100">
       <div className="container mx-auto px-4 py-6">
+        {/* Welcome Section */}
+        <div className="bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-2xl p-6 mb-8 border border-purple-500/30">
+          <div className="text-center mb-6">
+            <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+              Welcome to Productive Mining! 🚀
+            </h1>
+            <p className="text-xl text-slate-300 mb-4">
+              Where computers solve real math problems instead of wasting energy
+            </p>
+            <div className="flex justify-center items-center space-x-8 text-sm">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-green-400 font-medium">Network Active</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-2xl">🧮</span>
+                <span className="text-white">Solving Real Math</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-2xl">⚡</span>
+                <span className="text-white">99% Less Energy</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="text-2xl">💎</span>
+                <span className="text-white">$105M+ Value Created</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="flex items-center justify-between mb-8">
           <div>
             <p className="text-slate-400">Real-time mathematical blockchain network overview</p>
@@ -77,6 +107,41 @@ export default function Dashboard() {
             >
               {operations && operations.some(op => op.status === 'active') ? 'Mining Active' : 'Start Real Mining'}
             </Button>
+          </div>
+        </div>
+        
+        {/* What Makes This Different */}
+        <div className="bg-gradient-to-r from-amber-600/20 to-orange-600/20 rounded-2xl p-6 mb-8 border border-amber-500/30">
+          <h2 className="text-2xl font-bold text-center mb-4 text-amber-300">
+            ✨ What Makes Us Different From Bitcoin?
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+            <div className="space-y-3">
+              <div className="text-center">
+                <h3 className="font-semibold text-red-400 mb-2">❌ Traditional Mining (Bitcoin)</h3>
+                <div className="bg-red-900/20 rounded-lg p-3 border border-red-500/30">
+                  <div className="space-y-2 text-slate-300">
+                    <div>• Solves meaningless hash puzzles</div>
+                    <div>• Wastes massive amounts of energy</div>
+                    <div>• Creates no scientific value</div>
+                    <div>• Only enriches miners</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <div className="text-center">
+                <h3 className="font-semibold text-green-400 mb-2">✅ Productive Mining (Our Way)</h3>
+                <div className="bg-green-900/20 rounded-lg p-3 border border-green-500/30">
+                  <div className="space-y-2 text-slate-300">
+                    <div>• Solves real mathematical problems</div>
+                    <div>• 99% more energy efficient</div>
+                    <div>• Creates valuable scientific knowledge</div>
+                    <div>• Benefits all of humanity</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

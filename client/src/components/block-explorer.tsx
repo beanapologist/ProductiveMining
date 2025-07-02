@@ -28,12 +28,26 @@ export default function BlockExplorer({ blocks = [] }: BlockExplorerProps) {
     <section className="bg-pm-secondary/30 py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-            Productive <span className="text-pm-scientific">Block Explorer</span>
+          <h2 className="text-4xl lg:text-5xl font-bold mb-4 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+            🔗 Block Explorer
           </h2>
-          <p className="text-xl text-slate-300 max-w-3xl mx-auto">
-            Explore blocks containing real mathematical discoveries instead of meaningless hash computations.
+          <p className="text-xl text-slate-300 max-w-3xl mx-auto mb-6">
+            Unlike Bitcoin blocks that waste energy on meaningless calculations, these blocks contain real mathematical breakthroughs
           </p>
+          <div className="flex justify-center items-center space-x-8 text-sm">
+            <div className="flex items-center space-x-2">
+              <span className="text-2xl">🧮</span>
+              <span className="text-white">Real Math Inside</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="text-2xl">💎</span>
+              <span className="text-white">Scientific Value</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="text-2xl">🔒</span>
+              <span className="text-white">Blockchain Secure</span>
+            </div>
+          </div>
         </div>
         
         {/* Recent Blocks */}

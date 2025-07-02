@@ -33,15 +33,15 @@ const workTypeIcons: Record<string, any> = {
 };
 
 const workTypeNames: Record<string, string> = {
-  'riemann_zero': 'Riemann Hypothesis',
-  'prime_pattern': 'Prime Pattern Discovery',
-  'qdt_validation': 'Quantum Field Theory Validation',
-  'birch_swinnerton_dyer': 'Birch & Swinnerton-Dyer Conjecture',
-  'navier_stokes': 'Navier-Stokes Equations',
-  'yang_mills': 'Yang-Mills Theory',
-  'elliptic_curve_crypto': 'Elliptic Curve Cryptography',
-  'lattice_crypto': 'Lattice-Based Cryptography',
-  'poincare_conjecture': 'Poincaré Conjecture'
+  'riemann_zero': '🔢 Prime Number Secrets',
+  'prime_pattern': '🔐 Security Patterns',
+  'qdt_validation': '⚛️ Quantum Physics',
+  'birch_swinnerton_dyer': '💰 Million Dollar Problem',
+  'navier_stokes': '🌊 Fluid Flow Science',
+  'yang_mills': '🌌 Forces of Nature',
+  'elliptic_curve_crypto': '🛡️ Unbreakable Security',
+  'lattice_crypto': '🔮 Quantum-Safe Locks',
+  'poincare_conjecture': '🔄 3D Shape Puzzles'
 };
 
 const getDifficultyColor = (difficulty: number) => {
@@ -94,6 +94,34 @@ export default function DiscoveriesPage() {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
+      {/* User-friendly explanation header */}
+      <div className="bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-2xl p-6 border border-purple-500/30">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+            Mathematical Discoveries 🧠
+          </h1>
+          <p className="text-xl text-slate-300 mb-4">
+            Real mathematical breakthroughs created by our mining network
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-4xl mx-auto text-sm">
+            <div className="bg-white/5 rounded-lg p-3">
+              <div className="text-lg mb-1">🔬</div>
+              <div className="font-semibold text-white">Real Science</div>
+              <div className="text-slate-400">Authentic mathematical problems solved by miners</div>
+            </div>
+            <div className="bg-white/5 rounded-lg p-3">
+              <div className="text-lg mb-1">💰</div>
+              <div className="font-semibold text-white">Valuable Knowledge</div>
+              <div className="text-slate-400">Each discovery has measurable scientific value</div>
+            </div>
+            <div className="bg-white/5 rounded-lg p-3">
+              <div className="text-lg mb-1">🌍</div>
+              <div className="font-semibold text-white">Impact</div>
+              <div className="text-slate-400">Benefits cryptography, physics, and technology</div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Mathematical Discoveries</h1>

@@ -48,27 +48,28 @@ export default function MiningOperations({ operations = [], discoveries = [] }: 
   };
 
   const getOperationDescription = (operation: MiningOperation) => {
-    switch (operation.operationType) {
+    const operationType = operation.operationType || operation.workType;
+    switch (operationType) {
       case 'riemann_zero':
-        return `Zero #${operation.currentResult?.zeroIndex || 'Unknown'} validation`;
+        return `🔢 Finding special numbers that unlock prime number secrets`;
       case 'prime_pattern':
-        return `${operation.currentResult?.patternType || 'Pattern'} primes discovery`;
+        return `🔐 Discovering prime patterns for stronger online security`;
       case 'qdt_validation':
-        return 'Quantum field constraints';
+        return '⚛️ Testing quantum physics theories with advanced math';
       case 'birch_swinnerton_dyer':
-        return 'Elliptic curve L-function analysis';
+        return '💰 Working on a million-dollar math problem';
       case 'navier_stokes':
-        return '3D fluid dynamics simulation';
+        return '🌊 Solving fluid flow for better weather prediction';
       case 'elliptic_curve_crypto':
-        return 'ECDSA cryptographic operations';
+        return '🛡️ Building unbreakable digital security';
       case 'lattice_crypto':
-        return 'Post-quantum lattice reduction';
+        return '🔮 Creating quantum-resistant protection';
       case 'yang_mills':
-        return 'SU(3) gauge field theory';
+        return '🌌 Understanding fundamental forces of nature';
       case 'poincare_conjecture':
-        return '3-manifold Ricci flow analysis';
+        return '🔄 Solving complex 3D shape problems';
       default:
-        return 'Mathematical computation';
+        return '🧮 Creating valuable mathematical knowledge';
     }
   };
 
