@@ -38,7 +38,7 @@ export default function Dashboard() {
   });
 
   const { data: blocks } = useQuery({
-    queryKey: ['/api/blocks'],
+    queryKey: ['/api/blocks?limit=100'],
     refetchInterval: 3000,
     staleTime: 0,
     gcTime: 0,
