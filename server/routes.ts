@@ -211,6 +211,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get mining operations
+  app.get("/api/mining/operations", async (req, res) => {
+    try {
+      const operations = await storage.getActiveMiningOperations();
+      res.json(operations);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch mining operations" });
+    }
+  });
+
   // Start new mining operation with real mathematical computation
   app.post("/api/mining/start-real", async (req, res) => {
     try {

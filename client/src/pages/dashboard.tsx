@@ -29,74 +29,52 @@ export default function Dashboard() {
   const currentMetrics = metrics || initialMetrics;
 
   return (
-    <div className="min-h-screen bg-pm-primary text-slate-100">
-      {/* Navigation */}
-      <nav className="bg-pm-secondary border-b border-slate-700/50 sticky top-0 z-50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
-              <div className="bg-pm-accent/20 p-2 rounded-lg">
-                <Atom className="text-pm-accent h-6 w-6" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold">Productive Mining</h1>
-                <p className="text-xs text-slate-400">Scientific Blockchain Platform</p>
-              </div>
+    <div className="text-slate-100">
+      {/* Dashboard Content */}
+      <div className="container mx-auto px-4 py-6">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <p className="text-slate-400">Real-time mathematical blockchain network overview</p>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-pm-accent animate-pulse' : 'bg-slate-500'}`} />
+              <span className="text-sm text-slate-300">
+                {isConnected ? 'Live Mining' : 'Connecting...'}
+              </span>
             </div>
             
-            <div className="flex items-center space-x-6">
-              <div className="flex items-center space-x-4">
-                <Button variant="outline" className="flex items-center gap-2 border-pm-accent text-pm-accent">
-                  <BarChart3 className="h-4 w-4" />
-                  Dashboard
-                </Button>
-                <Link href="/blocks">
-                  <Button variant="ghost" className="flex items-center gap-2 text-slate-300 hover:text-white">
-                    <Database className="h-4 w-4" />
-                    Block Explorer
-                  </Button>
-                </Link>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-pm-accent animate-pulse' : 'bg-slate-500'}`} />
-                <span className="text-sm text-slate-300">
-                  {isConnected ? 'Live Mining' : 'Connecting...'}
-                </span>
-              </div>
-              
-              <Badge variant="outline" className="border-pm-accent text-pm-accent">
-                Network Health: {currentMetrics ? (currentMetrics.networkHealth * 100).toFixed(1) : '99.8'}%
-              </Badge>
-              
-              <Button 
-                className="bg-pm-accent hover:bg-pm-accent/80 text-pm-primary"
-                onClick={async () => {
-                  try {
-                    const response = await fetch('/api/mining/start-real', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ 
-                        workType: 'riemann_zero', 
-                        difficulty: 10 
-                      })
-                    });
-                    
-                    if (response.ok) {
-                      const operation = await response.json();
-                      console.log('Real mining started:', operation);
-                    }
-                  } catch (error) {
-                    console.error('Failed to start mining:', error);
+            <Badge variant="outline" className="border-pm-accent text-pm-accent">
+              Network Health: {currentMetrics ? (currentMetrics.networkHealth * 100).toFixed(1) : '99.8'}%
+            </Badge>
+            
+            <Button 
+              className="bg-pm-accent hover:bg-pm-accent/80 text-pm-primary"
+              onClick={async () => {
+                try {
+                  const response = await fetch('/api/mining/start-real', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                      workType: 'riemann_zero', 
+                      difficulty: 10 
+                    })
+                  });
+                  
+                  if (response.ok) {
+                    const operation = await response.json();
+                    console.log('Real mining started:', operation);
                   }
-                }}
-              >
-                Start Real Mining
-              </Button>
-            </div>
+                } catch (error) {
+                  console.error('Failed to start mining:', error);
+                }
+              }}
+            >
+              Start Real Mining
+            </Button>
           </div>
         </div>
-      </nav>
 
       {/* Hero Section */}
       <section className="relative overflow-hidden">

@@ -179,8 +179,8 @@ export default function MiningOperations({ operations = [], discoveries = [] }: 
           </div>
         ) : (
           <div className="space-y-4">
-            {discoveries.slice(0, 5).map((discovery) => (
-              <div key={discovery.id} className="flex items-center space-x-4 p-3 bg-pm-primary/30 rounded-lg border border-slate-700/30">
+            {discoveries.slice(0, 5).map((discovery, index) => (
+              <div key={`discovery-${discovery.id}-${index}`} className="flex items-center space-x-4 p-3 bg-pm-primary/30 rounded-lg border border-slate-700/30">
                 <div className="bg-pm-accent/20 p-2 rounded-lg">
                   {getDiscoveryIcon(discovery.workType)}
                 </div>
