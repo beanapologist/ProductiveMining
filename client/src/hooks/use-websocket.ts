@@ -102,10 +102,18 @@ export function useWebSocket() {
   useEffect(() => {
     connect();
 
+    // Memory cleanup interval to prevent buildup
+    const cleanupInterval = setInterval(() => {
+      setDiscoveries(prev => prev.slice(0, 20)); // Keep only 20 most recent
+      setOperations(prev => prev.slice(0, 10)); // Keep only 10 most recent  
+      setBlocks(prev => prev.slice(0, 15)); // Keep only 15 most recent
+    }, 5 * 60 * 1000); // Every 5 minutes
+
     return () => {
       if (socket) {
         socket.close();
       }
+      clearInterval(cleanupInterval);
     };
   }, []);
 

@@ -62,9 +62,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('Client disconnected from WebSocket');
     });
 
+    ws.on('error', (error) => {
+      console.error('WebSocket error:', error);
+      clients.delete(ws);
+    });
+
     // Send initial data
     sendInitialData(ws);
   });
+
+  // Clean up disconnected WebSocket clients and old metrics
+  setInterval(async () => {
+    try {
+      // Clean disconnected WebSocket clients
+      const disconnectedClients = Array.from(clients).filter(ws => 
+        ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING
+      );
+      
+      disconnectedClients.forEach(client => {
+        clients.delete(client);
+      });
+      
+      if (disconnectedClients.length > 0) {
+        console.log(`🧹 WEBSOCKET CLEANUP: Removed ${disconnectedClients.length} disconnected clients`);
+      }
+
+      // Clean old network metrics (keep only last 100 entries)
+      const { db } = await import('./db');
+      const { networkMetrics } = await import('@shared/schema');
+      const { sql } = await import('drizzle-orm');
+      
+      const metricsCount = await db.select({ count: sql`count(*)` }).from(networkMetrics);
+      const currentCount = Number(metricsCount[0]?.count || 0);
+      
+      if (currentCount > 100) {
+        await db.execute(sql`
+          DELETE FROM ${networkMetrics} 
+          WHERE id NOT IN (
+            SELECT id FROM ${networkMetrics} 
+            ORDER BY timestamp DESC 
+            LIMIT 100
+          )
+        `);
+        console.log(`🧹 METRICS CLEANUP: Trimmed to 100 recent metrics (was ${currentCount})`);
+      }
+    } catch (error) {
+      console.error('Cleanup error:', error);
+    }
+  }, 3 * 60 * 1000); // Every 3 minutes
 
   // Broadcast function
   function broadcast(message: WebSocketMessage) {
@@ -187,6 +232,108 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(discoveries);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch discoveries" });
+    }
+  });
+
+  // Manual cleanup endpoint
+  app.post("/api/cleanup", async (req, res) => {
+    try {
+      const { db } = await import('./db');
+      const { miningOperations, networkMetrics } = await import('@shared/schema');
+      const { sql, and, eq, lt } = await import('drizzle-orm');
+      
+      // Clean old mining operations
+      const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+      const deletedOps = await db.delete(miningOperations)
+        .where(and(
+          eq(miningOperations.status, 'completed'),
+          lt(miningOperations.estimatedCompletion, tenMinutesAgo)
+        ));
+
+      // Clean old metrics (keep last 100)
+      const metricsCount = await db.select({ count: sql`count(*)` }).from(networkMetrics);
+      const currentCount = Number(metricsCount[0]?.count || 0);
+      
+      let cleanedMetrics = 0;
+      if (currentCount > 100) {
+        await db.execute(sql`
+          DELETE FROM ${networkMetrics} 
+          WHERE id NOT IN (
+            SELECT id FROM ${networkMetrics} 
+            ORDER BY timestamp DESC 
+            LIMIT 100
+          )
+        `);
+        cleanedMetrics = currentCount - 100;
+      }
+
+      // Clean disconnected WebSocket clients
+      const disconnectedClients = Array.from(clients).filter(ws => 
+        ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING
+      );
+      
+      disconnectedClients.forEach(client => {
+        clients.delete(client);
+      });
+
+      console.log(`🧹 MANUAL CLEANUP: Operations: ${deletedOps.length}, Metrics: ${cleanedMetrics}, WebSockets: ${disconnectedClients.length}`);
+      
+      res.json({
+        cleaned: {
+          operations: deletedOps.length,
+          metrics: cleanedMetrics,
+          websockets: disconnectedClients.length
+        }
+      });
+    } catch (error) {
+      console.error('Manual cleanup error:', error);
+      res.status(500).json({ error: "Cleanup failed" });
+    }
+  });
+
+  // Cryptographic safety analysis endpoint using mathematical discoveries
+  app.post("/api/crypto/analyze", async (req, res) => {
+    try {
+      const discoveries = await storage.getRecentMathematicalWork(50);
+      
+      if (discoveries.length === 0) {
+        return res.json({ error: "No mathematical discoveries available for analysis" });
+      }
+
+      const { cryptoEngine } = await import('./crypto-engine');
+
+      // Generate post-quantum keys using Riemann discoveries
+      const riemannDiscoveries = discoveries.filter(d => d.workType === 'riemann_zero');
+      let postQuantumKey = null;
+      if (riemannDiscoveries.length > 0) {
+        postQuantumKey = cryptoEngine.generatePostQuantumKey(riemannDiscoveries);
+      }
+
+      // Create cryptographic signatures using prime patterns
+      const primeDiscoveries = discoveries.filter(d => d.workType === 'prime_pattern');
+      let primeSignature = null;
+      if (primeDiscoveries.length > 0) {
+        primeSignature = cryptoEngine.createPatternBasedSignature(
+          "blockchain_security_verification", 
+          primeDiscoveries
+        );
+      }
+
+      // Generate multi-layered security hash
+      const securityHash = cryptoEngine.generateSecurityHash(discoveries);
+
+      res.json({
+        analysis: {
+          discoveryCount: discoveries.length,
+          postQuantumKey,
+          primeSignature,
+          securityHash,
+          timestamp: new Date().toISOString()
+        }
+      });
+    } catch (error) {
+      console.error('Crypto analysis error:', error);
+      res.status(500).json({ error: "Cryptographic analysis failed" });
     }
   });
 
@@ -925,6 +1072,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     return primes;
   }
+
+  // Clean up old completed operations periodically
+  setInterval(async () => {
+    try {
+      const { db } = await import('./db');
+      const { miningOperations } = await import('@shared/schema');
+      const { sql, and, eq, lt } = await import('drizzle-orm');
+      
+      // Remove completed operations older than 10 minutes
+      const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+      const result = await db.delete(miningOperations)
+        .where(and(
+          eq(miningOperations.status, 'completed'),
+          lt(miningOperations.estimatedCompletion, tenMinutesAgo)
+        ));
+      
+      console.log(`🧹 CLEANUP: Checked for old operations (cutoff: ${tenMinutesAgo.toISOString()})`);
+    } catch (error) {
+      console.error('Cleanup error:', error);
+    }
+  }, 5 * 60 * 1000); // Run every 5 minutes
 
   // Simulate mining progress updates
   setInterval(async () => {
