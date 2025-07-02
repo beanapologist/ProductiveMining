@@ -938,6 +938,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const wasActive = operation.status === 'active';
         const justCompleted = newProgress >= 1.0 && wasActive;
         
+        if (operation.progress < 1.0) {
+          console.log(`⚡ Operation ${operation.id}: ${(newProgress * 100).toFixed(1)}% complete`);
+        }
+        
         const updatedOperation = await storage.updateMiningOperation(operation.id, {
           progress: newProgress,
           status: newProgress >= 1.0 ? 'completed' : 'active'
