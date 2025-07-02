@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   Activity, 
   Calculator, 
@@ -25,6 +25,7 @@ interface NetworkMetrics {
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('overview');
+  const queryClient = useQueryClient();
 
   const { data: metrics } = useQuery<NetworkMetrics>({
     queryKey: ['/api/metrics'],
@@ -38,7 +39,9 @@ export default function Dashboard() {
 
   const { data: blocks } = useQuery({
     queryKey: ['/api/blocks'],
-    refetchInterval: 15000,
+    refetchInterval: 3000,
+    staleTime: 0,
+    gcTime: 0,
   });
 
   const { data: operations } = useQuery({
@@ -124,17 +127,17 @@ export default function Dashboard() {
 
         <div className="metric-item">
           <div className="metric-value text-green-400">
-            {operations?.filter((op: any) => op.status === 'active').length || 0}
+            {Array.isArray(operations) ? operations.filter((op: any) => op.status === 'active').length : 0}
           </div>
           <div className="metric-label">Active Computing Nodes</div>
           <div className="text-sm text-muted-foreground mt-1">
-            {operations?.length || 0} total operations
+            {Array.isArray(operations) ? operations.length : 0} total operations
           </div>
         </div>
 
         <div className="metric-item">
           <div className="metric-value text-purple-400">
-            {blocks?.length || 0}
+            {Array.isArray(blocks) ? blocks.length : 0}
           </div>
           <div className="metric-label">Blockchain Height</div>
           <div className="text-sm text-muted-foreground mt-1">
@@ -187,11 +190,11 @@ export default function Dashboard() {
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">Active Miners</span>
-                      <span className="font-mono">{operations?.filter((op: any) => op.status === 'active').length || 0}</span>
+                      <span className="font-mono">{Array.isArray(operations) ? operations.filter((op: any) => op.status === 'active').length : 0}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">Research Areas</span>
-                      <span className="font-mono">{new Set(discoveries?.map((d: any) => d.workType)).size || 0}</span>
+                      <span className="font-mono">{Array.isArray(discoveries) ? new Set(discoveries.map((d: any) => d.workType)).size : 0}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">CO₂ Prevented</span>
@@ -208,7 +211,7 @@ export default function Dashboard() {
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">Total Discoveries</span>
-                      <span className="font-mono">{discoveries?.length || 0}</span>
+                      <span className="font-mono">{Array.isArray(discoveries) ? discoveries.length : 0}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">Avg Difficulty</span>
@@ -243,7 +246,7 @@ export default function Dashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {discoveries?.slice(0, 10).map((discovery: any) => (
+                    {Array.isArray(discoveries) ? discoveries.slice(0, 10).map((discovery: any) => (
                       <tr key={discovery.id}>
                         <td>
                           <span className={getWorkTypeClass(discovery.workType)}>
@@ -261,13 +264,13 @@ export default function Dashboard() {
                           {new Date(discovery.timestamp).toLocaleString()}
                         </td>
                       </tr>
-                    )) || (
-                      <tr>
+                    )) : [
+                      <tr key="no-data">
                         <td colSpan={5} className="text-center text-muted-foreground py-8">
                           No research data available. Start mathematical mining to begin generating discoveries.
                         </td>
                       </tr>
-                    )}
+                    ]}
                   </tbody>
                 </table>
               </div>
@@ -280,13 +283,13 @@ export default function Dashboard() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div className="metric-item">
                   <div className="metric-value text-purple-400">
-                    {blocks?.length || 0}
+                    {Array.isArray(blocks) ? blocks.length : 0}
                   </div>
                   <div className="metric-label">Total Blocks</div>
                 </div>
                 <div className="metric-item">
                   <div className="metric-value text-blue-400">
-                    {(blocks?.length || 0) * 512}MB
+                    {(Array.isArray(blocks) ? blocks.length : 0) * 512}MB
                   </div>
                   <div className="metric-label">Chain Size</div>
                 </div>
@@ -311,7 +314,7 @@ export default function Dashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {blocks?.slice(-10).reverse().map((block: any) => (
+                    {Array.isArray(blocks) ? blocks.slice(-10).reverse().map((block: any) => (
                       <tr key={block.id}>
                         <td className="font-mono text-purple-400">#{block.index}</td>
                         <td className="text-muted-foreground">
@@ -325,13 +328,13 @@ export default function Dashboard() {
                         </td>
                         <td className="font-mono">{block.difficulty}</td>
                       </tr>
-                    )) || (
-                      <tr>
+                    )) : [
+                      <tr key="no-blocks">
                         <td colSpan={5} className="text-center text-muted-foreground py-8">
                           No blocks generated yet.
                         </td>
                       </tr>
-                    )}
+                    ]}
                   </tbody>
                 </table>
               </div>
@@ -361,13 +364,13 @@ export default function Dashboard() {
                       <div className="flex justify-between mb-2">
                         <span className="text-muted-foreground">Network Utilization</span>
                         <span className="font-mono">
-                          {operations?.filter((op: any) => op.status === 'active').length || 0}/8
+                          {Array.isArray(operations) ? operations.filter((op: any) => op.status === 'active').length : 0}/8
                         </span>
                       </div>
                       <div className="progress-bar">
                         <div 
                           className="progress-fill" 
-                          style={{ width: `${((operations?.filter((op: any) => op.status === 'active').length || 0) / 8) * 100}%` }}
+                          style={{ width: `${((Array.isArray(operations) ? operations.filter((op: any) => op.status === 'active').length : 0) / 8) * 100}%` }}
                         />
                       </div>
                     </div>
@@ -379,11 +382,11 @@ export default function Dashboard() {
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">Research Types Active</span>
-                      <span className="font-mono">{new Set(discoveries?.map((d: any) => d.workType)).size || 0}</span>
+                      <span className="font-mono">{Array.isArray(discoveries) ? new Set(discoveries.map((d: any) => d.workType)).size : 0}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">Discoveries/Hour</span>
-                      <span className="font-mono">{Math.round((discoveries?.length || 0) / 24)}</span>
+                      <span className="font-mono">{Math.round((Array.isArray(discoveries) ? discoveries.length : 0) / 24)}</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-muted-foreground">Avg Processing Time</span>
