@@ -96,6 +96,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get block details with mathematical work by ID
+  app.get("/api/blocks/:id/work", async (req, res) => {
+    try {
+      const blockId = parseInt(req.params.id);
+      if (isNaN(blockId)) {
+        return res.status(400).json({ error: "Invalid block ID" });
+      }
+      
+      const blockWithWork = await storage.getBlockWithMathematicalWork(blockId);
+      if (!blockWithWork) {
+        return res.status(404).json({ error: "Block not found" });
+      }
+      
+      res.json(blockWithWork);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch block details" });
+    }
+  });
+
   // Get active mining operations
   app.get("/api/mining/operations", async (req, res) => {
     try {

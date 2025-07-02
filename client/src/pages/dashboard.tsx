@@ -1,9 +1,10 @@
 import { useEffect } from "react";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { useQuery } from "@tanstack/react-query";
-import { Atom, Users, Zap, Leaf } from "lucide-react";
+import { Atom, Users, Zap, Leaf, Database, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "wouter";
 import MetricsDashboard from "@/components/metrics-dashboard";
 import MiningOperations from "@/components/mining-operations";
 import BlockExplorer from "@/components/block-explorer";
@@ -43,6 +44,19 @@ export default function Dashboard() {
             </div>
             
             <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-4">
+                <Button variant="outline" className="flex items-center gap-2 border-pm-accent text-pm-accent">
+                  <BarChart3 className="h-4 w-4" />
+                  Dashboard
+                </Button>
+                <Link href="/blocks">
+                  <Button variant="ghost" className="flex items-center gap-2 text-slate-300 hover:text-white">
+                    <Database className="h-4 w-4" />
+                    Block Explorer
+                  </Button>
+                </Link>
+              </div>
+              
               <div className="flex items-center space-x-2">
                 <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-pm-accent animate-pulse' : 'bg-slate-500'}`} />
                 <span className="text-sm text-slate-300">
