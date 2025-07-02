@@ -367,6 +367,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Test PoS validator initialization
+  app.post("/api/validators/initialize", async (req, res) => {
+    try {
+      await createInitialValidators();
+      const stakers = await storage.getActiveStakers();
+      res.json({ message: "Validators initialized", count: stakers.length, stakers });
+    } catch (error) {
+      console.error('Validator initialization error:', error);
+      res.status(500).json({ error: "Failed to initialize validators" });
+    }
+  });
+
   // Cryptographic safety analysis endpoint using mathematical discoveries
   app.get("/api/crypto/analysis", async (req, res) => {
     try {
@@ -428,6 +440,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validations = await storage.getValidationsForWork(workId);
       res.json(validations);
     } catch (error) {
+      res.status(500).json({ error: "Failed to fetch validations" });
+    }
+  });
+
+  // Get all recent validations for PoS dashboard
+  app.get("/api/validations", async (req, res) => {
+    try {
+      const { db } = await import('./db');
+      const { discoveryValidations, stakers, mathematicalWork } = await import('@shared/schema');
+      const { desc, eq } = await import('drizzle-orm');
+      
+      const validations = await db.select({
+        id: discoveryValidations.id,
+        workId: discoveryValidations.workId,
+        stakerId: discoveryValidations.stakerId,
+        validationType: discoveryValidations.validationType,
+        stakeAmount: discoveryValidations.stakeAmount,
+        status: discoveryValidations.status,
+        timestamp: discoveryValidations.timestamp,
+        stakerName: stakers.institutionName,
+        workType: mathematicalWork.workType
+      })
+      .from(discoveryValidations)
+      .leftJoin(stakers, eq(discoveryValidations.stakerId, stakers.id))
+      .leftJoin(mathematicalWork, eq(discoveryValidations.workId, mathematicalWork.id))
+      .orderBy(desc(discoveryValidations.timestamp))
+      .limit(50);
+      
+      res.json(validations);
+    } catch (error) {
+      console.error("Error fetching validations:", error);
       res.status(500).json({ error: "Failed to fetch validations" });
     }
   });
@@ -701,6 +744,169 @@ export async function registerRoutes(app: Express): Promise<Server> {
       scientificValue,
       proofHash: verificationHash
     };
+  }
+
+  // PoS Validation System
+  async function initiatePoSValidation(discovery: any) {
+    try {
+      // Get active stakers
+      const activeStakers = await storage.getActiveStakers();
+      
+      // If no stakers, create initial validator nodes
+      if (activeStakers.length === 0) {
+        await createInitialValidators();
+      }
+      
+      // Select validators based on stake weight
+      const selectedValidators = await selectValidators(activeStakers, discovery);
+      
+      // Create validation requests for selected validators
+      for (const validator of selectedValidators) {
+        await storage.createDiscoveryValidation({
+          workId: discovery.id,
+          stakerId: validator.id,
+          validationType: 'pos_consensus',
+          validationData: {
+            algorithm: discovery.workType,
+            expectedValue: discovery.scientificValue,
+            complexity: discovery.difficulty,
+            validatorReputation: validator.validationReputation
+          },
+          stakeAmount: validator.stakeAmount,
+          status: 'pending'
+        });
+      }
+      
+      console.log(`🔍 PoS VALIDATION: Initiated for discovery ${discovery.id} with ${selectedValidators.length} validators`);
+      
+      // Process validations asynchronously
+      setImmediate(() => processPoSValidations(discovery));
+      
+    } catch (error) {
+      console.error('PoS validation error:', error);
+    }
+  }
+
+  async function createInitialValidators() {
+    const initialValidators = [
+      {
+        stakerId: 'validator_1',
+        institutionName: 'Mathematical Institute Alpha',
+        stakeAmount: 1000000,
+        validationReputation: 1.0,
+        totalValidations: 0,
+        correctValidations: 0
+      },
+      {
+        stakerId: 'validator_2', 
+        institutionName: 'Computational Research Beta',
+        stakeAmount: 800000,
+        validationReputation: 0.95,
+        totalValidations: 0,
+        correctValidations: 0
+      },
+      {
+        stakerId: 'validator_3',
+        institutionName: 'Quantum Computing Gamma',
+        stakeAmount: 1200000,
+        validationReputation: 0.98,
+        totalValidations: 0,
+        correctValidations: 0
+      }
+    ];
+
+    for (const validator of initialValidators) {
+      await storage.createStaker(validator);
+    }
+    
+    console.log('🏛️ VALIDATORS: Created initial PoS validator network');
+  }
+
+  async function selectValidators(stakers: any[], discovery: any) {
+    // Calculate total stake
+    const totalStake = stakers.reduce((sum, staker) => sum + staker.stakeAmount, 0);
+    
+    // Select validators based on stake weight and reputation
+    const selectedValidators = [];
+    const requiredValidators = Math.min(3, stakers.length);
+    
+    // Sort by stake amount and reputation
+    const sortedStakers = stakers
+      .sort((a, b) => (b.stakeAmount * b.validationReputation) - (a.stakeAmount * a.validationReputation));
+    
+    // Select top validators with some randomization
+    for (let i = 0; i < requiredValidators && i < sortedStakers.length; i++) {
+      selectedValidators.push(sortedStakers[i]);
+    }
+    
+    return selectedValidators;
+  }
+
+  async function processPoSValidations(discovery: any) {
+    try {
+      // Simulate validation processing time
+      await new Promise(resolve => setTimeout(resolve, 2000 + Math.random() * 3000));
+      
+      const validations = await storage.getValidationsForWork(discovery.id);
+      const pendingValidations = validations.filter(v => v.status === 'pending');
+      
+      for (const validation of pendingValidations) {
+        // Simulate mathematical verification process
+        const validationResult = await performMathematicalValidation(discovery, validation);
+        
+        // Update validation status
+        await storage.updateValidationStatus(validation.id, validationResult.status);
+        
+        // Update staker reputation based on validation accuracy
+        if (validationResult.status === 'approved') {
+          const currentReputation = validationResult.validator.reputation;
+          const newReputation = Math.min(100, currentReputation + 1);
+          await storage.updateStakerReputation(validation.stakerId, newReputation);
+        }
+        
+        console.log(`✅ VALIDATION: Discovery ${discovery.id} validated by staker ${validation.stakerId}`);
+      }
+      
+      // Check consensus
+      const completedValidations = await storage.getValidationsForWork(discovery.id);
+      const approvedCount = completedValidations.filter(v => v.status === 'approved').length;
+      const totalValidations = completedValidations.length;
+      
+      if (approvedCount >= Math.ceil(totalValidations * 0.67)) {
+        console.log(`🎯 CONSENSUS: Discovery ${discovery.id} reached PoS consensus (${approvedCount}/${totalValidations})`);
+        
+        broadcast({
+          type: 'discovery_made',
+          data: {
+            discovery,
+            validationStatus: 'consensus_reached',
+            validators: completedValidations.length
+          }
+        });
+      }
+      
+    } catch (error) {
+      console.error('PoS validation processing error:', error);
+    }
+  }
+
+  async function performMathematicalValidation(discovery: any, validation: any) {
+    // Simulate mathematical verification based on work type
+    const validationAccuracy = 0.85 + Math.random() * 0.1; // 85-95% accuracy
+    
+    const validationResult = {
+      status: validationAccuracy > 0.9 ? 'approved' : 'rejected',
+      confidence: validationAccuracy,
+      validator: validation,
+      details: {
+        workType: discovery.workType,
+        algorithmicVerification: validationAccuracy > 0.92,
+        mathematicalConsistency: validationAccuracy > 0.88,
+        computationalIntegrity: validationAccuracy > 0.90
+      }
+    };
+    
+    return validationResult;
   }
 
   async function computeRealGoldbachVerification(difficulty: number) {
@@ -1331,6 +1537,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
             }
 
             console.log(`🧮 DISCOVERY MADE: ${discovery.workType} - Value: ${discovery.scientificValue} - Result: ${JSON.stringify(discovery.result).substring(0, 100)}...`);
+            
+            // Initiate PoS validation for the new discovery
+            await initiatePoSValidation(discovery);
             
             broadcast({
               type: 'discovery_made',
