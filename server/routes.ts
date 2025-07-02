@@ -263,7 +263,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             difficulty,
             result: result.computationResult,
             verificationData: result.verificationData,
-            computationalCost: result.computationalCost,
+            computationalCost: Math.round(result.computationalCost),
             energyEfficiency: result.energyEfficiency,
             scientificValue: result.scientificValue,
             workerId: minerId,
