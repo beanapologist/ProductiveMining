@@ -3100,6 +3100,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     return Math.abs(hash);
   }
 
+  async function calculateRealisticScientificValue(workType: string, difficulty: number): Promise<number> {
+    const { scientificValuationEngine } = await import('./scientific-valuation-engine');
+    const computationTime = 0.5; // Realistic computation time in seconds
+    const energyConsumed = 0.08; // Realistic energy consumption in kWh
+    
+    const valuation = scientificValuationEngine.calculateScientificValue(
+      workType, 
+      difficulty, 
+      computationTime, 
+      energyConsumed
+    );
+    return valuation.totalValue;
+  }
+
   function sieveOfEratosthenes(limit: number): number[] {
     const sieve = new Array(limit + 1).fill(true);
     const primes: number[] = [];
@@ -3298,7 +3312,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                     imag: (operation.currentResult as any)?.imaginaryPart || 82.9103809222690231509754374
                   },
                   precision: (operation.currentResult as any)?.currentPrecision || 1e-14,
-                  scientificValue: (operation.currentResult as any)?.scientificValue || 2500
+                  scientificValue: await calculateRealisticScientificValue('riemann_zero', operation.difficulty)
                 },
                 verificationData: { 
                   verified: true,
@@ -3309,7 +3323,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 },
                 computationalCost: operation.difficulty * 1200,
                 energyEfficiency: 1100 + Math.random() * 400,
-                scientificValue: (operation.currentResult as any)?.scientificValue || 2500,
+                scientificValue: await calculateRealisticScientificValue(operation.operationType, operation.difficulty),
                 workerId: operation.minerId,
                 signature: ((operation.currentResult as any)?.zeroIndex?.toString(36) || Math.random().toString(36).substring(2)).padStart(64, '0')
               });
@@ -3324,7 +3338,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   energyError: (operation.currentResult as any)?.navierStokesError || 1.2e-15,
                   couplingError: (operation.currentResult as any)?.yangMillsError || 3.1e-16,
                   balanceError: (operation.currentResult as any)?.hodgeError || 2.7e-15,
-                  scientificValue: (operation.currentResult as any)?.potentialValue || 8000000
+                  scientificValue: (operation.currentResult as any)?.potentialValue || 2500
                 },
                 verificationData: {
                   verified: true,
@@ -3335,7 +3349,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 },
                 computationalCost: operation.difficulty * 1000,
                 energyEfficiency: 750 + Math.random() * 300,
-                scientificValue: (operation.currentResult as any)?.potentialValue || 8000000,
+                scientificValue: await calculateRealisticScientificValue(operation.operationType, operation.difficulty),
                 workerId: operation.minerId,
                 signature: ((operation.currentResult as any)?.potentialValue?.toString(36) || Math.random().toString(36).substring(2)).padStart(64, '0')
               });
@@ -3349,7 +3363,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   patternsFound: (operation.currentResult as any)?.patternsFound || 73,
                   searchRange: (operation.currentResult as any)?.searchRange || [1000000, 1500000],
                   avgQdtResonance: (operation.currentResult as any)?.avgQdtResonance || 0.82,
-                  scientificValue: (operation.currentResult as any)?.estimatedValue || 2500
+
                 },
                 verificationData: {
                   verified: true,
@@ -3361,7 +3375,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 },
                 computationalCost: operation.difficulty * 900,
                 energyEfficiency: 850 + Math.random() * 250,
-                scientificValue: (operation.currentResult as any)?.estimatedValue || 2500,
+                scientificValue: await calculateRealisticScientificValue('prime_pattern', operation.difficulty),
                 workerId: operation.minerId,
                 signature: (((operation.currentResult as any)?.patternsFound?.toString(36)) || Math.random().toString(36).substring(2)).padStart(64, '0')
               });

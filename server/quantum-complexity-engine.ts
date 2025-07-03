@@ -181,7 +181,7 @@ export class QuantumComplexityEngine {
       verificationData: this.generateQuantumVerification(workType, difficulty),
       computationalCost: difficulty * 1200 * quantumMultiplier,
       energyEfficiency: 500 + Math.random() * 300,
-      scientificValue: Math.floor((difficulty * 8000 + Math.random() * 5000000) * quantumMultiplier),
+      scientificValue: Math.floor((difficulty * 8 + Math.random() * 5000) * quantumMultiplier),
       cryptographicSignature: this.generateQuantumSignature(workType, difficulty)
     };
 
