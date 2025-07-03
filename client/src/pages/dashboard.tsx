@@ -1,269 +1,313 @@
-import { useState, useMemo } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
+import { useWebSocket } from "@/hooks/use-websocket";
+import { Link } from "wouter";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { 
-  Activity, 
-  Calculator, 
-  Database, 
-  Clock,
+  Zap, 
+  Trophy, 
+  Clock, 
+  Target, 
+  BarChart3, 
+  Shield, 
+  Star, 
+  Gem,
+  Crown,
+  Activity,
   TrendingUp,
   Users,
-  BarChart3,
-  Shield,
-  Zap,
-  Coins,
-  Star,
-  Flame,
-  Trophy,
-  Target,
-  Award
-} from 'lucide-react';
+  Database,
+  Brain,
+  Gamepad2,
+  Calculator,
+  DollarSign,
+  Globe,
+  ExternalLink,
+  ArrowRight
+} from "lucide-react";
 
-interface NetworkMetrics {
+interface MiningOperationData {
   id: number;
-  timestamp: string;
-  totalMiners: number;
-  totalScientificValue: number;
-  energyEfficiency: number;
-  blocksPerHour: number;
-  co2Saved: number;
-  avgDifficulty: number;
-  knowledgeCreated: number;
+  operationType: string;
+  difficulty: number;
+  workerId: string;
+  startTime: string;
+  status: string;
+  progress: number;
+  estimatedCompletion: string;
+  currentPhase: string;
+  computationData?: {
+    iterations: number;
+    currentValue: any;
+    precision: number;
+  };
 }
 
-// Gaming utility functions
-const getPlayerLevel = (scientificValue: number): number => {
-  return Math.floor(scientificValue / 100000) + 1;
-};
+interface MathematicalWork {
+  id: number;
+  workType: string;
+  difficulty: number;
+  result: any;
+  scientificValue: number;
+  timestamp: string;
+}
 
-const getNextLevelRequirement = (scientificValue: number): number => {
-  const currentLevel = getPlayerLevel(scientificValue);
-  return currentLevel * 100000;
-};
+interface ProductiveBlock {
+  id: number;
+  index: number;
+  timestamp: string;
+  mathematicalWork: MathematicalWork[];
+  totalScientificValue: number;
+}
 
-const getAchievementCount = (metrics: any): number => {
-  let achievements = 0;
-  if (metrics?.totalScientificValue > 100000) achievements++;
-  if (metrics?.knowledgeCreated > 5000) achievements++;
-  if (metrics?.hashrate > 1000) achievements++;
-  if (metrics?.blocksPerHour > 10) achievements++;
-  return achievements;
-};
+interface NetworkMetrics {
+  activeMiners: number;
+  totalBlocks: number;
+  totalScientificValue: number;
+  energyEfficiency: number;
+  networkHashrate: number;
+  avgBlockTime: number;
+  knowledgeCreated: number;
+  blocksPerHour: number;
+}
 
-const getComboMultiplier = (knowledgeCreated: number): number => {
-  return Math.floor(knowledgeCreated / 1000) + 1;
-};
+function formatNumber(num: number): string {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + 'M';
+  } else if (num >= 1000) {
+    return (num / 1000).toFixed(1) + 'K';
+  }
+  return num.toFixed(0);
+}
+
+function formatCurrency(amount: number): string {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(amount);
+}
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState('overview');
-  const queryClient = useQueryClient();
+  const { discoveries, blocks, metrics } = useWebSocket();
 
-  const { data: metrics, isLoading: metricsLoading } = useQuery<NetworkMetrics>({
-    queryKey: ['/api/metrics'],
+  const { data: allDiscoveries = [] } = useQuery({
+    queryKey: ["/api/discoveries"],
+    queryFn: () => fetch("/api/discoveries?limit=1000").then(res => res.json()),
     refetchInterval: 5000,
-    staleTime: 2000, // Keep data fresh for 2 seconds
   });
 
-  const { data: discoveries, isLoading: discoveriesLoading } = useQuery({
-    queryKey: ['/api/discoveries'],
-    refetchInterval: 10000,
-    staleTime: 5000, // Keep data fresh for 5 seconds
-  });
-
-  const { data: blocks, isLoading: blocksLoading } = useQuery({
-    queryKey: ['/api/blocks?limit=1000000'],
-    refetchInterval: 3000,
-    staleTime: 1000, // Keep data fresh for 1 second
-    gcTime: 30000, // Keep in cache for 30 seconds
-  });
-
-  const { data: operations, isLoading: operationsLoading } = useQuery({
-    queryKey: ['/api/mining/operations'],
+  const { data: allBlocks = [] } = useQuery({
+    queryKey: ["/api/blocks"],
     refetchInterval: 5000,
-    staleTime: 3000, // Keep data fresh for 3 seconds
   });
 
-  const formatNumber = (num: number) => {
-    if (num >= 1e9) return `${(num / 1e9).toFixed(1)}B`;
-    if (num >= 1e6) return `${(num / 1e6).toFixed(1)}M`;
-    if (num >= 1e3) return `${(num / 1e3).toFixed(1)}K`;
-    return num?.toString() || '0';
+  const { data: allMetrics } = useQuery({
+    queryKey: ["/api/metrics"],
+    refetchInterval: 2000,
+  });
+
+  const { data: miningOperations = [] } = useQuery<MiningOperationData[]>({
+    queryKey: ["/api/mining/operations"],
+    refetchInterval: 2000,
+  });
+
+  // Calculate computed statistics
+  const computedStats = {
+    totalDiscoveries: allDiscoveries.length || 0,
+    totalBlocks: allBlocks.length || 0,
+    totalScientificValue: allDiscoveries.reduce((sum: number, d: any) => sum + (d.scientificValue || 0), 0),
+    recentDiscoveries: allDiscoveries.slice(-10) || [],
+    activeOperations: miningOperations.filter(op => op.status === 'active').length || 0,
   };
 
-  // Memoized calculations for better performance
-  const computedStats = useMemo(() => {
-    if (!discoveries || !blocks || !metrics) return null;
-
-    const totalDiscoveries = Array.isArray(discoveries) ? discoveries.length : 0;
-    const totalBlocks = Array.isArray(blocks) ? blocks.length : 0;
-    const avgScientificValue = totalDiscoveries > 0 ? 
-      (Array.isArray(discoveries) ? discoveries.reduce((sum: number, d: any) => sum + (d.scientificValue || 0), 0) / totalDiscoveries : 0) : 0;
-
-    const totalScientificValue = Array.isArray(discoveries) ? 
-      discoveries.reduce((sum: number, d: any) => sum + (d.scientificValue || 0), 0) : 0;
-
-    const playerLevel = getPlayerLevel(totalScientificValue);
-    const nextLevelReq = getNextLevelRequirement(totalScientificValue);
-    const progressToNext = ((totalScientificValue % 100000) / 100000) * 100;
-    const achievements = getAchievementCount(metrics);
-    const comboMultiplier = getComboMultiplier(metrics?.knowledgeCreated || 0);
-    
-    // Calculate discovery rate (discoveries per hour)
-    const currentTime = new Date();
-    const oneHourAgo = new Date(currentTime.getTime() - 60 * 60 * 1000);
-    const recentDiscoveries = Array.isArray(discoveries) ? discoveries.filter((d: any) => {
-      const discoveryTime = new Date(d.timestamp || d.createdAt);
-      return discoveryTime >= oneHourAgo;
-    }) : [];
-    const discoveryRate = recentDiscoveries.length;
-
-    return {
-      totalDiscoveries,
-      totalBlocks,
-      avgScientificValue,
-      totalScientificValue,
-      playerLevel,
-      nextLevelReq,
-      progressToNext,
-      achievements,
-      comboMultiplier,
-      discoveryRate: Math.max(0, discoveryRate) // Ensure non-negative
-    };
-  }, [discoveries, blocks, metrics]);
-
-  if (metricsLoading || discoveriesLoading || blocksLoading) {
-    return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
-        <div className="game-card p-8 text-center">
-          <div className="animate-spin text-6xl mb-4">⚡</div>
-          <h2 className="text-xl font-bold text-blue-400">Loading Productive Mining...</h2>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-slate-900 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header with Player Stats */}
-        <div className="game-header">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
-                ⛏️ Productive Mining Dashboard
-              </h1>
-              <div className="flex items-center gap-4 mt-2">
-                <div className="player-level">
-                  Level {computedStats?.playerLevel || 1} Miner
-                </div>
-                <div className="achievement-badge">
-                  🏆 {computedStats?.achievements || 0} Achievements
-                </div>
-              </div>
-            </div>
-            <div className="coin-counter">
-              <div className="text-3xl font-bold text-yellow-400">
-                💰 {formatNumber(computedStats?.totalScientificValue || 0)}
-              </div>
-              <div className="text-sm text-yellow-200">Mining Rewards</div>
-            </div>
-          </div>
+    <div className="container mx-auto p-6 space-y-8">
+      {/* Hero Section */}
+      <div className="pm-header-gradient text-center mb-12">
+        <h1 className="text-5xl pm-text-gradient mb-4">
+          Productive Mining Dashboard
+        </h1>
+        <p className="text-xl text-slate-300 max-w-3xl mx-auto">
+          Real-time network statistics and mathematical discovery tracking
+        </p>
+      </div>
 
-          {/* XP Progress Bar */}
-          <div className="xp-bar-container">
-            <div className="flex justify-between text-sm mb-1">
-              <span>Level {computedStats?.playerLevel || 1}</span>
-              <span>Level {(computedStats?.playerLevel || 1) + 1}</span>
+      {/* Key Metrics */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="bg-gradient-to-br from-green-600/20 to-emerald-600/20 border-green-500/30">
+          <CardContent className="p-6 text-center">
+            <DollarSign className="h-8 w-8 text-green-400 mx-auto mb-3" />
+            <div className="text-2xl font-bold text-green-400">
+              {formatCurrency(computedStats.totalScientificValue)}
             </div>
-            <div className="xp-bar">
-              <div 
-                className="xp-progress" 
-                style={{ width: `${computedStats?.progressToNext || 0}%` }}
-              ></div>
-            </div>
-            <div className="text-center text-xs mt-1 text-slate-400">
-              {formatNumber(computedStats?.totalScientificValue || 0)} / {formatNumber(computedStats?.nextLevelReq || 100000)} Mining Points
-            </div>
-          </div>
-        </div>
+            <div className="text-sm text-slate-300">Mining Value Generated</div>
+            <div className="text-xs text-green-300 mt-1">Total scientific worth</div>
+          </CardContent>
+        </Card>
 
-        {/* Main Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Active Operations */}
-          <div className="game-card stat-card">
-            <div className="stat-icon">⚡</div>
-            <div className="stat-value">{Array.isArray(operations) ? operations.length : 0}</div>
-            <div className="stat-label">Active Operations</div>
-            <div className="stat-description">
-              <Activity className="h-4 w-4 text-blue-400" />
-              <span>Productive mining in progress</span>
+        <Card className="bg-gradient-to-br from-blue-600/20 to-cyan-600/20 border-blue-500/30">
+          <CardContent className="p-6 text-center">
+            <Users className="h-8 w-8 text-blue-400 mx-auto mb-3" />
+            <div className="text-2xl font-bold text-blue-400">
+              {metrics?.activeMiners || 0}
             </div>
-          </div>
+            <div className="text-sm text-slate-300">Active Miners</div>
+            <div className="text-xs text-blue-300 mt-1">Computing discoveries</div>
+          </CardContent>
+        </Card>
 
-          {/* Discovery Rate */}
-          <div className="game-card stat-card">
-            <div className="stat-icon">🔬</div>
-            <div className="stat-value">{computedStats?.discoveryRate || 0}/hr</div>
-            <div className="stat-label">Discovery Rate</div>
-            <div className="stat-description">
-              <TrendingUp className="h-4 w-4 text-green-400" />
-              <span>Mathematical breakthroughs</span>
+        <Card className="bg-gradient-to-br from-purple-600/20 to-pink-600/20 border-purple-500/30">
+          <CardContent className="p-6 text-center">
+            <Database className="h-8 w-8 text-purple-400 mx-auto mb-3" />
+            <div className="text-2xl font-bold text-purple-400">
+              {computedStats.totalBlocks}
             </div>
-          </div>
+            <div className="text-sm text-slate-300">Productive Blocks</div>
+            <div className="text-xs text-purple-300 mt-1">Beyond Bitcoin waste</div>
+          </CardContent>
+        </Card>
 
-          {/* Energy Efficiency */}
-          <div className="game-card stat-card">
-            <div className="stat-icon">🌿</div>
-            <div className="stat-value energy-positive">
-              {metrics?.energyEfficiency ? `${metrics.energyEfficiency.toFixed(1)}%` : '0%'}
+        <Card className="bg-gradient-to-br from-orange-600/20 to-red-600/20 border-orange-500/30">
+          <CardContent className="p-6 text-center">
+            <Calculator className="h-8 w-8 text-orange-400 mx-auto mb-3" />
+            <div className="text-2xl font-bold text-orange-400">
+              {computedStats.totalDiscoveries}
             </div>
-            <div className="stat-label">Energy Efficiency</div>
-            <div className="stat-description">
-              <Zap className="h-4 w-4 text-green-400" />
-              <span>vs Traditional Mining</span>
-            </div>
-          </div>
+            <div className="text-sm text-slate-300">Mathematical Discoveries</div>
+            <div className="text-xs text-orange-300 mt-1">Real breakthroughs</div>
+          </CardContent>
+        </Card>
+      </div>
 
-          {/* Combo Multiplier */}
-          <div className="game-card stat-card">
-            <div className="stat-icon">🔥</div>
-            <div className="stat-value combo-multiplier">x{computedStats?.comboMultiplier || 1}</div>
-            <div className="stat-label">Mining Combo</div>
-            <div className="stat-description">
-              <Flame className="h-4 w-4 text-orange-400" />
-              <span>Efficiency multiplier</span>
-            </div>
-          </div>
-        </div>
-
-
-
-        {/* Leaderboard Section */}
-        <div className="game-card">
-          <div className="card-header">
-            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+      {/* Recent Discoveries */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <Card className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-slate-700/50">
+          <CardHeader>
+            <CardTitle className="text-2xl text-white flex items-center gap-2">
               <Trophy className="h-6 w-6 text-yellow-400" />
               Recent Mathematical Discoveries
-            </h3>
-          </div>
-          <div className="space-y-2 mt-4">
-            {Array.isArray(discoveries) && discoveries.slice(0, 5).map((discovery: any, index: number) => (
-              <div key={discovery.id || index} className="leaderboard-row">
-                <div className="rank-badge">#{discovery.id}</div>
-                <div className="player-info">
-                  <div className="player-name">
-                    {discovery.workType?.replace(/_/g, ' ').toUpperCase()}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {Array.isArray(allDiscoveries) && allDiscoveries.slice(-5).map((discovery: any, index: number) => (
+              <div key={discovery.id || index} className="flex items-center justify-between p-3 bg-slate-800/30 rounded-lg border border-slate-700/50">
+                <div className="flex items-center gap-3">
+                  <Badge variant="outline" className="text-xs">
+                    #{discovery.id}
+                  </Badge>
+                  <div>
+                    <div className="text-sm font-medium text-white">
+                      {discovery.workType?.replace(/_/g, ' ').toUpperCase()}
+                    </div>
+                    <div className="text-xs text-slate-400">
+                      Difficulty {discovery.difficulty}
+                    </div>
                   </div>
-                  <div className="player-level">D{discovery.difficulty}</div>
                 </div>
-                <div className="player-score">
-                  ${formatNumber(discovery.scientificValue || 0)}
+                <div className="text-right">
+                  <div className="text-sm font-bold text-green-400">
+                    {formatCurrency(discovery.scientificValue || 0)}
+                  </div>
+                  <div className="text-xs text-slate-400">
+                    {new Date(discovery.timestamp).toLocaleDateString()}
+                  </div>
                 </div>
               </div>
             ))}
-          </div>
-        </div>
+            <Link href="/discoveries" className="w-full">
+              <div className="flex items-center justify-center gap-2 p-3 bg-blue-600/20 rounded-lg border border-blue-500/30 hover:bg-blue-600/30 transition-colors text-blue-400">
+                <span>View All Discoveries</span>
+                <ArrowRight className="h-4 w-4" />
+              </div>
+            </Link>
+          </CardContent>
+        </Card>
 
+        <Card className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-slate-700/50">
+          <CardHeader>
+            <CardTitle className="text-2xl text-white flex items-center gap-2">
+              <Activity className="h-6 w-6 text-green-400" />
+              Network Activity
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="p-3 bg-slate-800/30 rounded-lg border border-slate-700/50">
+                <div className="text-lg font-bold text-cyan-400">
+                  {metrics?.blocksPerHour || 0}/hr
+                </div>
+                <div className="text-xs text-slate-400">Block Rate</div>
+              </div>
+              <div className="p-3 bg-slate-800/30 rounded-lg border border-slate-700/50">
+                <div className="text-lg font-bold text-yellow-400">
+                  50
+                </div>
+                <div className="text-xs text-slate-400">Difficulty</div>
+              </div>
+              <div className="p-3 bg-slate-800/30 rounded-lg border border-slate-700/50">
+                <div className="text-lg font-bold text-purple-400">
+                  {computedStats.activeOperations}
+                </div>
+                <div className="text-xs text-slate-400">Active Operations</div>
+              </div>
+              <div className="p-3 bg-slate-800/30 rounded-lg border border-slate-700/50">
+                <div className="text-lg font-bold text-green-400">
+                  {metrics?.energyEfficiency || 0}%
+                </div>
+                <div className="text-xs text-slate-400">Energy Efficiency</div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Link href="/mining" className="w-full">
+                <div className="flex items-center justify-center gap-2 p-3 bg-green-600/20 rounded-lg border border-green-500/30 hover:bg-green-600/30 transition-colors text-green-400">
+                  <span>Start Mining</span>
+                  <ArrowRight className="h-4 w-4" />
+                </div>
+              </Link>
+              <Link href="/blocks" className="w-full">
+                <div className="flex items-center justify-center gap-2 p-3 bg-purple-600/20 rounded-lg border border-purple-500/30 hover:bg-purple-600/30 transition-colors text-purple-400">
+                  <span>View Block Explorer</span>
+                  <ArrowRight className="h-4 w-4" />
+                </div>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
+      {/* Quick Links */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Link href="/pos-validators" className="w-full">
+          <Card className="bg-gradient-to-br from-indigo-600/20 to-purple-600/20 border-indigo-500/30 hover:bg-indigo-600/30 transition-colors cursor-pointer">
+            <CardContent className="p-6 text-center">
+              <Shield className="h-8 w-8 text-indigo-400 mx-auto mb-3" />
+              <div className="text-xl font-bold text-indigo-400">PoS Validators</div>
+              <div className="text-sm text-slate-300">Validation network</div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/security-audit" className="w-full">
+          <Card className="bg-gradient-to-br from-red-600/20 to-pink-600/20 border-red-500/30 hover:bg-red-600/30 transition-colors cursor-pointer">
+            <CardContent className="p-6 text-center">
+              <Shield className="h-8 w-8 text-red-400 mx-auto mb-3" />
+              <div className="text-xl font-bold text-red-400">Security Audit</div>
+              <div className="text-sm text-slate-300">System security</div>
+            </CardContent>
+          </Card>
+        </Link>
+
+        <Link href="/research-vault" className="w-full">
+          <Card className="bg-gradient-to-br from-yellow-600/20 to-orange-600/20 border-yellow-500/30 hover:bg-yellow-600/30 transition-colors cursor-pointer">
+            <CardContent className="p-6 text-center">
+              <Gem className="h-8 w-8 text-yellow-400 mx-auto mb-3" />
+              <div className="text-xl font-bold text-yellow-400">Research Vault</div>
+              <div className="text-sm text-slate-300">Token portfolio</div>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
     </div>
   );
