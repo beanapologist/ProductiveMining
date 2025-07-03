@@ -1085,10 +1085,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Process pending validations through PoS consensus
+  // Process ONLY existing pending validations without creating new ones
   app.post("/api/pos/process-pending", async (req, res) => {
     try {
-      // Get all pending validations
       const { db } = await import('./db');
       const { discoveryValidations } = await import('@shared/schema');
       const { eq } = await import('drizzle-orm');
@@ -1097,44 +1096,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .from(discoveryValidations)
         .where(eq(discoveryValidations.status, 'pending'));
       
-      console.log(`🔍 PROCESSING: Found ${pendingValidations.length} pending validations`);
+      console.log(`🔍 CLEARING QUEUE: Found ${pendingValidations.length} pending validations to process`);
       
       let processedCount = 0;
       
-      // Process each pending validation
+      // Process each pending validation with quick consensus decision
       for (const validation of pendingValidations) {
-        // Simulate consensus decision (approve/reject based on simple logic)
-        const decision = Math.random() > 0.3 ? 'approved' : 'rejected';
-        
-        await db.update(discoveryValidations)
-          .set({ 
-            status: decision,
-            validationData: {
-              ...validation.validationData,
-              processedAt: new Date().toISOString(),
-              consensusDecision: decision
-            }
-          })
-          .where(eq(discoveryValidations.id, validation.id));
-        
-        console.log(`✅ PROCESSED: Validation ${validation.id} -> ${decision}`);
-        processedCount++;
+        try {
+          // Simple consensus decision (70% approval rate)
+          const decision = Math.random() > 0.3 ? 'approved' : 'rejected';
+          
+          await db.update(discoveryValidations)
+            .set({ 
+              status: decision,
+              validationData: {
+                processedAt: new Date().toISOString(),
+                consensusDecision: decision,
+                processingBatch: 'queue_clearing'
+              }
+            })
+            .where(eq(discoveryValidations.id, validation.id));
+          
+          console.log(`✅ CLEARED: Validation ${validation.id} -> ${decision}`);
+          processedCount++;
+        } catch (error) {
+          console.error(`❌ ERROR processing validation ${validation.id}:`, error);
+        }
       }
       
-      console.log(`🎯 PROCESSING COMPLETE: Updated ${processedCount} validations`);
+      const remainingPending = await db.select()
+        .from(discoveryValidations)
+        .where(eq(discoveryValidations.status, 'pending'))
+        .then(r => r.length);
       
-      // Also activate new validations
-      const { activatePoSValidation } = await import('./activate-pos-validation');
-      const newValidations = await activatePoSValidation();
+      console.log(`🎯 QUEUE CLEARING COMPLETE: Processed ${processedCount}, Remaining: ${remainingPending}`);
       
       res.json({ 
-        message: "All pending validations processed", 
+        message: "Validation queue cleared successfully", 
         processedExisting: processedCount,
-        newValidations: newValidations
+        remainingPending: remainingPending,
+        status: remainingPending === 0 ? "Queue cleared!" : "Partial clearing"
       });
     } catch (error) {
-      console.error("Error processing pending validations:", error);
-      res.status(500).json({ error: "Failed to process pending validations" });
+      console.error("Error clearing validation queue:", error);
+      res.status(500).json({ error: "Failed to clear validation queue" });
     }
   });
 
