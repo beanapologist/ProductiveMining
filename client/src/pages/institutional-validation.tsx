@@ -84,21 +84,34 @@ export function InstitutionalValidation() {
   // Submit to validation pipeline mutation
   const submitToValidation = useMutation({
     mutationFn: async (workId: number) => {
-      return apiRequest(`/api/institutional/validate/${workId}`, {
-        method: 'POST'
+      const response = await fetch(`/api/institutional/validate/${workId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(errorData.error || `HTTP ${response.status}`);
+      }
+
+      return response.json();
     },
     onSuccess: (data: any) => {
       toast({
-        title: "Validation Submitted",
+        title: "Validation Submitted ✅",
         description: data.message || "Successfully submitted to validation pipeline",
       });
+      setSelectedWork(null); // Clear selection
       queryClient.invalidateQueries({ queryKey: ['/api/institutional/pipeline'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/discoveries'] });
     },
     onError: (error: any) => {
+      console.error('Validation submission error:', error);
       toast({
-        title: "Submission Failed",
-        description: error.response?.data?.error || "Failed to submit to validation pipeline",
+        title: "Submission Failed ❌",
+        description: error.message || "Failed to submit to validation pipeline",
         variant: "destructive",
       });
     },
@@ -713,10 +726,26 @@ export function InstitutionalValidation() {
               <Button 
                 onClick={() => selectedWork && submitToValidation.mutate(selectedWork)}
                 disabled={!selectedWork || submitToValidation.isPending}
-                className="w-full"
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
-                {submitToValidation.isPending ? 'Submitting...' : 'Submit to Validation Pipeline'}
+                {submitToValidation.isPending ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    Submitting to Pipeline...
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <FileCheck className="w-4 h-4" />
+                    Submit to Validation Pipeline
+                  </div>
+                )}
               </Button>
+              
+              {selectedWork && (
+                <div className="text-center text-sm text-gray-600 dark:text-gray-400">
+                  Selected Discovery #{selectedWork} will be submitted to institutional validators for formal verification
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
