@@ -253,10 +253,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { sql } = await import('drizzle-orm');
       
       // Clear all blockchain data in correct order to avoid foreign key constraint violations
-      // First clear dependent tables (with foreign keys)
-      await db.delete(immutableRecordsPool);
-      await db.delete(discoveryValidations);
-      await db.delete(blockMathematicalWork);
+      // First clear dependent tables (with foreign keys) - handle missing tables gracefully
+      try {
+        await db.delete(immutableRecordsPool);
+      } catch (error) {
+        console.log('Immutable records table not found, skipping');
+      }
+      
+      try {
+        await db.delete(discoveryValidations);
+      } catch (error) {
+        console.log('Discovery validations table not found, skipping');
+      }
+      
+      try {
+        await db.delete(blockMathematicalWork);
+      } catch (error) {
+        console.log('Block mathematical work table not found, skipping');
+      }
       
       // Clear institutional validations if exists
       try {
