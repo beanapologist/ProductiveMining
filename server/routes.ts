@@ -6,6 +6,7 @@ import { insertMiningOperationSchema, type WebSocketMessage, type MiningProgress
 import { immutableRecordsEngine } from "./immutable-records-engine";
 import { posAuditEngine } from "./pos-audit-engine";
 import { institutionalValidationEngine } from "./institutional-validation-engine";
+import { discoveryAIEngine } from "./discovery-ai-engine";
 
 // Blockchain utility functions
 function generateSimpleHash(input: string): string {
@@ -2702,6 +2703,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Failed to get certifications:', error);
       res.status(500).json({ error: 'Failed to get certifications' });
+    }
+  });
+
+  // AI Discovery Analysis Routes
+  
+  // Analyze a specific discovery
+  app.post('/api/ai/analyze/:workId', async (req, res) => {
+    try {
+      const workId = parseInt(req.params.workId);
+      const work = await storage.getMathematicalWork(workId);
+      
+      if (!work) {
+        return res.status(404).json({ error: 'Discovery not found' });
+      }
+
+      const analysis = await discoveryAIEngine.analyzeDiscovery(work);
+      res.json(analysis);
+    } catch (error) {
+      console.error('Failed to analyze discovery:', error);
+      res.status(500).json({ error: 'Failed to analyze discovery' });
+    }
+  });
+
+  // Get comprehensive analysis report
+  app.get('/api/ai/report/:workId', async (req, res) => {
+    try {
+      const workId = parseInt(req.params.workId);
+      const report = await discoveryAIEngine.generateAnalysisReport(workId);
+      res.json(report);
+    } catch (error) {
+      console.error('Failed to generate analysis report:', error);
+      res.status(500).json({ error: 'Failed to generate analysis report' });
+    }
+  });
+
+  // Get analyses by work type
+  app.get('/api/ai/analyses/:workType', async (req, res) => {
+    try {
+      const workType = req.params.workType;
+      const analyses = await discoveryAIEngine.getAnalysesByType(workType);
+      res.json(analyses);
+    } catch (error) {
+      console.error('Failed to get analyses by type:', error);
+      res.status(500).json({ error: 'Failed to get analyses' });
+    }
+  });
+
+  // Get system-wide AI insights
+  app.get('/api/ai/insights', async (req, res) => {
+    try {
+      const insights = await discoveryAIEngine.getSystemInsights();
+      res.json(insights);
+    } catch (error) {
+      console.error('Failed to get AI insights:', error);
+      res.status(500).json({ error: 'Failed to get AI insights' });
+    }
+  });
+
+  // Auto-analyze new discoveries
+  app.post('/api/ai/auto-analyze', async (req, res) => {
+    try {
+      const recentWork = await storage.getRecentMathematicalWork(10);
+      const analyses = [];
+      
+      for (const work of recentWork) {
+        try {
+          const analysis = await discoveryAIEngine.analyzeDiscovery(work);
+          analyses.push(analysis);
+        } catch (error) {
+          console.error(`Failed to analyze work ${work.id}:`, error);
+        }
+      }
+      
+      res.json({
+        analyzed: analyses.length,
+        total: recentWork.length,
+        analyses: analyses.slice(0, 5) // Return first 5 analyses
+      });
+    } catch (error) {
+      console.error('Failed to auto-analyze discoveries:', error);
+      res.status(500).json({ error: 'Failed to auto-analyze discoveries' });
     }
   });
 
