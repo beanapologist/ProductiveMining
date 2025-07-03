@@ -363,7 +363,7 @@ export default function WalletPage() {
                   { name: "Yang-Mills Proofs", count: 2, floorPrice: 4100, volume: 12300 },
                   { name: "Quantum Fields", count: 1, floorPrice: 5500, volume: 7800 }
                 ]).map((collection, index) => (
-                  <div key={index} className="p-3 bg-gray-800/50 rounded-lg border border-gray-600/30">
+                  <div key={`collection-${index}-${collection.name || 'unknown'}`} className="p-3 bg-gray-800/50 rounded-lg border border-gray-600/30">
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-white font-medium">{collection.name}</span>
                       <span className="text-cyan-400 font-semibold">{collection.count || 0} owned</span>

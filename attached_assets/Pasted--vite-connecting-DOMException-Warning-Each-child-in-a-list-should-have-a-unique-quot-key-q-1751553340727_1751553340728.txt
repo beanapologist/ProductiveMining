@@ -1,0 +1,34 @@
+[vite] connecting...
+DOMException {}
+
+Warning: Each child in a list should have a unique &quot;key&quot; prop.
+
+Check the render method of `WalletPage`. See https://reactjs.org/link/warning-keys for more information.
+    at div
+    at WalletPage (https://1bded699-e3e0-4293-a71f-a91c1f66c3f0-00-5lxw1foapnfj.spock.replit.dev/src/pages/wallet.tsx:24:27)
+    at Route (https://1bded699-e3e0-4293-a71f-a91c1f66c3f0-00-5lxw1foapnfj.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=31dce200:323:16)
+    at Switch (https://1bded699-e3e0-4293-a71f-a91c1f66c3f0-00-5lxw1foapnfj.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=31dce200:379:17)
+    at div
+    at Router
+    at div
+    at Provider (https://1bded699-e3e0-4293-a71f-a91c1f66c3f0-00-5lxw1foapnfj.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-3GBZ24T2.js?v=31dce200:28:15)
+    at TooltipProvider (https://1bded699-e3e0-4293-a71f-a91c1f66c3f0-00-5lxw1foapnfj.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=31dce200:57:5)
+    at QueryClientProvider (https://1bded699-e3e0-4293-a71f-a91c1f66c3f0-00-5lxw1foapnfj.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=31dce200:2805:3)
+    at App
+
+Check the render method of &#x60;WalletPage&#x60;. See https://reactjs.org/link/warning-keys for more information.
+at div
+at WalletPage (https://1bded699-e3e0-4293-a71f-a91c1f66c3f0-00-5lxw1foapnfj.spock.replit.dev/src/pages/wallet.tsx:24:27)
+at Route (https://1bded699-e3e0-4293-a71f-a91c1f66c3f0-00-5lxw1foapnfj.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=31dce200:323:16)
+at Switch (https://1bded699-e3e0-4293-a71f-a91c1f66c3f0-00-5lxw1foapnfj.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=31dce200:379:17)
+at div
+at Router
+at div
+at Provider (https://1bded699-e3e0-4293-a71f-a91c1f66c3f0-00-5lxw1foapnfj.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-3GBZ24T2.js?v=31dce200:28:15)
+at TooltipProvider (https://1bded699-e3e0-4293-a71f-a91c1f66c3f0-00-5lxw1foapnfj.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=31dce200:57:5)
+at QueryClientProvider (https://1bded699-e3e0-4293-a71f-a91c1f66c3f0-00-5lxw1foapnfj.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=31dce200:2805:3)
+at App
+at t.value (https://1bded699-e3e0-4293-a71f-a91c1f66c3f0-00-5lxw1foapnfj.spock.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:17465)
+at new t (https://1bded699-e3e0-4293-a71f-a91c1f66c3f0-00-5lxw1foapnfj.spock.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:12630)
+at t.value (https://1bded699-e3e0-4293-a71f-a91c1f66c3f0-00-5lxw1foapnfj.spock.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:32766)
+at https://1bded699-e3e0-4293-a71f-a91c1f66c3f0-00-5lxw1foapnfj.spock.replit.dev/__replco/static/devtools/eruda/3.2.3/eruda.js:2:34400
