@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, real, timestamp, jsonb, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, real, timestamp, jsonb, boolean, varchar, decimal, bigint } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -150,3 +150,155 @@ export interface DiscoveryMessage {
   discovery: MathematicalWork;
   scientificValue: number;
 }
+
+// ============ TOKENIZATION SYSTEM ============
+
+// Main token for productive mining blockchain
+export const productiveTokens = pgTable("productive_tokens", {
+  id: serial("id").primaryKey(),
+  tokenSymbol: varchar("token_symbol", { length: 10 }).notNull().default("PROD"),
+  tokenName: varchar("token_name", { length: 100 }).notNull().default("Productive Mining Token"),
+  totalSupply: bigint("total_supply", { mode: "number" }).notNull().default(0),
+  circulatingSupply: bigint("circulating_supply", { mode: "number" }).notNull().default(0),
+  currentPrice: decimal("current_price", { precision: 18, scale: 8 }).notNull().default("1.00"),
+  marketCap: bigint("market_cap", { mode: "number" }).notNull().default(0),
+  timestamp: timestamp("timestamp").notNull().defaultNow(),
+});
+
+// User token balances and wallets
+export const tokenWallets = pgTable("token_wallets", {
+  id: serial("id").primaryKey(),
+  walletAddress: varchar("wallet_address", { length: 42 }).notNull().unique(),
+  ownerType: varchar("owner_type", { length: 20 }).notNull(), // 'miner', 'validator', 'researcher', 'investor'
+  ownerId: varchar("owner_id", { length: 50 }).notNull(),
+  prodBalance: bigint("prod_balance", { mode: "number" }).notNull().default(0),
+  stakedBalance: bigint("staked_balance", { mode: "number" }).notNull().default(0),
+  governanceVotes: integer("governance_votes").notNull().default(0),
+  reputationScore: decimal("reputation_score", { precision: 8, scale: 4 }).notNull().default("0.0000"),
+  totalEarnings: bigint("total_earnings", { mode: "number" }).notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Discovery-based NFTs for mathematical breakthroughs
+export const discoveryNFTs = pgTable("discovery_nfts", {
+  id: serial("id").primaryKey(),
+  tokenId: bigint("token_id", { mode: "number" }).notNull().unique(),
+  workId: integer("work_id").notNull().references(() => mathematicalWork.id),
+  ownerWallet: varchar("owner_wallet", { length: 42 }).notNull(),
+  mintPrice: bigint("mint_price", { mode: "number" }).notNull(),
+  currentValue: bigint("current_value", { mode: "number" }).notNull(),
+  royaltyPercentage: decimal("royalty_percentage", { precision: 5, scale: 2 }).notNull().default("5.00"),
+  metadata: jsonb("metadata").notNull(), // Contains discovery details, rarity, attributes
+  isListed: boolean("is_listed").notNull().default(false),
+  listingPrice: bigint("listing_price", { mode: "number" }),
+  scientificRarity: varchar("scientific_rarity", { length: 20 }).notNull(), // 'common', 'rare', 'epic', 'legendary'
+  mintedAt: timestamp("minted_at").notNull().defaultNow(),
+});
+
+// Validation rights tokens for PoS participation
+export const validationTokens = pgTable("validation_tokens", {
+  id: serial("id").primaryKey(),
+  tokenId: bigint("token_id", { mode: "number" }).notNull().unique(),
+  stakerId: integer("staker_id").notNull().references(() => stakers.id),
+  validationPower: integer("validation_power").notNull(), // Voting weight
+  stakeAmount: bigint("stake_amount", { mode: "number" }).notNull(),
+  lockedUntil: timestamp("locked_until").notNull(),
+  rewardsEarned: bigint("rewards_earned", { mode: "number" }).notNull().default(0),
+  validationsCompleted: integer("validations_completed").notNull().default(0),
+  consensusAccuracy: decimal("consensus_accuracy", { precision: 5, scale: 2 }).notNull().default("0.00"),
+  institutionBond: bigint("institution_bond", { mode: "number" }).notNull(),
+  status: varchar("status", { length: 20 }).notNull().default("active"), // 'active', 'locked', 'slashed'
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Trading and liquidity pools
+export const tokenTransactions = pgTable("token_transactions", {
+  id: serial("id").primaryKey(),
+  transactionHash: varchar("transaction_hash", { length: 66 }).notNull().unique(),
+  fromWallet: varchar("from_wallet", { length: 42 }),
+  toWallet: varchar("to_wallet", { length: 42 }).notNull(),
+  tokenType: varchar("token_type", { length: 20 }).notNull(), // 'PROD', 'NFT', 'VALIDATION'
+  tokenId: bigint("token_id", { mode: "number" }),
+  amount: bigint("amount", { mode: "number" }).notNull(),
+  transactionType: varchar("transaction_type", { length: 20 }).notNull(), // 'mint', 'transfer', 'stake', 'reward'
+  gasFee: bigint("gas_fee", { mode: "number" }).notNull().default(0),
+  blockNumber: integer("block_number"),
+  scientificValue: bigint("scientific_value", { mode: "number" }).default(0),
+  timestamp: timestamp("timestamp").notNull().defaultNow(),
+});
+
+// Governance proposals for protocol changes
+export const governanceProposals = pgTable("governance_proposals", {
+  id: serial("id").primaryKey(),
+  proposalId: bigint("proposal_id", { mode: "number" }).notNull().unique(),
+  title: varchar("title", { length: 200 }).notNull(),
+  description: text("description").notNull(),
+  proposer: varchar("proposer", { length: 42 }).notNull(),
+  proposalType: varchar("proposal_type", { length: 30 }).notNull(), // 'protocol_upgrade', 'reward_adjustment', 'validation_rules'
+  votingPowerRequired: bigint("voting_power_required", { mode: "number" }).notNull(),
+  votesFor: bigint("votes_for", { mode: "number" }).notNull().default(0),
+  votesAgainst: bigint("votes_against", { mode: "number" }).notNull().default(0),
+  votesAbstain: bigint("votes_abstain", { mode: "number" }).notNull().default(0),
+  status: varchar("status", { length: 20 }).notNull().default("active"), // 'active', 'passed', 'rejected', 'executed'
+  votingStartsAt: timestamp("voting_starts_at").notNull(),
+  votingEndsAt: timestamp("voting_ends_at").notNull(),
+  executionDate: timestamp("execution_date"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Staking pools and yield farming
+export const stakingPools = pgTable("staking_pools", {
+  id: serial("id").primaryKey(),
+  poolName: varchar("pool_name", { length: 100 }).notNull(),
+  poolType: varchar("pool_type", { length: 30 }).notNull(), // 'discovery_mining', 'validation_staking', 'liquidity_provision'
+  tokenPair: varchar("token_pair", { length: 20 }).notNull(), // 'PROD-ETH', 'PROD-USDC', 'VALIDATION-PROD'
+  totalStaked: bigint("total_staked", { mode: "number" }).notNull().default(0),
+  rewardRate: decimal("reward_rate", { precision: 8, scale: 4 }).notNull(), // APY percentage
+  poolRewards: bigint("pool_rewards", { mode: "number" }).notNull().default(0),
+  minStakeAmount: bigint("min_stake_amount", { mode: "number" }).notNull(),
+  lockupPeriod: integer("lockup_period").notNull(), // Days
+  isActive: boolean("is_active").notNull().default(true),
+  scientificMultiplier: decimal("scientific_multiplier", { precision: 4, scale: 2 }).notNull().default("1.00"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Market data and price history
+export const tokenMarketData = pgTable("token_market_data", {
+  id: serial("id").primaryKey(),
+  tokenSymbol: varchar("token_symbol", { length: 10 }).notNull(),
+  price: decimal("price", { precision: 18, scale: 8 }).notNull(),
+  volume24h: bigint("volume_24h", { mode: "number" }).notNull().default(0),
+  marketCap: bigint("market_cap", { mode: "number" }).notNull(),
+  priceChange24h: decimal("price_change_24h", { precision: 8, scale: 4 }).notNull(),
+  scientificValueBacked: bigint("scientific_value_backed", { mode: "number" }).notNull().default(0),
+  activeMiners: integer("active_miners").notNull().default(0),
+  activeValidators: integer("active_validators").notNull().default(0),
+  dailyDiscoveries: integer("daily_discoveries").notNull().default(0),
+  timestamp: timestamp("timestamp").notNull().defaultNow(),
+});
+
+export const insertProductiveTokenSchema = createInsertSchema(productiveTokens);
+export const insertTokenWalletSchema = createInsertSchema(tokenWallets);
+export const insertDiscoveryNFTSchema = createInsertSchema(discoveryNFTs);
+export const insertValidationTokenSchema = createInsertSchema(validationTokens);
+export const insertTokenTransactionSchema = createInsertSchema(tokenTransactions);
+export const insertGovernanceProposalSchema = createInsertSchema(governanceProposals);
+export const insertStakingPoolSchema = createInsertSchema(stakingPools);
+export const insertTokenMarketDataSchema = createInsertSchema(tokenMarketData);
+
+export type ProductiveToken = typeof productiveTokens.$inferSelect;
+export type InsertProductiveToken = z.infer<typeof insertProductiveTokenSchema>;
+export type TokenWallet = typeof tokenWallets.$inferSelect;
+export type InsertTokenWallet = z.infer<typeof insertTokenWalletSchema>;
+export type DiscoveryNFT = typeof discoveryNFTs.$inferSelect;
+export type InsertDiscoveryNFT = z.infer<typeof insertDiscoveryNFTSchema>;
+export type ValidationToken = typeof validationTokens.$inferSelect;
+export type InsertValidationToken = z.infer<typeof insertValidationTokenSchema>;
+export type TokenTransaction = typeof tokenTransactions.$inferSelect;
+export type InsertTokenTransaction = z.infer<typeof insertTokenTransactionSchema>;
+export type GovernanceProposal = typeof governanceProposals.$inferSelect;
+export type InsertGovernanceProposal = z.infer<typeof insertGovernanceProposalSchema>;
+export type StakingPool = typeof stakingPools.$inferSelect;
+export type InsertStakingPool = z.infer<typeof insertStakingPoolSchema>;
+export type TokenMarketData = typeof tokenMarketData.$inferSelect;
+export type InsertTokenMarketData = z.infer<typeof insertTokenMarketDataSchema>;

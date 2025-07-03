@@ -376,6 +376,216 @@ export async function registerRoutes(app: Express): Promise<Server> {
     return impact[workType] || 'Mathematical knowledge advancement';
   }
 
+  // ============ TOKENIZATION API ENDPOINTS ============
+
+  // Get PROD token overview and market data
+  app.get('/api/token/overview', async (req, res) => {
+    try {
+      const { db } = await import('./db');
+      const { productiveTokens, tokenMarketData, mathematicalWork, discoveryNFTs, tokenWallets } = await import('@shared/schema');
+      const { desc, sum, count, gte } = await import('drizzle-orm');
+      
+      // Get current token state
+      const [tokenData] = await db.select().from(productiveTokens).limit(1);
+      
+      // Calculate real-time metrics from productive mining
+      const [metrics] = await db.select({
+        totalScientificValue: sum(mathematicalWork.scientificValue),
+        totalDiscoveries: count(mathematicalWork.id),
+      }).from(mathematicalWork)
+        .where(gte(mathematicalWork.id, 160));
+      
+      // Get token distribution
+      const [distribution] = await db.select({
+        totalWallets: count(tokenWallets.id),
+        totalBalance: sum(tokenWallets.prodBalance),
+        totalStaked: sum(tokenWallets.stakedBalance),
+      }).from(tokenWallets);
+      
+      // Get NFT marketplace stats
+      const [nftStats] = await db.select({
+        totalNFTs: count(discoveryNFTs.id),
+        totalValue: sum(discoveryNFTs.currentValue),
+      }).from(discoveryNFTs);
+      
+      const overview = {
+        token: {
+          symbol: 'PROD',
+          name: 'Productive Mining Token',
+          totalSupply: metrics?.totalDiscoveries * 1000000 || 0,
+          circulatingSupply: (metrics?.totalDiscoveries * 750000) || 0,
+          currentPrice: 2.50 + ((metrics?.totalScientificValue || 0) / 50000000),
+          marketCap: ((metrics?.totalDiscoveries * 750000) || 0) * (2.50 + ((metrics?.totalScientificValue || 0) / 50000000)),
+        },
+        metrics: {
+          totalScientificValue: metrics?.totalScientificValue || 0,
+          totalDiscoveries: metrics?.totalDiscoveries || 0,
+          totalWallets: distribution?.totalWallets || 0,
+          totalStaked: distribution?.totalStaked || 0,
+          averageValuePerDiscovery: (metrics?.totalScientificValue || 0) / (metrics?.totalDiscoveries || 1),
+        },
+        nftMarketplace: {
+          totalNFTs: nftStats?.totalNFTs || 0,
+          totalValue: nftStats?.totalValue || 0,
+          avgNFTValue: (nftStats?.totalValue || 0) / (nftStats?.totalNFTs || 1),
+        },
+        lastUpdated: new Date().toISOString()
+      };
+      
+      res.json(overview);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch token overview" });
+    }
+  });
+
+  // Mint discovery NFTs for mathematical breakthroughs
+  app.post('/api/token/mint-discovery-nft', async (req, res) => {
+    try {
+      const { workId, ownerWallet } = req.body;
+      const { db } = await import('./db');
+      const { discoveryNFTs, mathematicalWork } = await import('@shared/schema');
+      const { eq } = await import('drizzle-orm');
+      
+      // Get the mathematical work
+      const [work] = await db.select()
+        .from(mathematicalWork)
+        .where(eq(mathematicalWork.id, workId));
+      
+      if (!work) {
+        return res.status(404).json({ error: "Mathematical work not found" });
+      }
+      
+      // Calculate rarity based on scientific value and work type
+      let rarity = 'common';
+      if (work.scientificValue > 20000000) rarity = 'legendary';
+      else if (work.scientificValue > 10000000) rarity = 'epic';
+      else if (work.scientificValue > 1000000) rarity = 'rare';
+      
+      // Create NFT metadata
+      const metadata = {
+        name: `Mathematical Discovery #${workId}`,
+        description: `${work.workType.replace('_', ' ').toUpperCase()} breakthrough with ${work.scientificValue} scientific value`,
+        workType: work.workType,
+        difficulty: work.difficulty,
+        scientificValue: work.scientificValue,
+        energyEfficiency: work.energyEfficiency,
+        computationalCost: work.computationalCost,
+        discoveryDate: work.timestamp,
+        attributes: [
+          { trait_type: 'Work Type', value: work.workType },
+          { trait_type: 'Difficulty', value: work.difficulty },
+          { trait_type: 'Scientific Value', value: work.scientificValue },
+          { trait_type: 'Rarity', value: rarity },
+          { trait_type: 'Energy Efficiency', value: work.energyEfficiency }
+        ]
+      };
+      
+      const mintPrice = Math.floor(work.scientificValue / 10000);
+      const tokenId = Date.now();
+      
+      // Mint the NFT
+      const [nft] = await db.insert(discoveryNFTs)
+        .values({
+          tokenId: tokenId,
+          workId: workId,
+          ownerWallet: ownerWallet,
+          mintPrice: mintPrice,
+          currentValue: mintPrice,
+          metadata: metadata,
+          scientificRarity: rarity,
+        })
+        .returning();
+      
+      res.json({
+        success: true,
+        nft: nft,
+        message: `Successfully minted ${rarity} NFT for discovery #${workId}`
+      });
+      
+    } catch (error) {
+      res.status(500).json({ error: "Failed to mint discovery NFT" });
+    }
+  });
+
+  // Get all discovery NFTs
+  app.get('/api/token/discovery-nfts', async (req, res) => {
+    try {
+      const { db } = await import('./db');
+      const { discoveryNFTs, mathematicalWork } = await import('@shared/schema');
+      const { eq, desc } = await import('drizzle-orm');
+      
+      const nfts = await db.select({
+        id: discoveryNFTs.id,
+        tokenId: discoveryNFTs.tokenId,
+        workId: discoveryNFTs.workId,
+        ownerWallet: discoveryNFTs.ownerWallet,
+        mintPrice: discoveryNFTs.mintPrice,
+        currentValue: discoveryNFTs.currentValue,
+        royaltyPercentage: discoveryNFTs.royaltyPercentage,
+        metadata: discoveryNFTs.metadata,
+        isListed: discoveryNFTs.isListed,
+        listingPrice: discoveryNFTs.listingPrice,
+        scientificRarity: discoveryNFTs.scientificRarity,
+        mintedAt: discoveryNFTs.mintedAt,
+        workType: mathematicalWork.workType,
+        scientificValue: mathematicalWork.scientificValue,
+        difficulty: mathematicalWork.difficulty,
+      })
+      .from(discoveryNFTs)
+      .leftJoin(mathematicalWork, eq(discoveryNFTs.workId, mathematicalWork.id))
+      .orderBy(desc(discoveryNFTs.mintedAt));
+      
+      res.json(nfts);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch discovery NFTs" });
+    }
+  });
+
+  // Create token wallet for user
+  app.post('/api/token/create-wallet', async (req, res) => {
+    try {
+      const { ownerType, ownerId, walletAddress } = req.body;
+      const { db } = await import('./db');
+      const { tokenWallets } = await import('@shared/schema');
+      
+      const [wallet] = await db.insert(tokenWallets)
+        .values({
+          walletAddress: walletAddress || `0x${Date.now().toString(16)}${Math.random().toString(16).slice(2, 10)}`,
+          ownerType: ownerType,
+          ownerId: ownerId,
+          prodBalance: 1000000, // Initial 1M PROD tokens
+          reputationScore: 100.0000,
+        })
+        .returning();
+      
+      res.json({
+        success: true,
+        wallet: wallet,
+        message: `Created wallet with 1M PROD tokens for ${ownerType}`
+      });
+      
+    } catch (error) {
+      res.status(500).json({ error: "Failed to create token wallet" });
+    }
+  });
+
+  // Get all token wallets
+  app.get('/api/token/wallets', async (req, res) => {
+    try {
+      const { db } = await import('./db');
+      const { tokenWallets } = await import('@shared/schema');
+      const { desc } = await import('drizzle-orm');
+      
+      const wallets = await db.select()
+        .from(tokenWallets)
+        .orderBy(desc(tokenWallets.totalEarnings));
+      
+      res.json(wallets);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch token wallets" });
+    }
+  });
+
   // Ensure all discoveries have corresponding blocks
   app.post("/api/blocks/sync", async (req, res) => {
     try {
