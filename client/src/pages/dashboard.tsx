@@ -235,32 +235,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Gaming-style Metric Gems */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="metric-gem gem-blue">
-            <div className="gem-icon">💎</div>
-            <div className="gem-value">{computedStats?.totalBlocks || 0}</div>
-            <div className="gem-label">Data Blocks</div>
-          </div>
-          
-          <div className="metric-gem gem-purple">
-            <div className="gem-icon">🧮</div>
-            <div className="gem-value">{computedStats?.totalDiscoveries || 0}</div>
-            <div className="gem-label">Discoveries</div>
-          </div>
-          
-          <div className="metric-gem gem-green">
-            <div className="gem-icon">⚡</div>
-            <div className="gem-value">{metrics?.blocksPerHour || 0}/hr</div>
-            <div className="gem-label">Block Rate</div>
-          </div>
-          
-          <div className="metric-gem gem-orange">
-            <div className="gem-icon">🎯</div>
-            <div className="gem-value">50</div>
-            <div className="gem-label">Difficulty</div>
-          </div>
-        </div>
+
 
         {/* Leaderboard Section */}
         <div className="game-card">
@@ -270,108 +245,25 @@ export default function Dashboard() {
               Recent Mathematical Discoveries
             </h3>
           </div>
-          <div className="space-y-3 mt-4">
-            {Array.isArray(discoveries) && discoveries.slice(0, 8).map((discovery: any, index: number) => (
+          <div className="space-y-2 mt-4">
+            {Array.isArray(discoveries) && discoveries.slice(0, 5).map((discovery: any, index: number) => (
               <div key={discovery.id || index} className="leaderboard-row">
                 <div className="rank-badge">#{discovery.id}</div>
                 <div className="player-info">
                   <div className="player-name">
                     {discovery.workType?.replace(/_/g, ' ').toUpperCase()}
                   </div>
-                  <div className="player-level">Difficulty {discovery.difficulty}</div>
+                  <div className="player-level">D{discovery.difficulty}</div>
                 </div>
                 <div className="player-score">
-                  💰 {formatNumber(discovery.scientificValue || 0)}
+                  ${formatNumber(discovery.scientificValue || 0)}
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Performance Metrics Card */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="game-card">
-            <div className="card-header">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                <BarChart3 className="h-6 w-6 text-blue-400" />
-                Network Performance
-              </h3>
-            </div>
-            <div className="space-y-4 mt-4">
-              <div className="progress-bar-container">
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-slate-300">Mining Efficiency</span>
-                  <span className="text-blue-400">85%</span>
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-fill" style={{ width: '85%' }}></div>
-                </div>
-              </div>
-              
-              <div className="progress-bar-container">
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-slate-300">Network Security</span>
-                  <span className="text-green-400">96%</span>
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-fill bg-green-400" style={{ width: '96%' }}></div>
-                </div>
-              </div>
-              
-              <div className="progress-bar-container">
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-slate-300">Discovery Quality</span>
-                  <span className="text-purple-400">92%</span>
-                </div>
-                <div className="progress-bar">
-                  <div className="progress-fill bg-purple-400" style={{ width: '92%' }}></div>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <div className="game-card">
-            <div className="card-header">
-              <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                <Shield className="h-6 w-6 text-red-400" />
-                Security Status
-              </h3>
-            </div>
-            <div className="space-y-3 mt-4">
-              <div className="security-item">
-                <div className="security-icon">🔒</div>
-                <div className="security-info">
-                  <div className="security-name">Post-Quantum Crypto</div>
-                  <div className="security-status active">ACTIVE</div>
-                </div>
-              </div>
-              
-              <div className="security-item">
-                <div className="security-icon">🛡️</div>
-                <div className="security-info">
-                  <div className="security-name">Discovery Audit System</div>
-                  <div className="security-status active">MONITORING</div>
-                </div>
-              </div>
-              
-              <div className="security-item">
-                <div className="security-icon">🔍</div>
-                <div className="security-info">
-                  <div className="security-name">Fraud Detection</div>
-                  <div className="security-status active">SCANNING</div>
-                </div>
-              </div>
-              
-              <div className="security-item">
-                <div className="security-icon">⚡</div>
-                <div className="security-info">
-                  <div className="security-name">Real-time Validation</div>
-                  <div className="security-status active">ONLINE</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
