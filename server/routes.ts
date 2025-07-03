@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { insertMiningOperationSchema, type WebSocketMessage, type MiningProgressMessage, type BlockMinedMessage } from "@shared/schema";
+import { immutableRecordsEngine } from "./immutable-records-engine";
 
 // Blockchain utility functions
 function generateSimpleHash(input: string): string {
@@ -1545,6 +1546,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     return primes;
   }
+
+  // Backfill missing immutable records for validations
+  app.post('/api/backfill-records', async (req, res) => {
+    try {
+      console.log('🔧 BACKFILL: Starting immutable records backfill...');
+      
+      // Get existing immutable records to see which validations have records
+      const existingRecords = await storage.getRecentValidationRecords(100);
+      const existingValidationIds = new Set(
+        existingRecords
+          .filter(r => r.validationId)
+          .map(r => r.validationId!)
+      );
+
+      // Get recent validation records from different stakers
+      const allStakers = await storage.getActiveStakers();
+      const recentValidations = [];
+      
+      for (const staker of allStakers) {
+        const stakerValidations = await storage.getStakerValidations(staker.id);
+        recentValidations.push(...stakerValidations);
+      }
+
+      // Filter out validations that already have immutable records
+      const validationsWithoutRecords = recentValidations.filter(
+        v => !existingValidationIds.has(v.id)
+      );
+
+      console.log(`🔧 BACKFILL: Found ${validationsWithoutRecords.length} validations missing records`);
+
+      let recordsCreated = 0;
+      for (const validation of validationsWithoutRecords) {
+        try {
+          // Get the work and staker for this validation
+          const work = await storage.getMathematicalWork(validation.workId);
+          const staker = await storage.getStaker(validation.stakerId);
+
+          if (work && staker) {
+            const { immutableRecordsEngine } = await import('./immutable-records-engine');
+            await immutableRecordsEngine.recordValidationActivity(validation, work, staker);
+            recordsCreated++;
+            console.log(`✅ Created record for validation ${validation.id}`);
+          }
+        } catch (error) {
+          console.error(`Failed to create record for validation ${validation.id}:`, error);
+        }
+      }
+
+      console.log(`🔧 BACKFILL: Created ${recordsCreated} immutable records`);
+      res.json({ 
+        message: `Backfilled ${recordsCreated} immutable records`,
+        recordsCreated,
+        totalMissing: validationsWithoutRecords.length
+      });
+    } catch (error) {
+      console.error('Backfill failed:', error);
+      res.status(500).json({ error: 'Failed to backfill records' });
+    }
+  });
 
   // Clean up old completed operations periodically
   setInterval(async () => {

@@ -50,8 +50,8 @@ export class ImmutableRecordsEngine {
       activityType: 'validation_activity'
     };
 
-    // Generate cryptographic hash
-    const activityHash = this.generateActivityHash(activityData);
+    // Generate cryptographic hash (include validation ID for uniqueness)
+    const activityHash = this.generateActivityHash(activityData, validation.id);
     
     // Create merkle root for batch verification
     const merkleRoot = this.generateMerkleRoot([activityData]);
@@ -163,10 +163,11 @@ export class ImmutableRecordsEngine {
   /**
    * Generate cryptographic hash for activity data
    */
-  private generateActivityHash(activityData: any): string {
+  private generateActivityHash(activityData: any, uniqueId?: number): string {
     const timestamp = Date.now().toString();
     const randomSalt = Math.random().toString(36).substring(2);
-    const hashInput = JSON.stringify(activityData, Object.keys(activityData).sort()) + timestamp + randomSalt;
+    const uniqueComponent = uniqueId ? uniqueId.toString() : '';
+    const hashInput = JSON.stringify(activityData, Object.keys(activityData).sort()) + timestamp + randomSalt + uniqueComponent;
     
     // Use simple hash to avoid crypto engine dependencies
     return this.simpleHash(hashInput);
