@@ -10,6 +10,8 @@ import { institutionalValidationEngine } from "./institutional-validation-engine
 import { discoveryAIEngine } from "./discovery-ai-engine";
 import { threatDetectionEngine } from "./threat-detection-engine";
 import { quantumComplexityEngine } from "./quantum-complexity-engine";
+import { recursiveEnhancementEngine } from "./recursive-enhancement-engine";
+import { adaptiveSecurityEngine } from "./adaptive-security-engine";
 
 // Blockchain utility functions
 function generateSimpleHash(input: string): string {
@@ -4079,7 +4081,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           security: {
             insights: '/api/security/insights',
             threats: '/api/threat-detection/analyze',
-            mitigation: '/api/threat-detection/mitigate'
+            mitigation: '/api/threat-detection/mitigate',
+            adaptiveSecurity: '/api/adaptive-security'
           },
           institutional: {
             validators: '/api/institutional/validators',
@@ -4112,6 +4115,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           'Productive Mining Operations',
           'Emergent AI Pattern Recognition',
           'Recursive Algorithm Enhancement',
+          'Adaptive Security Evolution',
           'Complexity Scaling Automation',
           'Cross-Disciplinary Synthesis',
           'Institutional Validation',
@@ -4129,6 +4133,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error generating API overview:', error);
       res.status(500).json({ error: 'Failed to generate API overview' });
+    }
+  });
+
+  // Adaptive Security Engine endpoints
+  app.get("/api/adaptive-security/status", async (req, res) => {
+    try {
+      const status = adaptiveSecurityEngine.getAdaptiveSecurityStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('Error getting adaptive security status:', error);
+      res.status(500).json({ error: 'Failed to get adaptive security status' });
+    }
+  });
+
+  app.get("/api/adaptive-security/history", async (req, res) => {
+    try {
+      const history = adaptiveSecurityEngine.getSecurityIterationHistory();
+      res.json(history);
+    } catch (error) {
+      console.error('Error getting security iteration history:', error);
+      res.status(500).json({ error: 'Failed to get security iteration history' });
+    }
+  });
+
+  app.post("/api/adaptive-security/trigger", async (req, res) => {
+    try {
+      const result = await adaptiveSecurityEngine.triggerSecurityIteration();
+      res.json(result);
+    } catch (error) {
+      console.error('Error triggering security iteration:', error);
+      res.status(500).json({ error: 'Failed to trigger security iteration' });
     }
   });
 

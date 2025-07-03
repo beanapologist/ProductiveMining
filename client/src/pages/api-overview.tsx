@@ -82,6 +82,11 @@ export default function APIOverview() {
     staleTime: 10000
   });
 
+  const { data: securityStatus } = useQuery({
+    queryKey: ['/api/adaptive-security/status'],
+    staleTime: 10000
+  });
+
   const copyEndpoint = (endpoint: string) => {
     const fullUrl = `${window.location.origin}${endpoint}`;
     navigator.clipboard.writeText(fullUrl);
@@ -269,7 +274,7 @@ export default function APIOverview() {
 
       {/* API Endpoints Documentation */}
       <Tabs defaultValue="core" className="w-full">
-        <TabsList className="grid grid-cols-5 w-full max-w-6xl mx-auto">
+        <TabsList className="grid grid-cols-6 w-full max-w-6xl mx-auto">
           <TabsTrigger value="core" className="flex items-center gap-2">
             <Server className="h-4 w-4" />
             Core APIs
@@ -277,6 +282,10 @@ export default function APIOverview() {
           <TabsTrigger value="recursive" className="flex items-center gap-2">
             <Zap className="h-4 w-4" />
             Self-Improving AI
+          </TabsTrigger>
+          <TabsTrigger value="security" className="flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            Adaptive Security
           </TabsTrigger>
           <TabsTrigger value="advanced" className="flex items-center gap-2">
             <Brain className="h-4 w-4" />
@@ -449,6 +458,133 @@ export default function APIOverview() {
                   </div>
                 </div>
               ))}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="security" className="space-y-4">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <Shield className="h-5 w-5 text-red-500" />
+                Adaptive Security Evolution System
+              </CardTitle>
+              <p className="text-gray-400">Self-iterating security system that uses recursive enhancement findings to improve cryptographic defenses</p>
+            </CardHeader>
+            <CardContent>
+              {securityStatus ? (
+                <div className="space-y-6">
+                  {/* Security Status Overview */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="bg-slate-700 p-4 rounded-lg">
+                      <div className="text-sm text-gray-400 mb-1">Current Iteration</div>
+                      <div className="text-2xl font-bold text-red-400">{securityStatus.currentIteration}</div>
+                    </div>
+                    <div className="bg-slate-700 p-4 rounded-lg">
+                      <div className="text-sm text-gray-400 mb-1">Total Iterations</div>
+                      <div className="text-2xl font-bold text-blue-400">{securityStatus.totalIterations}</div>
+                    </div>
+                    <div className="bg-slate-700 p-4 rounded-lg">
+                      <div className="text-sm text-gray-400 mb-1">Active Protocols</div>
+                      <div className="text-2xl font-bold text-green-400">{securityStatus.adaptiveProtocolsActive}</div>
+                    </div>
+                    <div className="bg-slate-700 p-4 rounded-lg">
+                      <div className="text-sm text-gray-400 mb-1">Security Trend</div>
+                      <div className={`text-2xl font-bold ${securityStatus.securityEvolutionTrend >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {securityStatus.securityEvolutionTrend >= 0 ? '+' : ''}{securityStatus.securityEvolutionTrend.toFixed(1)}%
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Latest Security Metrics */}
+                  {securityStatus.latestSecurityMetrics && (
+                    <div className="bg-slate-700 p-6 rounded-lg">
+                      <h3 className="text-lg font-semibold text-white mb-4">Latest Security Metrics</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <div className="text-center">
+                          <div className="text-sm text-gray-400 mb-1">Overall Score</div>
+                          <div className="text-xl font-bold text-red-400">{securityStatus.latestSecurityMetrics.overallSecurityScore}%</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-sm text-gray-400 mb-1">Threat Detection</div>
+                          <div className="text-xl font-bold text-yellow-400">{securityStatus.latestSecurityMetrics.threatDetectionAccuracy}%</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-sm text-gray-400 mb-1">Crypto Strength</div>
+                          <div className="text-xl font-bold text-blue-400">{securityStatus.latestSecurityMetrics.cryptographicStrength}%</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-sm text-gray-400 mb-1">Adaptive Defense</div>
+                          <div className="text-xl font-bold text-purple-400">{securityStatus.latestSecurityMetrics.adaptiveDefenseLevel}%</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-sm text-gray-400 mb-1">Quantum Resistance</div>
+                          <div className="text-xl font-bold text-cyan-400">{securityStatus.latestSecurityMetrics.quantumResistanceLevel}%</div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Security Evolution Status */}
+                  <div className="bg-slate-700 p-6 rounded-lg">
+                    <h3 className="text-lg font-semibold text-white mb-4">Security Evolution Status</h3>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Last Security Iteration:</span>
+                        <span className="text-white">{new Date(securityStatus.lastIteration).toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Evolution Trend:</span>
+                        <Badge 
+                          variant="outline" 
+                          className={`${securityStatus.securityEvolutionTrend >= 0 ? 'text-green-400 border-green-400' : 'text-red-400 border-red-400'}`}
+                        >
+                          {securityStatus.securityEvolutionTrend >= 0 ? 'Improving' : 'Declining'}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Security System Status:</span>
+                        <Badge variant="outline" className="text-green-400 border-green-400">
+                          Active & Learning
+                        </Badge>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-gray-400">Loading adaptive security status...</p>
+                </div>
+              )}
+
+              <div className="mt-6 pt-4 border-t border-slate-600">
+                <h3 className="text-lg font-semibold text-white mb-4">Security Controls</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <Button 
+                    onClick={() => fetch('/api/adaptive-security/trigger', { method: 'POST' })}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    <Shield className="h-4 w-4 mr-2" />
+                    Trigger Security Iteration
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => window.open('/api/adaptive-security/status')}
+                    className="border-slate-600 text-slate-300 hover:bg-slate-600"
+                  >
+                    <Code className="h-4 w-4 mr-2" />
+                    View Status API
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => window.open('/api/adaptive-security/history')}
+                    className="border-slate-600 text-slate-300 hover:bg-slate-600"
+                  >
+                    <Activity className="h-4 w-4 mr-2" />
+                    View History API
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
