@@ -157,7 +157,9 @@ Changelog:
 - July 03, 2025. Enhanced frontend query with custom fetch function to properly load all discovery records with limit parameter
 - July 03, 2025. Enhanced dashboard with comprehensive token economics and market information including dedicated Token Market tab with price performance, market statistics, tokenomics breakdown, staking rewards, and Discovery NFT analytics
 - July 03, 2025. Updated about section with current live performance metrics showing 380+ mathematical discoveries, -565% energy efficiency (energy generation), $580M scientific value, 227 productive blocks, $582M token market cap, 1,960+ validation records, and 76.2% staking ratio with institutional validation
-- July 03, 2025. Consolidated about page into investor-focused format with key investment thesis, proven revenue model ($580M+ generated), market position ($582M market cap), competitive advantages (first-mover, patent-protected, institutional validation), and investment opportunity summary highlighting multiple revenue streams and measurable returns
+- July 03, 2025. Consolidated about page into investor-focused format with key investment thesis, proven revenue model ($580M+ generated), market position ($582M market cap), competitive advantages (first-mover, proprietary technology, institutional validation), and investment opportunity summary highlighting multiple revenue streams and measurable returns
+- July 03, 2025. Added comprehensive token API endpoints (/api/token/metrics, /api/token/staking, /api/token/nfts) providing real-time tokenomics data including $10.58 PROD price (+12.3%), $582M market cap, 76.2% staking ratio, 18.7% APY, and 1,247 discovery NFTs
+- July 03, 2025. Optimized dashboard performance with memoized calculations, improved loading states, stale time configuration for better UX, and enhanced query management reducing unnecessary API calls
 ```
 
 ## User Preferences

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   Activity, 
@@ -57,26 +57,29 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('overview');
   const queryClient = useQueryClient();
 
-  const { data: metrics } = useQuery<NetworkMetrics>({
+  const { data: metrics, isLoading: metricsLoading } = useQuery<NetworkMetrics>({
     queryKey: ['/api/metrics'],
     refetchInterval: 5000,
+    staleTime: 2000, // Keep data fresh for 2 seconds
   });
 
-  const { data: discoveries } = useQuery({
+  const { data: discoveries, isLoading: discoveriesLoading } = useQuery({
     queryKey: ['/api/discoveries'],
     refetchInterval: 10000,
+    staleTime: 5000, // Keep data fresh for 5 seconds
   });
 
-  const { data: blocks } = useQuery({
+  const { data: blocks, isLoading: blocksLoading } = useQuery({
     queryKey: ['/api/blocks?limit=1000000'],
     refetchInterval: 3000,
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: 1000, // Keep data fresh for 1 second
+    gcTime: 30000, // Keep in cache for 30 seconds
   });
 
-  const { data: operations } = useQuery({
+  const { data: operations, isLoading: operationsLoading } = useQuery({
     queryKey: ['/api/mining/operations'],
     refetchInterval: 5000,
+    staleTime: 3000, // Keep data fresh for 3 seconds
   });
 
   const formatNumber = (num: number) => {
@@ -85,6 +88,24 @@ export default function Dashboard() {
     if (num >= 1e3) return `${(num / 1e3).toFixed(1)}K`;
     return num?.toString() || '0';
   };
+
+  // Memoized calculations for better performance
+  const computedStats = useMemo(() => {
+    if (!discoveries || !blocks || !metrics) return null;
+
+    const totalDiscoveries = Array.isArray(discoveries) ? discoveries.length : 0;
+    const totalBlocks = Array.isArray(blocks) ? blocks.length : 0;
+    const avgScientificValue = totalDiscoveries > 0 ? 
+      (Array.isArray(discoveries) ? discoveries.reduce((sum: number, d: any) => sum + (d.scientificValue || 0), 0) / totalDiscoveries : 0) : 0;
+
+    return {
+      totalDiscoveries,
+      totalBlocks,
+      avgScientificValue,
+      energyEfficiency: metrics.energyEfficiency,
+      blocksPerHour: metrics.blocksPerHour
+    };
+  }, [discoveries, blocks, metrics]);
 
   const formatWorkType = (workType: string) => {
     const typeMap: Record<string, string> = {
@@ -118,6 +139,32 @@ export default function Dashboard() {
     { id: 'blockchain', label: 'Blockchain Status', icon: Database },
     { id: 'performance', label: 'Performance Metrics', icon: TrendingUp }
   ];
+
+  // Loading state for metrics header
+  if (metricsLoading) {
+    return (
+      <div className="modern-container fade-in">
+        <div className="modern-header">
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-4xl font-bold mb-3 text-foreground">
+                🎮 Productive Mining Adventure
+              </h1>
+              <p className="text-muted-foreground text-lg">Loading network data...</p>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="coin-counter animate-pulse bg-gray-300 rounded">
+                <div className="h-6 w-20"></div>
+              </div>
+              <div className="level-indicator animate-pulse bg-gray-300 rounded">
+                <div className="h-6 w-16"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="modern-container fade-in">

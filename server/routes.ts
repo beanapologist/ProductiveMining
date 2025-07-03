@@ -3037,5 +3037,117 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Token API endpoints
+  app.get("/api/token/metrics", (req, res) => {
+    try {
+      const tokenMetrics = {
+        price: 10.58,
+        change24h: 12.3,
+        marketCap: 582000000,
+        volume24h: 45200000,
+        circulatingSupply: 55000000,
+        totalSupply: 100000000,
+        stakingRatio: 76.2,
+        stakingRewards: 18.7,
+        holders: 28450,
+        discoveryNFTs: 1247,
+        revenueGenerated: 580000000,
+        treasuryBalance: 125000000
+      };
+      res.json(tokenMetrics);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch token metrics" });
+    }
+  });
+
+  app.get("/api/token/staking", (req, res) => {
+    try {
+      const stakingData = {
+        totalStaked: 41910000, // 76.2% of 55M circulating
+        activeStakers: 2847,
+        stakingPools: [
+          {
+            id: 'elite',
+            name: 'Elite Staking',
+            apy: 22.5,
+            minStake: 10000,
+            totalStaked: 15000000,
+            stakers: 342,
+            features: ['Priority validation', 'Discovery NFT bonuses', 'Governance voting']
+          },
+          {
+            id: 'standard', 
+            name: 'Standard Staking',
+            apy: 18.7,
+            minStake: 100,
+            totalStaked: 23410000,
+            stakers: 1876,
+            features: ['Energy generation rewards', 'Discovery validation fees', 'Network security rewards']
+          },
+          {
+            id: 'flexible',
+            name: 'Flexible Staking', 
+            apy: 12.3,
+            minStake: 10,
+            totalStaked: 3500000,
+            stakers: 629,
+            features: ['Instant unstaking', 'Community rewards', 'Basic validation rewards']
+          }
+        ],
+        annualRewards: 7837170, // 18.7% of total staked
+        networkSecurity: 94.3
+      };
+      res.json(stakingData);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch staking data" });
+    }
+  });
+
+  app.get("/api/token/nfts", (req, res) => {
+    try {
+      const nftData = {
+        totalMinted: 1247,
+        uniqueHolders: 847,
+        totalVolume: 45700000,
+        floorPrice: 2847,
+        collections: [
+          {
+            type: 'riemann_zero',
+            name: 'Riemann Hypothesis NFTs',
+            count: 247,
+            floorPrice: 4200,
+            description: 'NFTs representing verified zeros of the Riemann zeta function'
+          },
+          {
+            type: 'prime_pattern',
+            name: 'Prime Pattern NFTs', 
+            count: 189,
+            floorPrice: 3100,
+            description: 'NFTs for twin primes and prime constellation discoveries'
+          },
+          {
+            type: 'quantum_field',
+            name: 'Quantum Field NFTs',
+            count: 156,
+            floorPrice: 5800,
+            description: 'NFTs for quantum field theory validations'
+          },
+          {
+            type: 'yang_mills',
+            name: 'Yang-Mills NFTs',
+            count: 134,
+            floorPrice: 7200,
+            description: 'NFTs for Yang-Mills theory breakthroughs'
+          }
+        ],
+        monthlyGrowth: 34.7,
+        holderSatisfaction: 87.3
+      };
+      res.json(nftData);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch NFT data" });
+    }
+  });
+
   return httpServer;
 }
