@@ -5,7 +5,9 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useState } from "react";
-import { BarChart3, Pickaxe, Database, Brain, Info, Shield, Users, GraduationCap, HardDrive, Coins, Wallet, Copy, Check, FileCode, TrendingUp } from "lucide-react";
+import { BarChart3, Pickaxe, Database, Brain, Info, Shield, Users, GraduationCap, HardDrive, Coins, Wallet, Copy, Check, FileCode, TrendingUp, Play } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 import Dashboard from "@/pages/dashboard-new";
 import BlockExplorer from "@/pages/block-explorer";
 import MiningPage from "@/pages/mining-simple";
@@ -15,6 +17,7 @@ import ValidatorsPage from "@/pages/validators";
 import { InstitutionalValidation } from "@/pages/institutional-validation";
 import DataManagement from "@/pages/data-management";
 import ComplexityAnalysisPage from "@/pages/complexity-analysis";
+import APIOverview from "@/pages/api-overview";
 
 import WalletPage from "@/pages/wallet";
 import About from "@/pages/about";
@@ -36,6 +39,7 @@ function Router() {
         <Route path="/blocks" component={BlockExplorer} />
         <Route path="/wallet" component={WalletPage} />
         <Route path="/data-management" component={DataManagement} />
+        <Route path="/api" component={APIOverview} />
         <Route path="/about" component={About} />
         <Route component={NotFound} />
       </Switch>
@@ -43,40 +47,52 @@ function Router() {
   );
 }
 
-function WalletComponent() {
-  const [walletAddress] = useState("0x742d35Cc6634C0532925a3b8D");
-  const [balance] = useState(15847.23);
-  const [copied, setCopied] = useState(false);
-
-  const copyAddress = () => {
-    navigator.clipboard.writeText(walletAddress);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+function StartMiningButton() {
+  const { toast } = useToast();
+  
+  const startMiningMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/mining/start-real', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          operationType: 'riemann_zero',
+          difficulty: Math.floor(Math.random() * 50) + 150 // 150-200 range
+        })
+      });
+      
+      if (!response.ok) throw new Error('Failed to start mining');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Mining Started!",
+        description: `Started ${data.operationType} mining operation #${data.id}`,
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Mining Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
 
   return (
-    <div className="flex items-center gap-3 mr-4">
-      <div className="wallet-display">
-        <div className="wallet-balance">
-          <span className="text-lg font-bold text-green-400">
-            {balance.toLocaleString()} PROD
-          </span>
-        </div>
-        <div className="wallet-address-container">
-          <span className="wallet-address text-sm text-gray-400">
-            {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
-          </span>
-          <button
-            onClick={copyAddress}
-            className="wallet-copy-btn"
-            title="Copy wallet address"
-          >
-            {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-          </button>
-        </div>
-      </div>
-      <Wallet className="h-6 w-6 text-cyan-400" />
-    </div>
+    <button
+      onClick={() => startMiningMutation.mutate()}
+      disabled={startMiningMutation.isPending}
+      className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:transform-none"
+      title="Start productive mining operation"
+    >
+      {startMiningMutation.isPending ? (
+        <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+      ) : (
+        <Play className="h-4 w-4" />
+      )}
+      <span>Start Mining</span>
+    </button>
   );
 }
 
@@ -94,6 +110,7 @@ function Navigation() {
     { path: '/blocks', title: 'Data Vault', icon: Database },
     { path: '/wallet', title: 'Research Vault', icon: Wallet },
     { path: '/data-management', title: 'Data Center', icon: HardDrive },
+    { path: '/api', title: 'API Docs', icon: FileCode },
     { path: '/about', title: 'Game Info', icon: Info }
   ];
 
@@ -121,7 +138,7 @@ function Navigation() {
           })}
         </div>
 
-        <WalletComponent />
+        <StartMiningButton />
       </div>
     </nav>
   );
