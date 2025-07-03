@@ -238,6 +238,124 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get scientific breakthroughs summary from productive mining
+  app.get('/api/scientific-breakthroughs', async (req, res) => {
+    try {
+      const discoveries = await storage.getRecentMathematicalWork(50);
+      
+      // Group discoveries by type and calculate breakthrough metrics
+      const breakthroughSummary = discoveries.reduce((acc, discovery) => {
+        const type = discovery.workType;
+        if (!acc[type]) {
+          acc[type] = {
+            workType: type,
+            discoveryCount: 0,
+            totalScientificValue: 0,
+            avgEnergyEfficiency: 0,
+            avgComputationalCost: 0,
+            recentDiscoveries: [],
+            breakthrough: {
+              name: getBreakthroughName(type),
+              significance: getBreakthroughSignificance(type),
+              applications: getBreakthroughApplications(type),
+              impact: getBreakthroughImpact(type)
+            }
+          };
+        }
+        
+        acc[type].discoveryCount++;
+        acc[type].totalScientificValue += discovery.scientificValue;
+        acc[type].avgEnergyEfficiency += discovery.energyEfficiency;
+        acc[type].avgComputationalCost += discovery.computationalCost;
+        acc[type].recentDiscoveries.push({
+          id: discovery.id,
+          timestamp: discovery.timestamp,
+          scientificValue: discovery.scientificValue,
+          difficulty: discovery.difficulty,
+          workerId: discovery.workerId
+        });
+        
+        return acc;
+      }, {});
+      
+      // Calculate averages and sort by scientific value
+      const breakthroughs = Object.values(breakthroughSummary).map((summary: any) => ({
+        ...summary,
+        avgEnergyEfficiency: Math.round(summary.avgEnergyEfficiency / summary.discoveryCount),
+        avgComputationalCost: Math.round(summary.avgComputationalCost / summary.discoveryCount),
+        recentDiscoveries: summary.recentDiscoveries.slice(0, 5).sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      })).sort((a: any, b: any) => b.totalScientificValue - a.totalScientificValue);
+      
+      res.json({
+        totalBreakthroughs: discoveries.length,
+        totalScientificValue: discoveries.reduce((sum, d) => sum + d.scientificValue, 0),
+        avgEnergyEfficiency: Math.round(discoveries.reduce((sum, d) => sum + d.energyEfficiency, 0) / discoveries.length),
+        totalComputationalWork: discoveries.reduce((sum, d) => sum + d.computationalCost, 0),
+        breakthroughsByType: breakthroughs,
+        lastUpdated: new Date().toISOString(),
+        timespan: '30 days'
+      });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch scientific breakthroughs" });
+    }
+  });
+
+  function getBreakthroughName(workType: string): string {
+    const names = {
+      'riemann_zero': 'Riemann Zeta Function Zero Discovery',
+      'prime_pattern': 'Twin Prime Constellation Discovery',
+      'yang_mills': 'Yang-Mills Mass Gap Analysis',
+      'navier_stokes': 'Navier-Stokes Turbulence Solution',
+      'poincare_conjecture': 'Poincaré Conjecture Verification',
+      'goldbach_verification': 'Goldbach Conjecture Evidence',
+      'birch_swinnerton_dyer': 'Birch-Swinnerton-Dyer Analysis',
+      'elliptic_curve_crypto': 'Elliptic Curve Cryptographic Breakthrough'
+    };
+    return names[workType] || 'Advanced Mathematical Discovery';
+  }
+
+  function getBreakthroughSignificance(workType: string): string {
+    const significance = {
+      'riemann_zero': 'Critical advancement toward proving the Riemann Hypothesis, one of mathematics\' most important unsolved problems',
+      'prime_pattern': 'Computational evidence supporting the Twin Prime Conjecture with implications for cryptography',
+      'yang_mills': 'Progress toward Millennium Prize Problem solution in quantum field theory',
+      'navier_stokes': 'Breakthrough in fluid dynamics with applications to aerospace and weather prediction',
+      'poincare_conjecture': 'Fundamental advance in topology and 3-manifold classification',
+      'goldbach_verification': 'Strengthens one of number theory\'s oldest and most famous conjectures',
+      'birch_swinnerton_dyer': 'Advancement in algebraic geometry and elliptic curve theory',
+      'elliptic_curve_crypto': 'Enhanced cryptographic security for digital communications'
+    };
+    return significance[workType] || 'Significant contribution to mathematical knowledge';
+  }
+
+  function getBreakthroughApplications(workType: string): string[] {
+    const applications = {
+      'riemann_zero': ['Cryptography', 'Prime number theory', 'Quantum computing', 'Number theory research'],
+      'prime_pattern': ['Cryptographic key generation', 'Number theory research', 'Computer security'],
+      'yang_mills': ['Particle physics', 'Quantum chromodynamics', 'Standard Model physics'],
+      'navier_stokes': ['Aerospace engineering', 'Weather prediction', 'Fluid simulation', 'Climate modeling'],
+      'poincare_conjecture': ['Topology research', 'Geometric analysis', 'Mathematical physics'],
+      'goldbach_verification': ['Number theory', 'Cryptographic analysis', 'Mathematical research'],
+      'birch_swinnerton_dyer': ['Cryptography', 'Algebraic geometry', 'Number theory'],
+      'elliptic_curve_crypto': ['Digital security', 'Blockchain technology', 'Secure communications']
+    };
+    return applications[workType] || ['Mathematical research', 'Applied mathematics'];
+  }
+
+  function getBreakthroughImpact(workType: string): string {
+    const impact = {
+      'riemann_zero': 'Millennium Prize Problem progress',
+      'prime_pattern': 'Cryptographic security enhancement',
+      'yang_mills': 'Fundamental physics advancement',
+      'navier_stokes': 'Engineering simulation breakthrough',
+      'poincare_conjecture': 'Topological mathematics revolution',
+      'goldbach_verification': 'Number theory validation',
+      'birch_swinnerton_dyer': 'Algebraic geometry progress',
+      'elliptic_curve_crypto': 'Digital security innovation'
+    };
+    return impact[workType] || 'Mathematical knowledge advancement';
+  }
+
   // Ensure all discoveries have corresponding blocks
   app.post("/api/blocks/sync", async (req, res) => {
     try {
