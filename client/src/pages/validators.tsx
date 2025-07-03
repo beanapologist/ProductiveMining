@@ -162,22 +162,16 @@ export default function ValidatorsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="glass-card p-6">
-        <div className="flex items-center space-x-3 mb-4">
-          <div className="metric-gem !w-12 !h-12 bg-gradient-to-br from-blue-500 to-purple-600">
-            <Shield className="w-6 h-6" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-100">🏛️ Guild Council</h1>
-            <p className="text-gray-300">Elite Validator Network • Level {Math.floor(activeValidators / 2) + 1} Guild</p>
-          </div>
-          {activeValidators >= 6 && (
-            <div className="achievement-badge ml-4">
-              🏆 Elite Council
-            </div>
-          )}
+    <div className="container mx-auto p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold flex items-center text-white">
+            <Shield className="mr-3 h-8 w-8 text-blue-400" />
+            PoS Validator Network
+          </h1>
+          <p className="text-gray-400 mt-2">
+            Elite institutional validators providing consensus for mathematical discoveries
+          </p>
         </div>
 
         {/* Action Buttons */}

@@ -111,89 +111,110 @@ export default function MiningPage() {
   };
 
   return (
-    <div className="text-slate-100">
-      <div className="container mx-auto px-4 py-6">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center">
-            <Pickaxe className="h-10 w-10 mr-3 text-orange-400" />
+    <div className="container mx-auto p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold flex items-center text-white">
+            <Pickaxe className="mr-3 h-8 w-8 text-orange-400" />
             Mining Operations
           </h1>
-          <p className="text-xl text-slate-300">
+          <p className="text-gray-400 mt-2">
             Start mathematical computations to discover new knowledge and mine blocks
           </p>
         </div>
+      </div>
 
-        {/* Mining Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="pm-card border-orange-500/30">
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 rounded-full bg-orange-500/20">
-                  <Play className="h-5 w-5 text-orange-400" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-white">{activeOperations.length}</div>
-                  <div className="text-sm text-slate-400">Active Operations</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-white flex items-center">
+              <Play className="mr-2 h-5 w-5 text-orange-400" />
+              Active Operations
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Currently running
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-orange-400">
+              {activeOperations.length}
+            </div>
+            <p className="text-sm text-gray-400 mt-1">
+              Mining operations in progress
+            </p>
+          </CardContent>
+        </Card>
 
-          <Card className="pm-card border-green-500/30">
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 rounded-full bg-green-500/20">
-                  <Award className="h-5 w-5 text-green-400" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-white">{completedOperations.length}</div>
-                  <div className="text-sm text-slate-400">Completed</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-white flex items-center">
+              <Award className="mr-2 h-5 w-5 text-green-400" />
+              Completed Operations
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Successfully finished
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-green-400">
+              {completedOperations.length}
+            </div>
+            <p className="text-sm text-gray-400 mt-1">
+              Operations completed
+            </p>
+          </CardContent>
+        </Card>
 
-          <Card className="pm-card border-purple-500/30">
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 rounded-full bg-purple-500/20">
-                  <Brain className="h-5 w-5 text-purple-400" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-white">{currentDiscoveries.length}</div>
-                  <div className="text-sm text-slate-400">Total Discoveries</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-white flex items-center">
+              <Brain className="mr-2 h-5 w-5 text-purple-400" />
+              Total Discoveries
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Mathematical breakthroughs
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-purple-400">
+              {currentDiscoveries.length}
+            </div>
+            <p className="text-sm text-gray-400 mt-1">
+              Discoveries made
+            </p>
+          </CardContent>
+        </Card>
 
-          <Card className="pm-card border-blue-500/30">
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 rounded-full bg-blue-500/20">
-                  <TrendingUp className="h-5 w-5 text-blue-400" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-white">
-                    ${currentDiscoveries.reduce((sum: number, d: any) => sum + (d.scientificValue || 0), 0).toLocaleString()}
-                  </div>
-                  <div className="text-sm text-slate-400">Total Value</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-white flex items-center">
+              <TrendingUp className="mr-2 h-5 w-5 text-blue-400" />
+              Scientific Value
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Total value created
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-blue-400">
+              ${currentDiscoveries.reduce((sum: number, d: any) => sum + (d.scientificValue || 0), 0).toLocaleString()}
+            </div>
+            <p className="text-sm text-gray-400 mt-1">
+              Total research value
+            </p>
+          </CardContent>
+        </Card>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Start New Mining Operation */}
-          <Card className="pm-card">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Start New Mining Operation */}
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center">
                 <Pickaxe className="h-5 w-5 mr-2 text-orange-400" />
                 Start Mining Operation
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-gray-400">
                 Choose a mathematical problem to solve and earn scientific value
               </CardDescription>
             </CardHeader>

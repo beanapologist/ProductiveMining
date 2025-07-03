@@ -305,92 +305,131 @@ export default function DiscoveriesPage() {
   };
 
   return (
-    <div className="text-slate-100">
-      <div className="container mx-auto px-4 py-6">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex-1"></div>
-            <h1 className="text-4xl font-bold text-white flex items-center">
-              <Brain className="h-10 w-10 mr-3 text-purple-400" />
-              Mathematical Discoveries
-            </h1>
-            <div className="flex-1 flex justify-end">
-              <div className="flex gap-2">
-                <Button 
-                  onClick={() => downloadAllRecords('json')}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                  size="sm"
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  JSON
-                </Button>
-                <Button 
-                  onClick={() => downloadAllRecords('csv')}
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                  size="sm"
-                >
-                  <Download className="h-4 w-4 mr-2" />
-                  CSV
-                </Button>
-              </div>
-            </div>
-          </div>
-          <p className="text-xl text-slate-300">
+    <div className="container mx-auto p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold flex items-center text-white">
+            <Brain className="mr-3 h-8 w-8 text-purple-400" />
+            Mathematical Discoveries
+          </h1>
+          <p className="text-gray-400 mt-2">
             Explore groundbreaking mathematical breakthroughs and scientific achievements
           </p>
-          <div className="mt-4 text-center">
-            <p className="text-sm text-slate-400">
-              Download complete database records: Discoveries, Validations, Immutable Records, and Blocks
-            </p>
-          </div>
         </div>
+        <div className="flex gap-2">
+          <Button 
+            onClick={() => downloadAllRecords('json')}
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+            size="sm"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            JSON
+          </Button>
+          <Button 
+            onClick={() => downloadAllRecords('csv')}
+            className="bg-green-600 hover:bg-green-700 text-white"
+            size="sm"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            CSV
+          </Button>
+        </div>
+      </div>
 
-        {/* Discovery Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="pm-card border-purple-500/30">
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 rounded-full bg-purple-500/20">
-                  <Brain className="h-5 w-5 text-purple-400" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-white">{currentDiscoveries.length}</div>
-                  <div className="text-sm text-slate-400">Total Discoveries</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-white flex items-center">
+              <Brain className="mr-2 h-5 w-5 text-purple-400" />
+              Total Discoveries
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Mathematical breakthroughs
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-purple-400">
+              {currentDiscoveries.length}
+            </div>
+            <p className="text-sm text-gray-400 mt-1">
+              Breakthrough discoveries made
+            </p>
+          </CardContent>
+        </Card>
 
-          <Card className="pm-card border-green-500/30">
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 rounded-full bg-green-500/20">
-                  <Award className="h-5 w-5 text-green-400" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-white">${totalScientificValue.toLocaleString()}</div>
-                  <div className="text-sm text-slate-400">Scientific Value</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-white flex items-center">
+              <Award className="mr-2 h-5 w-5 text-green-400" />
+              Scientific Value
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Total research value
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-green-400">
+              ${totalScientificValue.toLocaleString()}
+            </div>
+            <p className="text-sm text-gray-400 mt-1">
+              Value generated
+            </p>
+          </CardContent>
+        </Card>
 
-          <Card className="pm-card border-blue-500/30">
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 rounded-full bg-blue-500/20">
-                  <Target className="h-5 w-5 text-blue-400" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-white">{averageDifficulty.toFixed(1)}</div>
-                  <div className="text-sm text-slate-400">Avg Difficulty</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-white flex items-center">
+              <Target className="mr-2 h-5 w-5 text-blue-400" />
+              Average Difficulty
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Computational complexity
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-blue-400">
+              {averageDifficulty.toFixed(1)}
+            </div>
+            <p className="text-sm text-gray-400 mt-1">
+              Average difficulty level
+            </p>
+          </CardContent>
+        </Card>
 
-          <Card className="pm-card border-orange-500/30">
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-white flex items-center">
+              <Users className="mr-2 h-5 w-5 text-orange-400" />
+              Contributors
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Unique researchers
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-orange-400">
+              {uniqueWorkers}
+            </div>
+            <p className="text-sm text-gray-400 mt-1">
+              Active contributors
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Tabs defaultValue="discoveries" className="space-y-6">
+        <TabsList className="bg-slate-800 border-slate-700">
+          <TabsTrigger value="discoveries" className="text-white data-[state=active]:bg-slate-700">
+            Mathematical Discoveries
+          </TabsTrigger>
+          <TabsTrigger value="validators" className="text-white data-[state=active]:bg-slate-700">
+            Validator Network
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="discoveries" className="space-y-6">
+          <Card className="bg-slate-800 border-slate-700">
             <CardContent className="pt-6">
               <div className="flex items-center space-x-3">
                 <div className="p-2 rounded-full bg-orange-500/20">
