@@ -5,7 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useState } from "react";
-import { BarChart3, Pickaxe, Database, Brain, Info, Shield, Users, GraduationCap, HardDrive, Coins, Wallet, Copy, Check, FileCode } from "lucide-react";
+import { BarChart3, Pickaxe, Database, Brain, Info, Shield, Users, GraduationCap, HardDrive, Coins, Wallet, Copy, Check, FileCode, TrendingUp } from "lucide-react";
 import Dashboard from "@/pages/dashboard-new";
 import BlockExplorer from "@/pages/block-explorer";
 import MiningPage from "@/pages/mining-simple";
@@ -14,6 +14,7 @@ import SecurityDashboard from "@/pages/security-dashboard";
 import ValidatorsPage from "@/pages/validators";
 import { InstitutionalValidation } from "@/pages/institutional-validation";
 import DataManagement from "@/pages/data-management";
+import ComplexityAnalysisPage from "@/pages/complexity-analysis";
 
 import WalletPage from "@/pages/wallet";
 import About from "@/pages/about";
@@ -30,6 +31,7 @@ function Router() {
         <Route path="/validators" component={ValidatorsPage} />
         <Route path="/institutional" component={InstitutionalValidation} />
         <Route path="/security" component={SecurityDashboard} />
+        <Route path="/complexity" component={ComplexityAnalysisPage} />
 
         <Route path="/blocks" component={BlockExplorer} />
         <Route path="/wallet" component={WalletPage} />
@@ -88,6 +90,7 @@ function Navigation() {
     { path: '/validators', title: 'Guild Council', icon: Users },
     { path: '/institutional', title: 'Academy', icon: GraduationCap },
     { path: '/security', title: 'Crypto Fortress', icon: Shield },
+    { path: '/complexity', title: 'Complexity Engine', icon: TrendingUp },
     { path: '/blocks', title: 'Data Vault', icon: Database },
     { path: '/wallet', title: 'Research Vault', icon: Wallet },
     { path: '/data-management', title: 'Data Center', icon: HardDrive },

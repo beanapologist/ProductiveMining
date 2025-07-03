@@ -1516,6 +1516,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Complexity Scaling Analysis API
+  app.get("/api/complexity/analysis", async (req, res) => {
+    try {
+      const { complexityScalingEngine } = await import('./complexity-scaling-engine');
+      const analysis = await complexityScalingEngine.analyzeComplexityProgression();
+      res.json(analysis);
+    } catch (error) {
+      console.error("Error analyzing complexity:", error);
+      res.status(500).json({ error: "Failed to analyze complexity progression" });
+    }
+  });
+
+  // Apply Complexity Scaling
+  app.post("/api/complexity/apply-scaling", async (req, res) => {
+    try {
+      const { complexityScalingEngine } = await import('./complexity-scaling-engine');
+      const result = await complexityScalingEngine.applyComplexityScaling();
+      
+      if (result.applied) {
+        // Start new high-difficulty mining operations with updated difficulty
+        const { startAutonomousMining } = await import('./routes');
+        await startAutonomousMining(result.newDifficulty, 3); // Start 3 miners
+        
+        // Broadcast scaling update
+        broadcast({
+          type: 'complexity_scaling',
+          data: {
+            previousDifficulty: result.previousDifficulty,
+            newDifficulty: result.newDifficulty,
+            analysis: result.analysis,
+            timestamp: new Date()
+          }
+        });
+      }
+      
+      res.json(result);
+    } catch (error) {
+      console.error("Error applying complexity scaling:", error);
+      res.status(500).json({ error: "Failed to apply complexity scaling" });
+    }
+  });
+
+  // Get Complexity Metrics
+  app.get("/api/complexity/metrics", async (req, res) => {
+    try {
+      const { complexityScalingEngine } = await import('./complexity-scaling-engine');
+      const analysis = await complexityScalingEngine.analyzeComplexityProgression();
+      
+      const metrics = {
+        currentDifficulty: analysis.recommendedDifficulty,
+        performanceScore: analysis.performanceScore,
+        nextMilestone: analysis.nextMilestone,
+        scalingFactor: analysis.scalingFactor,
+        emergentComplexity: analysis.adaptiveParameters.emergentComplexity,
+        breakthroughPotential: analysis.adaptiveParameters.breakthroughPotential,
+        workTypeOptimization: analysis.adaptiveParameters.workTypeOptimization,
+        reasoning: analysis.reasoning
+      };
+      
+      res.json(metrics);
+    } catch (error) {
+      console.error("Error fetching complexity metrics:", error);
+      res.status(500).json({ error: "Failed to fetch complexity metrics" });
+    }
+  });
+
   // Process ONLY existing pending validations without creating new ones
   app.post("/api/pos/process-pending", async (req, res) => {
     try {
