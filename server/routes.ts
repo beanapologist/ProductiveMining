@@ -252,10 +252,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } = await import('@shared/schema');
       const { sql } = await import('drizzle-orm');
       
-      // Clear all blockchain data using proper drizzle delete syntax
+      // Clear all blockchain data in correct order to avoid foreign key constraint violations
+      // First clear dependent tables (with foreign keys)
       await db.delete(immutableRecordsPool);
       await db.delete(discoveryValidations);
       await db.delete(blockMathematicalWork);
+      
+      // Clear institutional validations if exists
+      try {
+        const { institutionalValidations } = await import('@shared/schema');
+        await db.delete(institutionalValidations);
+      } catch (error) {
+        console.log('No institutional validations table found');
+      }
+      
+      // Clear audit records if exists
+      try {
+        const { auditRecords } = await import('@shared/schema');
+        await db.delete(auditRecords);
+      } catch (error) {
+        console.log('No audit records table found');
+      }
+      
+      // Clear data management tables if exists
+      try {
+        const { 
+          riemannZeroDiscoveries, 
+          primePatternDiscoveries, 
+          yangMillsDiscoveries, 
+          navierStokesDiscoveries,
+          goldbachDiscoveries,
+          poincareDiscoveries,
+          birchSwinnertonDyerDiscoveries,
+          ellipticCurveDiscoveries,
+          latticeCryptoDiscoveries
+        } = await import('@shared/data-management-schema');
+        
+        await db.delete(riemannZeroDiscoveries);
+        await db.delete(primePatternDiscoveries);
+        await db.delete(yangMillsDiscoveries);
+        await db.delete(navierStokesDiscoveries);
+        await db.delete(goldbachDiscoveries);
+        await db.delete(poincareDiscoveries);
+        await db.delete(birchSwinnertonDyerDiscoveries);
+        await db.delete(ellipticCurveDiscoveries);
+        await db.delete(latticeCryptoDiscoveries);
+      } catch (error) {
+        console.log('No data management tables found');
+      }
+      
+      // Now clear main tables
       await db.delete(mathematicalWork);
       await db.delete(productiveBlocks);
       await db.delete(miningOperations);
