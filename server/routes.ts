@@ -3298,7 +3298,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                     imag: (operation.currentResult as any)?.imaginaryPart || 82.9103809222690231509754374
                   },
                   precision: (operation.currentResult as any)?.currentPrecision || 1e-14,
-                  scientificValue: (operation.currentResult as any)?.scientificValue || 2500000
+                  scientificValue: (operation.currentResult as any)?.scientificValue || 2500
                 },
                 verificationData: { 
                   verified: true,
@@ -3309,7 +3309,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 },
                 computationalCost: operation.difficulty * 1200,
                 energyEfficiency: 1100 + Math.random() * 400,
-                scientificValue: (operation.currentResult as any)?.scientificValue || 2500000,
+                scientificValue: (operation.currentResult as any)?.scientificValue || 2500,
                 workerId: operation.minerId,
                 signature: ((operation.currentResult as any)?.zeroIndex?.toString(36) || Math.random().toString(36).substring(2)).padStart(64, '0')
               });
@@ -3349,7 +3349,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   patternsFound: (operation.currentResult as any)?.patternsFound || 73,
                   searchRange: (operation.currentResult as any)?.searchRange || [1000000, 1500000],
                   avgQdtResonance: (operation.currentResult as any)?.avgQdtResonance || 0.82,
-                  scientificValue: (operation.currentResult as any)?.estimatedValue || 1500000
+                  scientificValue: (operation.currentResult as any)?.estimatedValue || 2500
                 },
                 verificationData: {
                   verified: true,
@@ -3361,7 +3361,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
                 },
                 computationalCost: operation.difficulty * 900,
                 energyEfficiency: 850 + Math.random() * 250,
-                scientificValue: (operation.currentResult as any)?.estimatedValue || 1500000,
+                scientificValue: (operation.currentResult as any)?.estimatedValue || 2500,
                 workerId: operation.minerId,
                 signature: (((operation.currentResult as any)?.patternsFound?.toString(36)) || Math.random().toString(36).substring(2)).padStart(64, '0')
               });

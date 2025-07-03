@@ -77,22 +77,22 @@ export class ScientificValuationEngine {
   }
 
   /**
-   * Base research values for breakthrough mathematical discoveries
-   * Reflecting major scientific advancement value
+   * Base research values equivalent to real academic funding
+   * Based on typical research grants and computational resources
    */
   private getBaseResearchValues(): Record<string, number> {
     return {
-      // Values in USD, reflecting breakthrough scientific value
-      riemann_zero: 180000,            // $180K - Advanced number theory research
-      prime_pattern: 150000,           // $150K - Computational number theory
-      yang_mills: 250000,             // $250K - Theoretical physics (Millennium Prize)
-      navier_stokes: 220000,          // $220K - Applied mathematics (Millennium Prize)
-      poincare_conjecture: 200000,    // $200K - Topology research (Solved Millennium Prize)
-      goldbach_verification: 120000,  // $120K - Number theory verification
-      birch_swinnerton_dyer: 190000,  // $190K - Algebraic geometry (Millennium Prize)
-      elliptic_curve_crypto: 160000,  // $160K - Applied cryptography
-      lattice_crypto: 140000,         // $140K - Post-quantum cryptography
-      default: 100000                 // $100K - General mathematical research
+      // Values in USD, based on realistic research computation costs
+      riemann_zero: 800,            // $800 - Advanced number theory research
+      prime_pattern: 600,           // $600 - Computational number theory
+      yang_mills: 1200,            // $1.2K - Theoretical physics (Millennium Prize)
+      navier_stokes: 1000,         // $1K - Applied mathematics (Millennium Prize)
+      poincare_conjecture: 900,    // $900 - Topology research (Solved Millennium Prize)
+      goldbach_verification: 500,  // $500 - Number theory verification
+      birch_swinnerton_dyer: 850,  // $850 - Algebraic geometry (Millennium Prize)
+      elliptic_curve_crypto: 700,  // $700 - Applied cryptography
+      lattice_crypto: 650,         // $650 - Post-quantum cryptography
+      default: 400                 // $400 - General mathematical research
     };
   }
 
@@ -124,22 +124,22 @@ export class ScientificValuationEngine {
    */
   private calculateResearchImpact(workType: string, difficulty: number): number {
     const impactFactors: Record<string, number> = {
-      riemann_zero: 50000,         // High theoretical importance
-      prime_pattern: 40000,        // Cryptographic applications
-      yang_mills: 80000,          // Millennium Prize problem
-      navier_stokes: 60000,       // Engineering applications
-      poincare_conjecture: 55000, // Fundamental topology
-      goldbach_verification: 30000, // Classical number theory
-      birch_swinnerton_dyer: 45000, // Modern algebraic geometry
-      elliptic_curve_crypto: 35000, // Practical cryptography
-      lattice_crypto: 32000,      // Quantum-resistant crypto
-      default: 25000
+      riemann_zero: 200,           // High theoretical importance
+      prime_pattern: 150,          // Cryptographic applications
+      yang_mills: 300,            // Millennium Prize problem
+      navier_stokes: 250,         // Engineering applications
+      poincare_conjecture: 225,   // Fundamental topology
+      goldbach_verification: 100, // Classical number theory
+      birch_swinnerton_dyer: 175, // Modern algebraic geometry
+      elliptic_curve_crypto: 125, // Practical cryptography
+      lattice_crypto: 110,        // Quantum-resistant crypto
+      default: 75
     };
 
     const baseFactor = impactFactors[workType] || impactFactors.default;
     
-    // Scale with difficulty to reach breakthrough values
-    const difficultyScale = Math.min(1 + (difficulty / 200), 3.0);
+    // Scale with difficulty but keep reasonable bounds (reduced scaling)
+    const difficultyScale = Math.min(1 + (difficulty / 400), 1.5);
     
     return Math.round(baseFactor * difficultyScale);
   }
