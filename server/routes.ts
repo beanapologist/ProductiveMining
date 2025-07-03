@@ -1928,7 +1928,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
               result = await computeRealRiemannZero(difficulty);
           }
 
-          // Create mathematical work from computation (cap computational cost to safe integer range)
+          // Create mathematical work from computation using realistic scientific valuation
+          const { scientificValuationEngine } = await import('./scientific-valuation-engine');
+          const realisticValuation = scientificValuationEngine.calculateScientificValue(
+            workType, 
+            difficulty, 
+            result.computationalCost, 
+            result.energyEfficiency
+          );
+          
           const safeComputationalCost = Math.min(2147483647, Math.max(1, Math.round(result.computationalCost)));
           const work = await storage.createMathematicalWork({
             workType,
@@ -1937,7 +1945,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             verificationData: result.verificationData,
             computationalCost: safeComputationalCost,
             energyEfficiency: result.energyEfficiency,
-            scientificValue: result.scientificValue,
+            scientificValue: realisticValuation.totalValue,
             workerId: minerId,
             signature: result.proofHash
           });
@@ -1961,9 +1969,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
               previousHash,
               minerId,
               difficulty,
-              totalScientificValue: result.scientificValue,
+              totalScientificValue: realisticValuation.totalValue,
               energyConsumed: result.computationalCost / 1000000, // Convert to reasonable energy units
-              knowledgeCreated: result.scientificValue
+              knowledgeCreated: realisticValuation.totalValue
             };
             
             const merkleRoot = generateSimpleHash(`work_${work.id}_${work.workType}_${work.signature}`);
@@ -3221,10 +3229,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ...activeOperations.map(op => op.minerId)
         ]).size;
         
-        // Calculate total scientific value from recent discoveries
-        const totalScientificValue = recentDiscoveries.reduce((sum, discovery) => 
-          sum + (discovery.scientificValue || 0), 0
-        );
+        // Calculate realistic total scientific value from recent discoveries
+        const { scientificValuationEngine } = await import('./scientific-valuation-engine');
+        const aggregateValue = scientificValuationEngine.calculateAggregateValue(recentDiscoveries);
+        const totalScientificValue = aggregateValue.adjustedTotal;
 
         const newTotalMiners = Math.max(1, activeMiners + Math.floor(Math.random() * 5));
         const newBlocksPerHour = Math.max(0, recentBlocksCount + Math.floor(Math.random() * 3));
@@ -3235,7 +3243,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           totalMiners: newTotalMiners, // Ensure positive, add some growth
           blocksPerHour: newBlocksPerHour, // Real blocks per hour
           energyEfficiency: Math.min(-500, currentMetrics.energyEfficiency + Math.random() * 10 - 5), // Keep QDT efficiency negative but stable
-          totalScientificValue: Math.max(0, totalScientificValue + Math.random() * 10000),
+          totalScientificValue: Math.max(0, totalScientificValue),
           co2Saved: Math.max(0, currentMetrics.co2Saved + Math.random() * 10),
           networkHealth: Math.min(Math.max(currentMetrics.networkHealth + (Math.random() * 0.004 - 0.002), 0.95), 1.0)
         });
