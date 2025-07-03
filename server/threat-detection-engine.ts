@@ -154,7 +154,7 @@ class ThreatDetectionEngine {
       
       if (vulnerabilityScore > 0.7) {
         threats.push({
-          id: Date.now() + Math.random(),
+          id: Math.floor(Date.now() + Math.random() * 1000),
           threatType: 'quantum_attack',
           severity: vulnerabilityScore > 0.9 ? 'critical' : 'high',
           confidence: vulnerabilityScore * 100,
@@ -206,7 +206,7 @@ class ThreatDetectionEngine {
         const confidenceScore = Math.min(frequency / 20, 1.0);
         
         threats.push({
-          id: Date.now() + Math.random(),
+          id: Math.floor(Date.now() + Math.random() * 1000),
           threatType: 'pattern_exploitation',
           severity: frequency > 25 ? 'high' : 'medium',
           confidence: confidenceScore * 100,
@@ -265,7 +265,7 @@ class ThreatDetectionEngine {
 
       if (suspiciousRatio > 0.4 && suspiciousCount > 5) {
         threats.push({
-          id: Date.now() + Math.random(),
+          id: Math.floor(Date.now() + Math.random() * 1000),
           threatType: 'validation_manipulation',
           severity: suspiciousRatio > 0.7 ? 'high' : 'medium',
           confidence: suspiciousRatio * 100,
@@ -317,7 +317,7 @@ class ThreatDetectionEngine {
       
       if (controlPercentage > 0.3) { // More than 30% control
         threats.push({
-          id: Date.now() + Math.random(),
+          id: Math.floor(Date.now() + Math.random() * 1000),
           threatType: 'mining_hijack',
           severity: controlPercentage > 0.5 ? 'critical' : 'high',
           confidence: controlPercentage * 100,
@@ -373,7 +373,7 @@ class ThreatDetectionEngine {
           const riskScore = anomalyCount / 4;
           
           threats.push({
-            id: Date.now() + Math.random(),
+            id: Math.floor(Date.now() + Math.random() * 1000),
             threatType: 'ai_adversarial',
             severity: riskScore > 0.75 ? 'high' : 'medium',
             confidence: riskScore * 100,
@@ -413,11 +413,11 @@ class ThreatDetectionEngine {
   async implementMitigation(threatId: number): Promise<SecurityMitigation> {
     const threat = this.activeThreats.get(threatId);
     if (!threat) {
-      throw new Error(`Threat ${threatId} not found`);
+      throw new Error(`Threat ${threatId} not found in active threats map`);
     }
 
     const mitigation: SecurityMitigation = {
-      id: Date.now(),
+      id: Math.floor(Date.now()),
       threatId,
       mitigationType: this.determineMitigationType(threat.threatType),
       status: 'implementing',
