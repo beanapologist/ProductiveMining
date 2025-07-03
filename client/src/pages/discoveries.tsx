@@ -1157,21 +1157,6 @@ export default function DiscoveriesPage() {
     </div>
   );
 }
-              Average Difficulty
-            </CardTitle>
-            <CardDescription className="text-gray-400">
-              Computational complexity
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-blue-400">
-              {averageDifficulty.toFixed(1)}
-            </div>
-            <p className="text-sm text-gray-400 mt-1">
-              Average difficulty level
-            </p>
-          </CardContent>
-        </Card>
 
         <Card className="bg-slate-800 border-slate-700">
           <CardHeader className="pb-3">

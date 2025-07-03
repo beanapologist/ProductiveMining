@@ -89,10 +89,10 @@ export default function WalletPage() {
   const calculatedValue = prodValue + stakedValue + nftValue;
   const adjustmentFactor = calculatedValue > 0 ? targetPortfolioValue / calculatedValue : 1;
   
-  const adjustedProdValue = prodValue * adjustmentFactor;
-  const adjustedStakedValue = stakedValue * adjustmentFactor;
-  const adjustedNftValue = nftValue * adjustmentFactor;
-  const totalPortfolioValue = targetPortfolioValue;
+  const adjustedProdValue = (prodValue * adjustmentFactor) || 0;
+  const adjustedStakedValue = (stakedValue * adjustmentFactor) || 0;
+  const adjustedNftValue = (nftValue * adjustmentFactor) || 0;
+  const totalPortfolioValue = targetPortfolioValue || 0;
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -298,19 +298,19 @@ export default function WalletPage() {
             <span className="text-pink-400 font-semibold">Riemann Discoveries</span>
           </div>
           <div className="grid grid-cols-2 gap-2 mt-4">
-            <div className="text-center p-2 bg-slate-700/50 rounded-lg border border-slate-600">
+            <div key="riemann" className="text-center p-2 bg-slate-700/50 rounded-lg border border-slate-600">
               <div className="text-white font-bold">3</div>
               <div className="text-xs text-pink-300">Riemann</div>
             </div>
-            <div className="text-center p-2 bg-slate-700/50 rounded-lg border border-slate-600">
+            <div key="prime" className="text-center p-2 bg-slate-700/50 rounded-lg border border-slate-600">
               <div className="text-white font-bold">2</div>
               <div className="text-xs text-blue-300">Prime</div>
             </div>
-            <div className="text-center p-2 bg-slate-700/50 rounded-lg border border-slate-600">
+            <div key="yang-mills" className="text-center p-2 bg-slate-700/50 rounded-lg border border-slate-600">
               <div className="text-white font-bold">2</div>
               <div className="text-xs text-purple-300">Yang-Mills</div>
             </div>
-            <div className="text-center p-2 bg-slate-700/50 rounded-lg border border-slate-600">
+            <div key="quantum" className="text-center p-2 bg-slate-700/50 rounded-lg border border-slate-600">
               <div className="text-white font-bold">1</div>
               <div className="text-xs text-green-300">Quantum</div>
             </div>
