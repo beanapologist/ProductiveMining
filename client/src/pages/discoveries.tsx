@@ -58,9 +58,9 @@ export default function DiscoveriesPage() {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [activeTab, setActiveTab] = useState("discoveries");
 
-  const { data: initialDiscoveries = [] } = useQuery({
-    queryKey: ["/api/discoveries?limit=1000"],
-    enabled: !discoveries,
+  const { data: allDiscoveries = [] } = useQuery({
+    queryKey: ["/api/discoveries"],
+    queryFn: () => fetch("/api/discoveries?limit=1000").then(res => res.json()),
     refetchInterval: 10000,
   });
 
@@ -76,7 +76,7 @@ export default function DiscoveriesPage() {
     queryKey: ['/api/blocks'],
   });
 
-  const currentDiscoveries = discoveries && discoveries.length > 0 ? discoveries : (initialDiscoveries as MathematicalWork[] || []);
+  const currentDiscoveries = allDiscoveries as MathematicalWork[] || [];
 
   // Function to get immutable records related to a specific discovery
   const getDiscoveryRecords = (workId: number): ImmutableRecord[] => {

@@ -150,8 +150,11 @@ Changelog:
 - July 03, 2025. Enhanced backend metrics calculation to use real data instead of random values for accurate network statistics
 - July 03, 2025. Completed dashboard metrics fix with real-time data display showing positive miners (10-14) and blocks per hour (10-12) values
 - July 03, 2025. Fixed energy efficiency display to show dynamic real-time values (-635.41%) instead of hardcoded percentage
-- July 03, 2025. Fixed Mathematical Discoveries page to display all 167 mathematical discoveries instead of limiting to 10 records
+- July 03, 2025. Fixed Mathematical Discoveries page to display all 167+ mathematical discoveries instead of limiting to 10 records
 - July 03, 2025. Updated discoveries API default limit from 10 to 1000 to show complete productive mining achievements
+- July 03, 2025. Resolved JavaScript error in discoveries page (.replace() on undefined values) with proper safety checks
+- July 03, 2025. Fixed discovery statistics to show complete data (179+ discoveries) instead of limited WebSocket data
+- July 03, 2025. Enhanced frontend query with custom fetch function to properly load all discovery records with limit parameter
 ```
 
 ## User Preferences
