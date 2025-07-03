@@ -448,7 +448,7 @@ contract {{CONTRACT_NAME}} is Ownable, ReentrancyGuard {
       </div>
 
       <Tabs defaultValue="validators" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5 bg-slate-800 border-slate-700">
+        <TabsList className="grid w-full grid-cols-4 bg-slate-800 border-slate-700">
           <TabsTrigger value="validators" className="text-slate-300 data-[state=active]:text-white data-[state=active]:bg-slate-700">
             <Building2 className="w-4 h-4 mr-2" />
             Validators
@@ -464,10 +464,6 @@ contract {{CONTRACT_NAME}} is Ownable, ReentrancyGuard {
           <TabsTrigger value="submission" className="text-slate-300 data-[state=active]:text-white data-[state=active]:bg-slate-700">
             <FileCheck className="w-4 h-4 mr-2" />
             Submit Work
-          </TabsTrigger>
-          <TabsTrigger value="contracts" className="text-slate-300 data-[state=active]:text-white data-[state=active]:bg-slate-700">
-            <Code className="w-4 h-4 mr-2" />
-            Smart Contracts
           </TabsTrigger>
         </TabsList>
 
