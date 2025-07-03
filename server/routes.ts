@@ -233,7 +233,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get recent mathematical discoveries - ONLY REAL MINED DATA
   app.get("/api/discoveries", async (req, res) => {
     try {
-      const limit = parseInt(req.query.limit as string) || 10;
+      const limit = parseInt(req.query.limit as string) || 1000;
       const { db } = await import('./db');
       const { mathematicalWork } = await import('@shared/schema');
       const { gte } = await import('drizzle-orm');

@@ -59,8 +59,9 @@ export default function DiscoveriesPage() {
   const [activeTab, setActiveTab] = useState("discoveries");
 
   const { data: initialDiscoveries = [] } = useQuery({
-    queryKey: ["/api/discoveries"],
-    enabled: !discoveries
+    queryKey: ["/api/discoveries?limit=1000"],
+    enabled: !discoveries,
+    refetchInterval: 10000,
   });
 
   const { data: immutableRecords = [] } = useQuery<ImmutableRecord[]>({
