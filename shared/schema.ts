@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, real, timestamp, jsonb, boolean, varchar, decimal, bigint } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, real, timestamp, jsonb, boolean, varchar, decimal, bigint, numeric } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -302,3 +302,91 @@ export type StakingPool = typeof stakingPools.$inferSelect;
 export type InsertStakingPool = z.infer<typeof insertStakingPoolSchema>;
 export type TokenMarketData = typeof tokenMarketData.$inferSelect;
 export type InsertTokenMarketData = z.infer<typeof insertTokenMarketDataSchema>;
+
+// ============ INSTITUTIONAL VALIDATION PIPELINE ============
+
+// Institutional Validators - Academic and research institutions
+export const institutionalValidators = pgTable('institutional_validators', {
+  id: serial('id').primaryKey(),
+  institutionName: varchar('institution_name', { length: 255 }).notNull(),
+  institutionType: varchar('institution_type', { length: 100 }).notNull(), // 'university', 'research_institute', 'government_lab'
+  country: varchar('country', { length: 100 }).notNull(),
+  specialization: text('specialization').array().notNull(), // Areas of mathematical expertise
+  accreditation: varchar('accreditation', { length: 255 }).notNull(),
+  contactInfo: jsonb('contact_info').notNull(),
+  validatorPublicKey: varchar('validator_public_key', { length: 512 }).notNull().unique(),
+  reputation: decimal('reputation', { precision: 10, scale: 4 }).default('100.0000'),
+  totalValidations: integer('total_validations').default(0),
+  successfulValidations: integer('successful_validations').default(0),
+  isActive: boolean('is_active').default(true),
+  joinedAt: timestamp('joined_at').defaultNow().notNull(),
+  lastValidation: timestamp('last_validation'),
+});
+
+// Individual validation records from institutions
+export const institutionalValidations = pgTable('institutional_validations', {
+  id: serial('id').primaryKey(),
+  workId: integer('work_id').references(() => mathematicalWork.id).notNull(),
+  validatorId: integer('validator_id').references(() => institutionalValidators.id).notNull(),
+  validationType: varchar('validation_type', { length: 50 }).notNull(), // 'peer_review', 'computational_verification', 'theoretical_analysis'
+  validationStatus: varchar('validation_status', { length: 30 }).notNull(), // 'submitted', 'under_review', 'approved', 'rejected', 'requires_revision'
+  validationScore: decimal('validation_score', { precision: 5, scale: 2 }), // 0-100 confidence score
+  reviewData: jsonb('review_data').notNull(),
+  peerReviewers: text('peer_reviewers').array(), // List of expert reviewers
+  validationEvidence: jsonb('validation_evidence'), // Supporting mathematical proofs/computations
+  digitalSignature: varchar('digital_signature', { length: 512 }).notNull(),
+  submittedAt: timestamp('submitted_at').defaultNow().notNull(),
+  reviewedAt: timestamp('reviewed_at'),
+  comments: text('comments'),
+  revisionRequests: jsonb('revision_requests'),
+});
+
+// Pipeline tracking for multi-stage validation
+export const validationPipeline = pgTable('validation_pipeline', {
+  id: serial('id').primaryKey(),
+  workId: integer('work_id').references(() => mathematicalWork.id).notNull(),
+  pipelineStage: varchar('pipeline_stage', { length: 50 }).notNull(), // 'initial_submission', 'institutional_review', 'peer_consensus', 'final_certification'
+  currentValidators: integer('current_validators').array().notNull(),
+  requiredValidations: integer('required_validations').default(3),
+  completedValidations: integer('completed_validations').default(0),
+  approvalRate: decimal('approval_rate', { precision: 5, scale: 2 }).default('0.00'),
+  pipelineStatus: varchar('pipeline_status', { length: 30 }).default('active'), // 'active', 'completed', 'rejected', 'stalled'
+  priority: varchar('priority', { length: 20 }).default('normal'), // 'low', 'normal', 'high', 'critical'
+  estimatedCompletion: timestamp('estimated_completion'),
+  actualCompletion: timestamp('actual_completion'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  lastActivity: timestamp('last_activity').defaultNow(),
+});
+
+// Final certification records
+export const certificationRecords = pgTable('certification_records', {
+  id: serial('id').primaryKey(),
+  workId: integer('work_id').references(() => mathematicalWork.id).notNull(),
+  certificationLevel: varchar('certification_level', { length: 30 }).notNull(), // 'preliminary', 'verified', 'certified', 'landmark'
+  certifyingInstitutions: integer('certifying_institutions').array().notNull(),
+  consensusScore: decimal('consensus_score', { precision: 5, scale: 2 }).notNull(),
+  certificateHash: varchar('certificate_hash', { length: 64 }).notNull().unique(),
+  mathematicalSignificance: varchar('mathematical_significance', { length: 100 }), // 'breakthrough', 'advancement', 'incremental', 'foundational'
+  blockchainRecord: varchar('blockchain_record', { length: 64 }), // Reference to immutable blockchain record
+  validityPeriod: integer('validity_period').default(31536000), // Seconds (default 1 year)
+  certifiedAt: timestamp('certified_at').defaultNow().notNull(),
+  expiresAt: timestamp('expires_at'),
+  revoked: boolean('revoked').default(false),
+  revocationReason: text('revocation_reason'),
+});
+
+// Insert schemas for institutional validation
+export const insertInstitutionalValidatorSchema = createInsertSchema(institutionalValidators);
+export const insertInstitutionalValidationSchema = createInsertSchema(institutionalValidations);
+export const insertValidationPipelineSchema = createInsertSchema(validationPipeline);
+export const insertCertificationRecordSchema = createInsertSchema(certificationRecords);
+
+// Types for institutional validation
+export type InstitutionalValidator = typeof institutionalValidators.$inferSelect;
+export type InsertInstitutionalValidator = z.infer<typeof insertInstitutionalValidatorSchema>;
+export type InstitutionalValidation = typeof institutionalValidations.$inferSelect;
+export type InsertInstitutionalValidation = z.infer<typeof insertInstitutionalValidationSchema>;
+export type ValidationPipeline = typeof validationPipeline.$inferSelect;
+export type InsertValidationPipeline = z.infer<typeof insertValidationPipelineSchema>;
+export type CertificationRecord = typeof certificationRecords.$inferSelect;
+export type InsertCertificationRecord = z.infer<typeof insertCertificationRecordSchema>;

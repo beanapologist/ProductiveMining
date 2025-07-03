@@ -5,6 +5,7 @@ import { storage } from "./storage";
 import { insertMiningOperationSchema, type WebSocketMessage, type MiningProgressMessage, type BlockMinedMessage } from "@shared/schema";
 import { immutableRecordsEngine } from "./immutable-records-engine";
 import { posAuditEngine } from "./pos-audit-engine";
+import { institutionalValidationEngine } from "./institutional-validation-engine";
 
 // Blockchain utility functions
 function generateSimpleHash(input: string): string {
@@ -2594,6 +2595,115 @@ export async function registerRoutes(app: Express): Promise<Server> {
     };
     return scores[workType] || 10;
   }
+
+  // ============ INSTITUTIONAL VALIDATION PIPELINE ROUTES ============
+
+  // Initialize institutional validators
+  app.post('/api/institutional/validators/init', async (req, res) => {
+    try {
+      const validators = await institutionalValidationEngine.initializeInstitutionalValidators();
+      res.json({
+        message: `Initialized ${validators.length} institutional validators`,
+        validators: validators.map(v => ({
+          id: v.id,
+          institution: v.institutionName,
+          type: v.institutionType,
+          country: v.country,
+          specialization: v.specialization,
+          reputation: v.reputation
+        }))
+      });
+    } catch (error) {
+      console.error('Failed to initialize institutional validators:', error);
+      res.status(500).json({ error: 'Failed to initialize validators' });
+    }
+  });
+
+  // Submit work to validation pipeline
+  app.post('/api/institutional/validate/:workId', async (req, res) => {
+    try {
+      const workId = parseInt(req.params.workId);
+      const pipeline = await institutionalValidationEngine.submitToValidationPipeline(workId);
+      res.json({
+        message: `Submitted work ${workId} to institutional validation pipeline`,
+        pipeline: {
+          id: pipeline.id,
+          stage: pipeline.pipelineStage,
+          status: pipeline.pipelineStatus,
+          requiredValidations: pipeline.requiredValidations,
+          estimatedCompletion: pipeline.estimatedCompletion
+        }
+      });
+    } catch (error) {
+      console.error('Failed to submit to validation pipeline:', error);
+      res.status(500).json({ error: 'Failed to submit to validation pipeline' });
+    }
+  });
+
+  // Process institutional validation
+  app.post('/api/institutional/validate/:workId/review', async (req, res) => {
+    try {
+      const workId = parseInt(req.params.workId);
+      const { validatorId, validationType, validationScore, reviewData, comments } = req.body;
+      
+      const validation = await institutionalValidationEngine.processInstitutionalValidation(
+        workId,
+        validatorId,
+        validationType,
+        validationScore,
+        reviewData,
+        comments
+      );
+      
+      res.json({
+        message: `Institutional validation completed for work ${workId}`,
+        validation: {
+          id: validation.id,
+          status: validation.validationStatus,
+          score: validation.validationScore,
+          validator: validatorId,
+          reviewedAt: validation.reviewedAt
+        }
+      });
+    } catch (error) {
+      console.error('Failed to process institutional validation:', error);
+      res.status(500).json({ error: 'Failed to process validation' });
+    }
+  });
+
+  // Get validation pipeline reports
+  app.get('/api/institutional/pipeline', async (req, res) => {
+    try {
+      const workId = req.query.workId ? parseInt(req.query.workId as string) : undefined;
+      const reports = await institutionalValidationEngine.getValidationPipelineReport(workId);
+      res.json(reports);
+    } catch (error) {
+      console.error('Failed to get pipeline reports:', error);
+      res.status(500).json({ error: 'Failed to get pipeline reports' });
+    }
+  });
+
+  // Get institutional validators
+  app.get('/api/institutional/validators', async (req, res) => {
+    try {
+      const validators = await storage.getInstitutionalValidators();
+      res.json(validators);
+    } catch (error) {
+      console.error('Failed to get institutional validators:', error);
+      res.status(500).json({ error: 'Failed to get validators' });
+    }
+  });
+
+  // Get certification records
+  app.get('/api/institutional/certifications', async (req, res) => {
+    try {
+      const certifications = await storage.getCertificationRecords();
+      res.json(certifications);
+    } catch (error) {
+      console.error('Failed to get certifications:', error);
+      res.status(500).json({ error: 'Failed to get certifications' });
+    }
+  });
 
   return httpServer;
 }

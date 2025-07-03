@@ -22,7 +22,19 @@ import {
   type DiscoveryValidation,
   type InsertDiscoveryValidation,
   type ImmutableRecord,
-  type InsertImmutableRecord
+  type InsertImmutableRecord,
+  institutionalValidators,
+  institutionalValidations,
+  validationPipeline,
+  certificationRecords,
+  type InstitutionalValidator,
+  type InsertInstitutionalValidator,
+  type InstitutionalValidation,
+  type InsertInstitutionalValidation,
+  type ValidationPipeline,
+  type InsertValidationPipeline,
+  type CertificationRecord,
+  type InsertCertificationRecord
 } from "@shared/schema";
 
 export interface IStorage {
@@ -69,6 +81,10 @@ export interface IStorage {
   getRecordsByType(recordType: string): Promise<ImmutableRecord[]>;
   verifyRecordIntegrity(recordId: number): Promise<boolean>;
   getRecordChain(recordId: number): Promise<ImmutableRecord[]>;
+
+  // Institutional Validation Pipeline
+  getInstitutionalValidators(): Promise<InstitutionalValidator[]>;
+  getCertificationRecords(): Promise<CertificationRecord[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -321,6 +337,17 @@ export class DatabaseStorage implements IStorage {
     }
     
     return records;
+  }
+
+  // Institutional Validation Pipeline methods
+  async getInstitutionalValidators(): Promise<InstitutionalValidator[]> {
+    return await db.select().from(institutionalValidators)
+      .orderBy(desc(institutionalValidators.reputation));
+  }
+
+  async getCertificationRecords(): Promise<CertificationRecord[]> {
+    return await db.select().from(certificationRecords)
+      .orderBy(desc(certificationRecords.certifiedAt));
   }
 }
 
