@@ -1536,8 +1536,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (result.applied) {
         // Start new high-difficulty mining operations with updated difficulty
-        const { startAutonomousMining } = await import('./routes');
-        await startAutonomousMining(result.newDifficulty, 3); // Start 3 miners
+        console.log(`🔧 COMPLEXITY SCALING: Starting 3 miners at new difficulty ${result.newDifficulty}`);
+        
+        // Spawn autonomous miners with new difficulty level
+        const workTypes = ['riemann_zero', 'prime_pattern', 'yang_mills'];
+        for (let i = 0; i < 3; i++) {
+          const workType = workTypes[i];
+          const minerId = `scaling_miner_${Date.now()}_${i}`;
+          
+          try {
+            const operation = await storage.createMiningOperation({
+              operationType: workType,
+              minerId,
+              startTime: new Date(),
+              estimatedCompletion: new Date(Date.now() + 120000 + (i * 30000)),
+              progress: 0,
+              currentResult: { status: 'initializing', difficulty: result.newDifficulty },
+              difficulty: result.newDifficulty,
+              status: 'active'
+            });
+
+            // Start mining computation immediately
+            setTimeout(async () => {
+              try {
+                console.log(`🚀 SCALING MINER ${i + 1}: Starting ${workType} at difficulty ${result.newDifficulty}`);
+                
+                let computationResult;
+                switch (workType) {
+                  case 'riemann_zero':
+                    computationResult = await computeRealRiemannZero(result.newDifficulty);
+                    break;
+                  case 'prime_pattern':
+                    computationResult = await computeRealPrimePattern(result.newDifficulty);
+                    break;
+                  case 'yang_mills':
+                    computationResult = await computeYangMills(result.newDifficulty);
+                    break;
+                }
+                
+                // Complete mining operation and create block
+                await storage.updateMiningOperation(operation.id, {
+                  status: 'completed',
+                  progress: 100,
+                  currentResult: computationResult
+                });
+
+                const work = await storage.createMathematicalWork({
+                  workType,
+                  difficulty: result.newDifficulty,
+                  result: computationResult.computationResult,
+                  verificationData: computationResult.verificationData,
+                  computationalCost: Math.min(Math.floor(computationResult.computationalCost || 900000), 2147483647),
+                  energyEfficiency: Math.min(Math.floor(computationResult.energyEfficiency || 111), 2147483647),
+                  scientificValue: Math.min(Math.floor(computationResult.scientificValue || 100000), 2147483647),
+                  workerId: minerId,
+                  signature: computationResult.cryptographicSignature || `scaling_${workType}_${Date.now()}`
+                });
+
+                console.log(`⛏️ SCALING DISCOVERY: Miner ${i + 1} completed ${workType} with new difficulty ${result.newDifficulty}`);
+                
+              } catch (error) {
+                console.error(`❌ SCALING MINER ${i + 1} FAILED:`, error);
+              }
+            }, 2000 + (i * 1000));
+            
+          } catch (error) {
+            console.error(`Failed to spawn scaling miner ${i + 1}:`, error);
+          }
+        }
         
         // Broadcast scaling update
         broadcast({
