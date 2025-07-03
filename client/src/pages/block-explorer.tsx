@@ -122,6 +122,7 @@ export default function BlockExplorerPage() {
     return typeMap[formatted] || formatted;
   };
 
+  // Calculate actual totals from current network data
   const totalScientificValue = currentBlocks.reduce((sum: number, block: ProductiveBlock) => 
     sum + (block.totalScientificValue || 0), 0
   );
@@ -134,6 +135,17 @@ export default function BlockExplorerPage() {
   const latestDifficulty = currentBlocks.length > 0 
     ? Math.max(...currentBlocks.map(block => block.difficulty || 0))
     : 0;
+
+  // Get actual block count (should show current productive mining blocks)
+  const actualBlockCount = currentBlocks.length;
+  
+  // Format large numbers properly
+  const formatCurrency = (value: number) => {
+    if (value >= 1000000) {
+      return `$${(value / 1000000).toFixed(1)}M`;
+    }
+    return `$${value.toLocaleString()}`;
+  };
 
   return (
     <div className="text-slate-100">
@@ -158,7 +170,7 @@ export default function BlockExplorerPage() {
                   <Database className="h-5 w-5 text-blue-400" />
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-white">{currentBlocks.length}</div>
+                  <div className="text-2xl font-bold text-white">{actualBlockCount}</div>
                   <div className="text-sm text-slate-400">Total Blocks</div>
                 </div>
               </div>
@@ -172,7 +184,7 @@ export default function BlockExplorerPage() {
                   <Award className="h-5 w-5 text-purple-400" />
                 </div>
                 <div>
-                  <div className="text-2xl font-bold text-white">${totalScientificValue.toLocaleString()}</div>
+                  <div className="text-2xl font-bold text-white">{formatCurrency(totalScientificValue)}</div>
                   <div className="text-sm text-slate-400">Scientific Value</div>
                 </div>
               </div>
