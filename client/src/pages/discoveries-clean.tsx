@@ -44,6 +44,34 @@ interface ImmutableRecord {
   lastVerificationCheck?: string;
 }
 
+// Hybrid Mathematical System interfaces
+interface HybridCapabilities {
+  realComputationTypes: string[];
+  realComputationThreshold: number;
+  simulatedComputationTypes: string[];
+  hybridCapabilities: {
+    intelligentRouting: boolean;
+    fallbackMechanism: boolean;
+    independentVerification: boolean;
+    scientificValuation: boolean;
+  };
+  systemVersion: string;
+  lastUpdated: string;
+}
+
+interface RealComputationResult {
+  workType: string;
+  success: boolean;
+  mode: string;
+  computationTime: number;
+  energyConsumed: number;
+  verified: boolean;
+  realComputation: boolean;
+  scientificValue: number;
+  resultKeys: string[];
+  timestamp: string;
+}
+
 // Emergent AI Components
 interface EmergentPattern {
   id: string;
@@ -452,6 +480,20 @@ export default function DiscoveriesPage() {
     queryKey: ['/api/blocks']
   });
 
+  // Fetch hybrid system capabilities
+  const { data: hybridCapabilities, isLoading: hybridLoading } = useQuery<HybridCapabilities>({
+    queryKey: ['/api/hybrid-system/capabilities'],
+    refetchInterval: 30000,
+  });
+
+  // Fetch hybrid system test results
+  const { data: hybridTestResults, isLoading: testLoading, refetch: refetchTests } = useQuery({
+    queryKey: ['/api/hybrid-system/test'],
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    enabled: false, // Only fetch when manually triggered
+  });
+
   const discoveries = Array.isArray(discoveryData) ? discoveryData : [];
 
   // Filter and sort discoveries
@@ -561,10 +603,14 @@ export default function DiscoveriesPage() {
       </div>
 
       <Tabs defaultValue="discoveries" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5 bg-slate-800 border-slate-700">
+        <TabsList className="grid w-full grid-cols-6 bg-slate-800 border-slate-700">
           <TabsTrigger value="discoveries" className="data-[state=active]:bg-purple-600">
             <Microscope className="h-4 w-4 mr-2" />
             Discoveries
+          </TabsTrigger>
+          <TabsTrigger value="real-computation" className="data-[state=active]:bg-emerald-600">
+            <Calculator className="h-4 w-4 mr-2" />
+            Real Computation
           </TabsTrigger>
           <TabsTrigger value="ai-analytics" className="data-[state=active]:bg-cyan-600">
             <Brain className="h-4 w-4 mr-2" />
@@ -793,6 +839,314 @@ export default function DiscoveriesPage() {
               ))
             )}
           </div>
+        </TabsContent>
+
+        <TabsContent value="real-computation" className="space-y-6">
+          {/* Hybrid Mathematical System Status */}
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <Calculator className="mr-2 h-5 w-5 text-emerald-400" />
+                Hybrid Mathematical System
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Revolutionary system combining real mathematical computation with intelligent simulation routing
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {hybridLoading ? (
+                <div className="animate-pulse space-y-4">
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                </div>
+              ) : hybridCapabilities ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <Card className="bg-emerald-900/20 border-emerald-600/30">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-emerald-300">Real Algorithms</p>
+                          <p className="text-2xl font-bold text-emerald-400">
+                            {hybridCapabilities.realComputationTypes.length}
+                          </p>
+                        </div>
+                        <Cpu className="h-8 w-8 text-emerald-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-blue-900/20 border-blue-600/30">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-blue-300">Simulated Types</p>
+                          <p className="text-2xl font-bold text-blue-400">
+                            {hybridCapabilities.simulatedComputationTypes.length}
+                          </p>
+                        </div>
+                        <Network className="h-8 w-8 text-blue-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-purple-900/20 border-purple-600/30">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-purple-300">Threshold</p>
+                          <p className="text-2xl font-bold text-purple-400">
+                            {hybridCapabilities.realComputationThreshold}
+                          </p>
+                        </div>
+                        <Target className="h-8 w-8 text-purple-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  <Card className="bg-cyan-900/20 border-cyan-600/30">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm text-cyan-300">System Version</p>
+                          <p className="text-2xl font-bold text-cyan-400">
+                            v{hybridCapabilities.systemVersion}
+                          </p>
+                        </div>
+                        <Award className="h-8 w-8 text-cyan-400" />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              ) : (
+                <p className="text-gray-400">Failed to load hybrid system capabilities</p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Real Mathematical Algorithms */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card className="bg-slate-800 border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center">
+                  <FlaskConical className="mr-2 h-5 w-5 text-emerald-400" />
+                  Real Mathematical Algorithms
+                </CardTitle>
+                <CardDescription className="text-gray-400">
+                  Authentic mathematical computation for tractable problems
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {hybridCapabilities?.realComputationTypes ? (
+                  <div className="space-y-3">
+                    {hybridCapabilities.realComputationTypes.map((type, index) => (
+                      <div key={index} className="p-3 bg-emerald-900/20 rounded-lg border border-emerald-600/30">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
+                            <span className="text-emerald-300 font-medium">
+                              {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            </span>
+                          </div>
+                          <Badge className="bg-emerald-600 text-white text-xs">Real</Badge>
+                        </div>
+                        <p className="text-xs text-emerald-400/70 mt-1 ml-5">
+                          {type === 'goldbach_verification' && 'Verifies Goldbach conjecture for even numbers'}
+                          {type === 'prime_gap_analysis' && 'Analyzes gaps between consecutive primes'}
+                          {type === 'fibonacci_patterns' && 'Studies Fibonacci sequence convergence patterns'}
+                          {type === 'collatz_verification' && 'Verifies Collatz sequence properties'}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-400">Loading real computation types...</p>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="bg-slate-800 border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center">
+                  <Atom className="mr-2 h-5 w-5 text-blue-400" />
+                  Simulated Mathematical Types
+                </CardTitle>
+                <CardDescription className="text-gray-400">
+                  Advanced simulation for complex mathematical problems
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {hybridCapabilities?.simulatedComputationTypes ? (
+                  <div className="space-y-3">
+                    {hybridCapabilities.simulatedComputationTypes.slice(0, 4).map((type, index) => (
+                      <div key={index} className="p-3 bg-blue-900/20 rounded-lg border border-blue-600/30">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                            <span className="text-blue-300 font-medium">
+                              {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            </span>
+                          </div>
+                          <Badge className="bg-blue-600 text-white text-xs">Simulation</Badge>
+                        </div>
+                        <p className="text-xs text-blue-400/70 mt-1 ml-5">
+                          {type === 'riemann_zero' && 'Complex analysis of Riemann zeta function zeros'}
+                          {type === 'yang_mills' && 'Quantum field theory gauge mechanics'}
+                          {type === 'navier_stokes' && 'Fluid dynamics differential equations'}
+                          {type === 'prime_pattern' && 'Advanced prime distribution patterns'}
+                        </p>
+                      </div>
+                    ))}
+                    {hybridCapabilities.simulatedComputationTypes.length > 4 && (
+                      <div className="text-center text-gray-400 text-sm">
+                        +{hybridCapabilities.simulatedComputationTypes.length - 4} more types
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-gray-400">Loading simulated computation types...</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* System Testing and Capabilities */}
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <Activity className="mr-2 h-5 w-5 text-orange-400" />
+                Real Computation Testing
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Test and verify real mathematical computation capabilities
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-4">
+                  <Button
+                    onClick={() => refetchTests()}
+                    disabled={testLoading}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  >
+                    {testLoading ? (
+                      <>
+                        <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
+                        Testing...
+                      </>
+                    ) : (
+                      <>
+                        <Play className="h-4 w-4 mr-2" />
+                        Run Real Computation Tests
+                      </>
+                    )}
+                  </Button>
+                  
+                  {hybridTestResults && (
+                    <div className="flex items-center space-x-2">
+                      <Badge className="bg-green-600 text-white">
+                        {hybridTestResults.successfulTests}/{hybridTestResults.totalTests} Tests Passed
+                      </Badge>
+                      {hybridTestResults.realComputationCount && (
+                        <Badge className="bg-emerald-600 text-white">
+                          {hybridTestResults.realComputationCount} Real Computations
+                        </Badge>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {hybridTestResults?.testResults && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    {hybridTestResults.testResults.map((result: any, index: number) => (
+                      <div key={index} className="p-4 bg-slate-700/50 rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-white">
+                            {result.workType.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())}
+                          </span>
+                          <div className="flex items-center space-x-2">
+                            {result.success ? (
+                              <CheckCircle className="h-4 w-4 text-green-400" />
+                            ) : (
+                              <div className="h-4 w-4 bg-red-400 rounded-full"></div>
+                            )}
+                            {result.realComputation && (
+                              <Badge className="bg-emerald-600 text-white text-xs">Real</Badge>
+                            )}
+                          </div>
+                        </div>
+                        
+                        {result.success ? (
+                          <div className="space-y-1 text-xs text-gray-400">
+                            <div className="flex justify-between">
+                              <span>Mode:</span>
+                              <span className={result.mode === 'real' ? 'text-emerald-400' : 'text-blue-400'}>
+                                {result.mode}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Time:</span>
+                              <span className="text-orange-400">{result.computationTime?.toFixed(3)}s</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span>Energy:</span>
+                              <span className="text-green-400">{result.energyConsumed?.toFixed(4)} kWh</span>
+                            </div>
+                            {result.scientificValue && (
+                              <div className="flex justify-between">
+                                <span>Value:</span>
+                                <span className="text-purple-400">${result.scientificValue}</span>
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <p className="text-xs text-red-400">{result.error}</p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* System Capabilities Overview */}
+          {hybridCapabilities?.hybridCapabilities && (
+            <Card className="bg-slate-800 border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center">
+                  <Sparkles className="mr-2 h-5 w-5 text-purple-400" />
+                  Advanced Capabilities
+                </CardTitle>
+                <CardDescription className="text-gray-400">
+                  Core features of the hybrid mathematical system
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {Object.entries(hybridCapabilities.hybridCapabilities).map(([key, value]) => (
+                    <div key={key} className="p-4 bg-slate-700/30 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm text-gray-300">
+                          {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                        </span>
+                        {value ? (
+                          <CheckCircle className="h-5 w-5 text-green-400" />
+                        ) : (
+                          <div className="h-5 w-5 bg-red-400 rounded-full"></div>
+                        )}
+                      </div>
+                      <div className="text-xs text-gray-400">
+                        {key === 'intelligentRouting' && 'Automatically routes between real and simulated computation'}
+                        {key === 'fallbackMechanism' && 'Graceful fallback when real computation fails'}
+                        {key === 'independentVerification' && 'Peer verification for blockchain consensus'}
+                        {key === 'scientificValuation' && 'Realistic valuation of mathematical discoveries'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         <TabsContent value="ai-analytics" className="space-y-6">
