@@ -24,7 +24,7 @@ export default function MiningPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedWorkType, setSelectedWorkType] = useState('riemann_zero');
-  const [difficulty, setDifficulty] = useState([150]);
+  const [difficulty, setDifficulty] = useState([280]);
 
   const { data: currentOperations = [], isLoading } = useQuery<MiningOperation[]>({
     queryKey: ['/api/mining/operations'],
@@ -231,9 +231,9 @@ export default function MiningPage() {
               <Slider
                 value={difficulty}
                 onValueChange={setDifficulty}
-                max={150}
-                min={50}
-                step={5}
+                max={400}
+                min={200}
+                step={10}
                 className="w-full"
               />
             </div>
