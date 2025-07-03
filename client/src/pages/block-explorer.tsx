@@ -104,6 +104,11 @@ export default function BlockExplorerPage() {
     sum + (block.energyConsumed || 0), 0
   );
 
+  // Get the latest difficulty from the most recent block (highest index)
+  const latestDifficulty = currentBlocks.length > 0 
+    ? Math.max(...currentBlocks.map(block => block.difficulty || 0))
+    : 0;
+
   return (
     <div className="text-slate-100">
       <div className="container mx-auto px-4 py-6">
@@ -170,7 +175,7 @@ export default function BlockExplorerPage() {
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-white">
-                    {currentBlocks.length > 0 ? currentBlocks[0]?.difficulty || 0 : 0}
+                    {latestDifficulty}
                   </div>
                   <div className="text-sm text-slate-400">Latest Difficulty</div>
                 </div>
