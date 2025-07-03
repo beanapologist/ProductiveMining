@@ -4,6 +4,7 @@ import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { insertMiningOperationSchema, type WebSocketMessage, type MiningProgressMessage, type BlockMinedMessage } from "@shared/schema";
 import { immutableRecordsEngine } from "./immutable-records-engine";
+import { posAuditEngine } from "./pos-audit-engine";
 
 // Blockchain utility functions
 function generateSimpleHash(input: string): string {
@@ -1603,6 +1604,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Backfill failed:', error);
       res.status(500).json({ error: 'Failed to backfill records' });
+    }
+  });
+
+  // Manual audit for missing records
+  app.post('/api/manual-audit', async (req, res) => {
+    try {
+      const { runManualAudit } = await import('./manual-audit');
+      const result = await runManualAudit();
+      res.json(result);
+    } catch (error) {
+      console.error('Manual audit failed:', error);
+      res.status(500).json({ error: 'Manual audit failed' });
+    }
+  });
+
+  // PoS Audit Routes
+  app.post('/api/pos/audit', async (req, res) => {
+    try {
+      console.log('🔍 Starting comprehensive PoS audit...');
+      const auditReport = await posAuditEngine.performComprehensiveAudit();
+      res.json(auditReport);
+    } catch (error) {
+      console.error('PoS audit failed:', error);
+      res.status(500).json({ error: 'Failed to perform PoS audit' });
+    }
+  });
+
+  app.get('/api/pos/audit/work/:workId', async (req, res) => {
+    try {
+      const workId = parseInt(req.params.workId);
+      const consensusResult = await posAuditEngine.auditWorkConsensus(workId);
+      res.json(consensusResult);
+    } catch (error) {
+      console.error('Work consensus audit failed:', error);
+      res.status(500).json({ error: 'Failed to audit work consensus' });
+    }
+  });
+
+  app.post('/api/pos/consensus/:workId', async (req, res) => {
+    try {
+      const workId = parseInt(req.params.workId);
+      const consensusRecord = await posAuditEngine.recordConsensusDecision(workId);
+      if (consensusRecord) {
+        res.json({ 
+          message: 'Consensus decision recorded',
+          record: consensusRecord 
+        });
+      } else {
+        res.json({ 
+          message: 'No consensus reached or already recorded',
+          record: null 
+        });
+      }
+    } catch (error) {
+      console.error('Consensus recording failed:', error);
+      res.status(500).json({ error: 'Failed to record consensus decision' });
     }
   });
 
