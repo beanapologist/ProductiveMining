@@ -36,6 +36,7 @@ function Router() {
         <Route path="/institutional" component={InstitutionalValidation} />
         <Route path="/security" component={SecurityDashboard} />
         <Route path="/complexity" component={ComplexityAnalysisPage} />
+        <Route path="/valuation" component={ScientificValuation} />
 
         <Route path="/blocks" component={BlockExplorer} />
         <Route path="/wallet" component={WalletPage} />
