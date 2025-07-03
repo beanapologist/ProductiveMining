@@ -3919,5 +3919,122 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Recursive Enhancement Engine API Routes
+  app.get('/api/recursive-enhancement/status', async (req, res) => {
+    try {
+      const { recursiveEnhancementEngine } = await import('./recursive-enhancement-engine');
+      const status = recursiveEnhancementEngine.getSystemStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('Error getting recursive enhancement status:', error);
+      res.status(500).json({ error: 'Failed to get system status' });
+    }
+  });
+
+  app.get('/api/recursive-enhancement/genealogy', async (req, res) => {
+    try {
+      const { recursiveEnhancementEngine } = await import('./recursive-enhancement-engine');
+      const genealogy = recursiveEnhancementEngine.getAlgorithmGenealogy();
+      res.json(genealogy);
+    } catch (error) {
+      console.error('Error getting algorithm genealogy:', error);
+      res.status(500).json({ error: 'Failed to get genealogy data' });
+    }
+  });
+
+  app.post('/api/recursive-enhancement/trigger-cycle', async (req, res) => {
+    try {
+      const { recursiveEnhancementEngine } = await import('./recursive-enhancement-engine');
+      const result = await recursiveEnhancementEngine.runEnhancementCycle();
+      res.json(result);
+    } catch (error) {
+      console.error('Error triggering enhancement cycle:', error);
+      res.status(500).json({ error: 'Failed to trigger enhancement cycle' });
+    }
+  });
+
+  // Enhanced API Overview - All Available Endpoints
+  app.get('/api/overview', async (req, res) => {
+    try {
+      const endpoints = {
+        core: {
+          discoveries: '/api/discoveries',
+          blocks: '/api/blocks',
+          mining: '/api/mining/operations',
+          metrics: '/api/metrics',
+          validations: '/api/validations'
+        },
+        advanced: {
+          emergentAI: {
+            analysis: '/api/emergent-ai/analysis',
+            metrics: '/api/emergent-ai/metrics',
+            unification: '/api/emergent-ai/unification'
+          },
+          recursiveEnhancement: {
+            status: '/api/recursive-enhancement/status',
+            genealogy: '/api/recursive-enhancement/genealogy',
+            triggerCycle: '/api/recursive-enhancement/trigger-cycle'
+          },
+          complexityScaling: {
+            analysis: '/api/complexity-scaling/analysis',
+            metrics: '/api/complexity/metrics',
+            apply: '/api/complexity-scaling/apply'
+          },
+          security: {
+            insights: '/api/security/insights',
+            threats: '/api/threat-detection/analyze',
+            mitigation: '/api/threat-detection/mitigate'
+          },
+          institutional: {
+            validators: '/api/institutional/validators',
+            pipeline: '/api/institutional/pipeline',
+            certifications: '/api/institutional/certifications'
+          }
+        },
+        blockchain: {
+          immutableRecords: '/api/immutable-records',
+          dataIntegrity: '/api/data-integrity/check',
+          posValidation: '/api/pos/validate',
+          smartContracts: '/api/smart-contracts/generate'
+        },
+        token: {
+          metrics: '/api/token/metrics',
+          staking: '/api/token/staking',
+          nfts: '/api/token/nfts',
+          wallet: '/api/wallet/create'
+        }
+      };
+
+      const systemStats = {
+        totalEndpoints: Object.values(endpoints).reduce((total, category) => {
+          return total + Object.keys(category).length;
+        }, 0),
+        categories: Object.keys(endpoints).length,
+        lastUpdated: new Date(),
+        version: '2.1.0',
+        features: [
+          'Productive Mining Operations',
+          'Emergent AI Pattern Recognition',
+          'Recursive Algorithm Enhancement',
+          'Complexity Scaling Automation',
+          'Cross-Disciplinary Synthesis',
+          'Institutional Validation',
+          'Cryptographic Security Enhancement',
+          'Immutable Audit Records',
+          'Token Economics Integration'
+        ]
+      };
+
+      res.json({
+        endpoints,
+        systemStats,
+        documentation: 'Advanced productive mining blockchain platform with emergent AI capabilities'
+      });
+    } catch (error) {
+      console.error('Error generating API overview:', error);
+      res.status(500).json({ error: 'Failed to generate API overview' });
+    }
+  });
+
   return httpServer;
 }
