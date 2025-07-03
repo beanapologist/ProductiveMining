@@ -130,8 +130,10 @@ export default function BlockExplorerPage() {
     ? Math.max(...currentBlocks.map(block => block.difficulty || 0))
     : 0;
 
-  // Get actual block count (should show current productive mining blocks)
-  const actualBlockCount = currentBlocks.length;
+  // Get actual block count from highest block index (total blocks mined)
+  const actualBlockCount = currentBlocks.length > 0 
+    ? Math.max(...currentBlocks.map(block => block.index || 0)) + 1
+    : 0;
   
   // Format large numbers properly
   const formatCurrency = (value: number) => {
