@@ -28,7 +28,7 @@ export default function MiningPage() {
   const { toast } = useToast();
   
   const [selectedWorkType, setSelectedWorkType] = useState("riemann_zero");
-  const [difficulty, setDifficulty] = useState([250]);
+  const [difficulty, setDifficulty] = useState([280]);
 
   const { data: initialOperations = [] } = useQuery({
     queryKey: ["/api/mining/operations"],
@@ -247,15 +247,15 @@ export default function MiningPage() {
                 <Slider
                   value={difficulty}
                   onValueChange={setDifficulty}
-                  max={300}
+                  max={400}
                   min={200}
                   step={10}
                   className="w-full"
                 />
                 <div className="flex justify-between text-xs text-slate-400 mt-1">
                   <span>Military Grade (200)</span>
-                  <span>Ultra Secure (250)</span>
-                  <span>Maximum (300)</span>
+                  <span>Enhanced Security (300)</span>
+                  <span>Maximum Power (400)</span>
                 </div>
               </div>
 
