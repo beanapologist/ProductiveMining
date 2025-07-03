@@ -38,14 +38,14 @@ function Navigation() {
   const [location] = useLocation();
   
   const navItems = [
-    { path: '/', label: 'Computation Dashboard', icon: BarChart3 },
-    { path: '/mining', label: 'Mathematical Mining', icon: Pickaxe },
-    { path: '/discoveries', label: 'Research Results', icon: Brain },
-    { path: '/validators', label: 'PoS Validators', icon: Users },
-    { path: '/institutional', label: 'Academic Validation', icon: GraduationCap },
-    { path: '/security', label: 'Cryptographic Security', icon: Shield },
-    { path: '/blocks', label: 'Blockchain Explorer', icon: Database },
-    { path: '/about', label: 'About', icon: Info }
+    { path: '/', label: '🎮 Adventure Hub', icon: BarChart3 },
+    { path: '/mining', label: '⛏️ Mining Quest', icon: Pickaxe },
+    { path: '/discoveries', label: '🧬 Discovery Lab', icon: Brain },
+    { path: '/validators', label: '🏛️ Guild Council', icon: Users },
+    { path: '/institutional', label: '🎓 Academy', icon: GraduationCap },
+    { path: '/security', label: '🛡️ Crypto Fortress', icon: Shield },
+    { path: '/blocks', label: '📊 Data Vault', icon: Database },
+    { path: '/about', label: 'ℹ️ Game Info', icon: Info }
   ];
 
   return (

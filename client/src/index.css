@@ -372,3 +372,123 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, var(--blue-600), var(--purple-600));
 }
+/* Gaming UI Enhancements */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+  50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.8); }
+}
+
+@keyframes achievement-pop {
+  0% { transform: scale(0) rotate(-12deg); opacity: 0; }
+  50% { transform: scale(1.1) rotate(3deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes level-up {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); color: #fbbf24; }
+  100% { transform: scale(1); }
+}
+
+@keyframes xp-bar-fill {
+  0% { width: 0%; }
+  100% { width: var(--fill-percentage); }
+}
+
+@keyframes discovery-beam {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(400%) skewX(-15deg); }
+}
+
+.game-card {
+  @apply relative overflow-hidden bg-gradient-to-br from-slate-800/90 via-blue-900/90 to-indigo-900/90 
+         backdrop-blur-md border border-blue-500/30 rounded-xl shadow-2xl transition-all duration-300;
+}
+
+.game-card:hover {
+  @apply border-blue-400/50 shadow-blue-500/20;
+  transform: translateY(-2px);
+}
+
+.achievement-badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold
+         bg-gradient-to-r from-yellow-400 to-orange-500 text-black
+         shadow-lg transform transition-all duration-300 hover:scale-110;
+  animation: achievement-pop 0.6s ease-out;
+}
+
+.level-indicator {
+  @apply inline-flex items-center px-4 py-2 rounded-full text-sm font-bold
+         bg-gradient-to-r from-purple-500 to-pink-500 text-white
+         shadow-lg border-2 border-white/20;
+}
+
+.xp-bar {
+  @apply relative h-3 bg-gray-700 rounded-full overflow-hidden border border-gray-600;
+}
+
+.xp-fill {
+  @apply h-full bg-gradient-to-r from-green-400 to-blue-500 rounded-full relative;
+  animation: xp-bar-fill 2s ease-out;
+}
+
+.metric-gem {
+  @apply relative inline-flex items-center justify-center w-16 h-16 rounded-full
+         bg-gradient-to-br from-blue-400 to-purple-600 text-white font-bold text-lg
+         shadow-xl border-2 border-white/30 transform transition-all duration-300;
+}
+
+.metric-gem:hover {
+  animation: pulse-glow 1.5s infinite;
+  transform: scale(1.1);
+}
+
+.coin-counter {
+  @apply inline-flex items-center px-4 py-2 rounded-full
+         bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold
+         shadow-lg border-2 border-yellow-300/50;
+}
+
+.gaming-button {
+  @apply relative px-6 py-3 rounded-lg font-semibold text-white
+         bg-gradient-to-r from-blue-600 to-purple-600
+         shadow-lg transform transition-all duration-200
+         hover:shadow-xl hover:scale-105 active:scale-95
+         border border-blue-400/30;
+}
+
+.leaderboard-row.rank-1 {
+  @apply border-yellow-400 bg-gradient-to-r from-yellow-900/30 to-transparent;
+}
+
+.leaderboard-row.rank-2 {
+  @apply border-gray-300 bg-gradient-to-r from-gray-700/30 to-transparent;
+}
+
+.leaderboard-row.rank-3 {
+  @apply border-orange-400 bg-gradient-to-r from-orange-900/30 to-transparent;
+}
+
+.mining-progress {
+  @apply relative h-4 bg-gray-700 rounded-full overflow-hidden border border-gray-600;
+}
+
+.mining-fill {
+  @apply h-full bg-gradient-to-r from-orange-400 via-red-500 to-pink-500 rounded-full
+         transition-all duration-1000 ease-out relative;
+}
+
+.combo-counter {
+  @apply absolute top-4 right-4 px-3 py-1 rounded-full
+         bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold text-sm
+         shadow-lg border border-white/30 transform transition-all duration-300;
+}
+
+.holographic {
+  background: linear-gradient(45deg, #ff0080, #ff8c00, #40e0d0, #ff0080);
+  background-size: 400% 400%;
+}
+
+.neon-glow {
+  filter: drop-shadow(0 0 10px currentColor);
+}

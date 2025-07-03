@@ -8,7 +8,14 @@ import {
   TrendingUp,
   Users,
   BarChart3,
-  Shield
+  Shield,
+  Zap,
+  Coins,
+  Star,
+  Flame,
+  Trophy,
+  Target,
+  Award
 } from 'lucide-react';
 
 interface NetworkMetrics {
@@ -22,6 +29,29 @@ interface NetworkMetrics {
   avgDifficulty: number;
   knowledgeCreated: number;
 }
+
+// Gaming utility functions
+const getPlayerLevel = (scientificValue: number): number => {
+  return Math.floor(scientificValue / 100000) + 1;
+};
+
+const getNextLevelRequirement = (scientificValue: number): number => {
+  const currentLevel = getPlayerLevel(scientificValue);
+  return currentLevel * 100000;
+};
+
+const getAchievementCount = (metrics: any): number => {
+  let achievements = 0;
+  if (metrics?.totalScientificValue > 100000) achievements++;
+  if (metrics?.knowledgeCreated > 5000) achievements++;
+  if (metrics?.hashrate > 1000) achievements++;
+  if (metrics?.blocksPerHour > 10) achievements++;
+  return achievements;
+};
+
+const getComboMultiplier = (knowledgeCreated: number): number => {
+  return Math.floor(knowledgeCreated / 1000) + 1;
+};
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -90,73 +120,114 @@ export default function Dashboard() {
 
   return (
     <div className="modern-container fade-in">
-      {/* Header */}
+      {/* Gaming Header */}
       <div className="modern-header">
         <div className="flex justify-between items-start">
           <div>
             <h1 className="text-4xl font-bold mb-3 text-foreground">
-              Productive Mining Dashboard
+              🎮 Productive Mining Adventure
             </h1>
-            <p className="text-muted-foreground text-lg">Advanced computational research platform - transforming mining into mathematical discovery</p>
+            <p className="text-muted-foreground text-lg">Level up through mathematical discoveries and earn rewards!</p>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="status-badge status-active">
-              <div className="pulse-indicator bg-current"></div>
-              System Active
+            <div className="coin-counter">
+              <Coins className="h-4 w-4 mr-2" />
+              {formatNumber(Math.floor((metrics?.totalScientificValue || 0) / 1000))} COINS
             </div>
-            <div className="text-sm text-muted-foreground">
-              <Clock className="h-4 w-4 inline mr-1" />
-              {new Date().toLocaleString()}
+            <div className="level-indicator">
+              Level {getPlayerLevel(metrics?.totalScientificValue || 0)}
             </div>
+            <div className="achievement-badge">
+              <Trophy className="h-3 w-3 mr-1" />
+              {getAchievementCount(metrics)} Achievements
+            </div>
+          </div>
+        </div>
+        
+        {/* XP Progress Bar */}
+        <div className="mt-4 space-y-2">
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Research Progress to Level {getPlayerLevel(metrics?.totalScientificValue || 0) + 1}</span>
+            <span className="text-blue-400">{Math.round(((metrics?.totalScientificValue || 0) % 100000) / 1000)}%</span>
+          </div>
+          <div className="xp-bar">
+            <div 
+              className="xp-fill" 
+              style={{ width: `${((metrics?.totalScientificValue || 0) % 100000) / 1000}%` }}
+            />
           </div>
         </div>
       </div>
 
       {/* Metrics Grid */}
       <div className="metric-grid">
-        <div className="metric-item">
-          <div className="metric-value text-blue-400">
-            {formatNumber(metrics?.totalScientificValue || 0)}
+        <div className="game-card metric-item p-6 relative">
+          <div className="metric-gem mb-4">
+            <TrendingUp className="h-6 w-6" />
           </div>
-          <div className="metric-label">Scientific Value Generated</div>
-          <div className="progress-bar mt-2">
+          <div className="metric-value text-blue-400">
+            ${formatNumber((metrics?.totalScientificValue || 0) / 1000)}K
+          </div>
+          <div className="metric-label text-gray-300">Research Vault</div>
+          <div className="text-sm text-gray-400 mt-1">
+            Portfolio Worth
+          </div>
+          {(metrics?.totalScientificValue || 0) > 500000 && (
+            <div className="absolute top-2 right-2 w-2 h-2 bg-yellow-400 rounded-full animate-ping"></div>
+          )}
+          <div className="mining-progress mt-3">
             <div 
-              className="progress-fill" 
+              className="mining-fill" 
               style={{ width: `${Math.min(100, (metrics?.totalScientificValue || 0) / 1000000 * 100)}%` }}
             />
           </div>
         </div>
 
-        <div className="metric-item">
+        <div className="game-card metric-item p-6 relative">
+          <div className="metric-gem mb-4 bg-gradient-to-br from-green-400 to-emerald-600">
+            <Users className="h-6 w-6" />
+          </div>
           <div className="metric-value text-green-400">
             {Array.isArray(blocks) ? new Set(blocks.map((block: any) => block.minerId)).size : 0}
           </div>
-          <div className="metric-label">Unique Miners</div>
-          <div className="text-sm text-muted-foreground mt-1">
-            {Array.isArray(operations) ? operations.filter((op: any) => op.status === 'active').length : 0} active now
+          <div className="metric-label text-gray-300">Guild Members</div>
+          <div className="text-sm text-gray-400 mt-1">
+            {Array.isArray(operations) ? operations.filter((op: any) => op.status === 'active').length : 0} active miners
+          </div>
+          <div className="combo-counter">
+            Team x{Math.max(1, Math.floor((Array.isArray(blocks) ? new Set(blocks.map((block: any) => block.minerId)).size : 0) / 3))}
           </div>
         </div>
 
-        <div className="metric-item">
+        <div className="game-card metric-item p-6 relative">
+          <div className="metric-gem mb-4 bg-gradient-to-br from-purple-400 to-pink-600">
+            <Database className="h-6 w-6" />
+          </div>
           <div className="metric-value text-purple-400">
             {Array.isArray(blocks) ? blocks.length : 0}
           </div>
-          <div className="metric-label">Blockchain Height</div>
-          <div className="text-sm text-muted-foreground mt-1">
-            +{metrics?.blocksPerHour || 0} blocks/hour
+          <div className="metric-label text-gray-300">Discovery Blocks</div>
+          <div className="text-sm text-gray-400 mt-1">
+            +{metrics?.blocksPerHour || 0}/hour discovery rate
+          </div>
+          <div className="absolute bottom-2 right-2">
+            <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
           </div>
         </div>
 
-        <div className="metric-item">
+        <div className="game-card metric-item p-6 relative">
+          <div className="metric-gem mb-4 bg-gradient-to-br from-orange-400 to-red-600">
+            <Zap className="h-6 w-6" />
+          </div>
           <div className="metric-value text-orange-400">
             -1065.5985%
           </div>
-          <div className="metric-label">Energy Efficiency</div>
-          <div className="text-sm text-muted-foreground mt-1">
-            vs traditional mining
+          <div className="metric-label text-gray-300">Quantum Efficiency</div>
+          <div className="text-sm text-gray-400 mt-1">
+            Beyond Theoretical Limits
           </div>
-          <div className="text-xs text-orange-300 mt-1 font-mono">
-            QDT Enhancement
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="holographic absolute inset-1 rounded-lg opacity-20"></div>
           </div>
         </div>
       </div>
