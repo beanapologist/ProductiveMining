@@ -518,6 +518,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/stakers", async (req, res) => {
+    try {
+      const stakerData = insertStakerSchema.parse(req.body);
+      const staker = await storage.createStaker(stakerData);
+      res.json(staker);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid staker data" });
+    }
+  });
+
   app.get("/api/validations/:workId", async (req, res) => {
     try {
       const workId = parseInt(req.params.workId);
