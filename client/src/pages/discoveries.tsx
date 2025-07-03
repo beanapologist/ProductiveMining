@@ -68,7 +68,7 @@ export default function DiscoveriesPage() {
     queryKey: ['/api/immutable-records'],
   });
 
-  const { data: validationsData = [] } = useQuery({
+  const { data: validationsData = [] } = useQuery<any[]>({
     queryKey: ['/api/validations'],
   });
 
@@ -181,6 +181,7 @@ export default function DiscoveriesPage() {
   };
 
   const formatWorkType = (workType: string) => {
+    if (!workType) return 'Unknown';
     return workType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   };
 
@@ -207,15 +208,19 @@ export default function DiscoveriesPage() {
       ...data.map(row => 
         headers.map(header => {
           const value = row[header];
+          // Handle null or undefined values
+          if (value === null || value === undefined) {
+            return '';
+          }
           // Handle nested objects and arrays
-          if (typeof value === 'object' && value !== null) {
+          if (typeof value === 'object') {
             return `"${JSON.stringify(value).replace(/"/g, '""')}"`;
           }
           // Handle strings with commas
           if (typeof value === 'string' && value.includes(',')) {
             return `"${value.replace(/"/g, '""')}"`;
           }
-          return value;
+          return String(value);
         }).join(',')
       )
     ].join('\n');
