@@ -586,6 +586,161 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ============ HIGH-DIFFICULTY MINING NETWORK ============
+
+  // Spawn multiple high-difficulty miners automatically
+  app.post('/api/mining/spawn-network', async (req, res) => {
+    try {
+      const { minerCount = 10, difficulty = 30 } = req.body;
+      const spawnedMiners = [];
+      
+      const workTypes = [
+        'riemann_zero', 'prime_pattern', 'yang_mills', 'navier_stokes',
+        'poincare_conjecture', 'goldbach_verification', 'birch_swinnerton_dyer',
+        'elliptic_curve_crypto', 'lattice_crypto'
+      ];
+      
+      for (let i = 0; i < minerCount; i++) {
+        const workType = workTypes[i % workTypes.length];
+        const minerId = `autonomous_miner_${Date.now()}_${i}`;
+        
+        try {
+          // Create high-difficulty mining operation
+          const operation = await storage.createMiningOperation({
+            operationType: workType,
+            minerId,
+            startTime: new Date(),
+            estimatedCompletion: new Date(Date.now() + 180000 + (i * 15000)), // Staggered completion
+            progress: 0,
+            currentResult: { status: 'initializing', difficulty },
+            difficulty,
+            status: 'active'
+          });
+
+          // Start autonomous mining computation
+          setTimeout(async () => {
+            try {
+              let result;
+              console.log(`🚀 AUTONOMOUS MINER ${i + 1}: Starting ${workType} at difficulty ${difficulty}`);
+              
+              // High-difficulty mathematical computation
+              switch (workType) {
+                case 'riemann_zero':
+                  result = await computeRealRiemannZero(difficulty);
+                  break;
+                case 'prime_pattern':
+                  result = await computeRealPrimePattern(difficulty);
+                  break;
+                case 'yang_mills':
+                  result = await computeYangMills(difficulty);
+                  break;
+                case 'navier_stokes':
+                  result = await computeNavierStokes(difficulty);
+                  break;
+                case 'poincare_conjecture':
+                  result = await computePoincareConjecture(difficulty);
+                  break;
+                case 'goldbach_verification':
+                  result = await computeRealGoldbachVerification(difficulty);
+                  break;
+                case 'birch_swinnerton_dyer':
+                  result = await computeBirchSwinnertonDyer(difficulty);
+                  break;
+                case 'elliptic_curve_crypto':
+                  result = await computeEllipticCurveCrypto(difficulty);
+                  break;
+                case 'lattice_crypto':
+                  result = await computeLatticeCrypto(difficulty);
+                  break;
+                default:
+                  result = await computeRealRiemannZero(difficulty);
+              }
+
+              // Complete the mining operation
+              await storage.updateMiningOperation(operation.id, {
+                status: 'completed',
+                progress: 100,
+                currentResult: result
+              });
+
+              // Create mathematical work record
+              const work = await storage.createMathematicalWork({
+                workType,
+                difficulty,
+                result: result.result,
+                verificationData: result.verification,
+                computationalCost: result.computationalCost,
+                energyEfficiency: result.energyEfficiency,
+                scientificValue: result.scientificValue,
+                workerId: minerId,
+                signature: result.signature
+              });
+
+              // Create new block with this discovery
+              const blockCount = (await storage.getRecentBlocks(1)).length;
+              const newBlockIndex = blockCount;
+              
+              const block = await storage.createBlock({
+                index: newBlockIndex,
+                previousHash: blockCount > 0 ? 'hash_' + (newBlockIndex - 1) : 'genesis',
+                merkleRoot: generateSimpleHash(JSON.stringify(work)),
+                difficulty: difficulty,
+                nonce: calculateProofOfWork(JSON.stringify(work), difficulty),
+                minerId: minerId,
+                energyEfficiency: result.energyEfficiency,
+                scientificValue: result.scientificValue
+              });
+
+              console.log(`⛏️ AUTONOMOUS DISCOVERY: Miner ${i + 1} completed ${workType} (Block #${newBlockIndex + 1})`);
+              
+              // Trigger PoS validation for autonomous discovery
+              await initiatePoSValidation(work);
+              
+              // Broadcast completion
+              broadcast({
+                type: 'discovery_made',
+                data: { 
+                  discovery: work, 
+                  block: block,
+                  autonomousMiner: true,
+                  scientificValue: result.scientificValue
+                }
+              });
+
+            } catch (error) {
+              console.error(`❌ AUTONOMOUS MINER ${i + 1} FAILED:`, error);
+              await storage.updateMiningOperation(operation.id, {
+                status: 'failed',
+                currentResult: { error: error.message }
+              });
+            }
+          }, 5000 + (i * 3000)); // Staggered start times
+
+          spawnedMiners.push({
+            minerId,
+            workType,
+            difficulty,
+            operationId: operation.id,
+            estimatedCompletion: operation.estimatedCompletion
+          });
+
+        } catch (error) {
+          console.error(`Failed to spawn miner ${i + 1}:`, error);
+        }
+      }
+      
+      res.json({
+        success: true,
+        message: `Spawned ${spawnedMiners.length} autonomous miners at difficulty ${difficulty}`,
+        miners: spawnedMiners,
+        totalNetworkDifficulty: difficulty * spawnedMiners.length
+      });
+      
+    } catch (error) {
+      res.status(500).json({ error: "Failed to spawn mining network" });
+    }
+  });
+
   // Ensure all discoveries have corresponding blocks
   app.post("/api/blocks/sync", async (req, res) => {
     try {
@@ -982,7 +1137,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Start new mining operation with real mathematical computation
   app.post("/api/mining/start-real", async (req, res) => {
     try {
-      const { workType = 'riemann_zero', difficulty = 10 } = req.body;
+      const { workType = 'riemann_zero', difficulty = 25 } = req.body;
       const minerId = `miner_${Date.now()}`;
       
       // Create mining operation
