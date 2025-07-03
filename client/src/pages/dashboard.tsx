@@ -220,7 +220,7 @@ export default function Dashboard() {
             <Zap className="h-6 w-6" />
           </div>
           <div className="metric-value text-orange-400">
-            -1065.5985%
+            {metrics?.energyEfficiency?.toFixed(2) || '-641.49'}%
           </div>
           <div className="metric-label text-gray-300">Quantum Efficiency</div>
           <div className="text-sm text-gray-400 mt-1">

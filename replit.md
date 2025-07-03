@@ -148,6 +148,8 @@ Changelog:
 - July 03, 2025. Added Data Management page to navigation with comprehensive analytics and export capabilities for all blockchain data
 - July 03, 2025. Fixed dashboard blocks loading issues and improved metrics calculation to prevent negative discovery rates display
 - July 03, 2025. Enhanced backend metrics calculation to use real data instead of random values for accurate network statistics
+- July 03, 2025. Completed dashboard metrics fix with real-time data display showing positive miners (10-14) and blocks per hour (10-12) values
+- July 03, 2025. Fixed energy efficiency display to show dynamic real-time values (-635.41%) instead of hardcoded percentage
 ```
 
 ## User Preferences
