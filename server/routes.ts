@@ -4189,6 +4189,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Scientific valuation summary endpoint
+  app.get('/api/data-management/valuation-summary', async (req, res) => {
+    try {
+      const { scientificValuationEngine } = await import('./scientific-valuation-engine');
+      const allDiscoveries = await storage.getMathematicalWork(1000);
+      
+      const aggregateValue = scientificValuationEngine.calculateAggregateValue(allDiscoveries);
+      
+      // Get sample valuations by work type
+      const workTypes = ['riemann_zero', 'prime_pattern', 'yang_mills', 'navier_stokes'];
+      const sampleValuations = workTypes.map(workType => {
+        const valuation = scientificValuationEngine.calculateScientificValue(
+          workType, 
+          150, 
+          600000, 
+          1.2
+        );
+        return { 
+          workType, 
+          baseValue: valuation.baseValue,
+          computationalCost: valuation.computationalCost,
+          researchImpact: valuation.researchImpact,
+          totalValue: valuation.totalValue,
+          methodology: valuation.methodology
+        };
+      });
+
+      res.json({
+        totalDiscoveries: allDiscoveries.length,
+        rawTotal: aggregateValue.totalValue,
+        adjustedTotal: aggregateValue.adjustedTotal,
+        averageValue: aggregateValue.averageValue,
+        diminishingFactor: aggregateValue.diminishingFactor,
+        sampleValuations,
+        valuationExplanation: {
+          baseValues: "Research grant equivalents ($1.2K-$3.5K)",
+          computationalCosts: "Cloud computing + energy costs",
+          researchImpact: "Based on theoretical and practical significance",
+          maxSingleDiscovery: "$50K (Millennium Prize level)",
+          minSingleDiscovery: "$100 (Basic computation)"
+        }
+      });
+    } catch (error) {
+      console.error("Error getting valuation summary:", error);
+      res.status(500).json({ error: "Failed to get valuation summary" });
+    }
+  });
+
   return httpServer;
 }
 

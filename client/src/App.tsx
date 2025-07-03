@@ -18,6 +18,7 @@ import { InstitutionalValidation } from "@/pages/institutional-validation";
 import DataManagement from "@/pages/data-management";
 import ComplexityAnalysisPage from "@/pages/complexity-analysis";
 import APIOverview from "@/pages/api-overview";
+import ScientificValuation from "@/pages/scientific-valuation";
 
 import WalletPage from "@/pages/wallet";
 import About from "@/pages/about";
