@@ -165,6 +165,7 @@ Changelog:
 - July 03, 2025. Redesigned Research Vault Portfolio with modern dashboard-style layout featuring two-column grid, prominent $407.3K portfolio value display, enhanced asset allocation cards with percentage breakdowns, and comprehensive sidebar with market stats and quick actions
 - July 03, 2025. Increased mining difficulty from default 25 to 50 for enhanced mathematical computation complexity and higher security validation standards
 - July 03, 2025. Completely revamped main dashboard with modern tabbed interface featuring Overview, Mining, Security, Economics, and Network sections with comprehensive real-time metrics, enhanced visualizations, and improved user experience
+- July 03, 2025. Restored gaming-themed dashboard style based on user preference while maintaining enhanced security information and real-time data integration with gaming CSS components
 ```
 
 ## User Preferences
