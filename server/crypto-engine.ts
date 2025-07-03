@@ -401,11 +401,18 @@ export class CryptographicSafetyEngine {
   }
 
   private cryptographicMix(components: string[]): string {
-    let mixed = components[0];
-    for (let i = 1; i < components.length; i++) {
-      mixed = this.simpleHash(mixed + components[i]);
+    if (!components || components.length === 0) {
+      return '0'.repeat(64);
     }
-    return mixed.padStart(64, '0');
+    
+    let mixed = components[0] || '';
+    for (let i = 1; i < components.length; i++) {
+      mixed = this.simpleHash(mixed + (components[i] || ''));
+    }
+    
+    // Ensure mixed is a string before calling padStart
+    const mixedString = String(mixed || '');
+    return mixedString.padStart(64, '0');
   }
 
   private determineSecurityLevelByScore(entropy: number, layers: number): 

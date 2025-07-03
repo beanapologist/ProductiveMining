@@ -23,7 +23,7 @@ export const productiveBlocks = pgTable("productive_blocks", {
   previousHash: text("previous_hash").notNull(),
   merkleRoot: text("merkle_root").notNull(),
   difficulty: integer("difficulty").notNull(),
-  nonce: integer("nonce").notNull(),
+  nonce: bigint("nonce", { mode: "number" }).notNull(),
   blockHash: text("block_hash").notNull().unique(),
   minerId: text("miner_id").notNull(),
   totalScientificValue: real("total_scientific_value").notNull(),

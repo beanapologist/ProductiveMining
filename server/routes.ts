@@ -1039,6 +1039,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Data integrity repair endpoint
+  app.post("/api/integrity/repair", async (req, res) => {
+    try {
+      const { dataIntegrityRepairEngine } = await import('./data-integrity-repair');
+      console.log('🔧 DATA REPAIR: Starting comprehensive blockchain repair...');
+      
+      const repairResult = await dataIntegrityRepairEngine.performCompleteIntegrityRepair();
+      
+      res.json({
+        message: "Data integrity repair completed",
+        ...repairResult,
+        timestamp: new Date().toISOString()
+      });
+
+      // Broadcast repair completion
+      broadcast({
+        type: 'integrity_update',
+        data: { repair: repairResult }
+      });
+      
+    } catch (error) {
+      console.error('Data integrity repair error:', error);
+      res.status(500).json({ error: "Data integrity repair failed" });
+    }
+  });
+
+  // Data integrity status endpoint
+  app.get("/api/integrity/status", async (req, res) => {
+    try {
+      const { dataIntegrityRepairEngine } = await import('./data-integrity-repair');
+      
+      const status = await dataIntegrityRepairEngine.getIntegrityStatus();
+      
+      res.json({
+        ...status,
+        timestamp: new Date().toISOString()
+      });
+      
+    } catch (error) {
+      console.error('Data integrity status error:', error);
+      res.status(500).json({ error: "Failed to get integrity status" });
+    }
+  });
+
   // Data integrity check endpoint
   app.post("/api/integrity/check", async (req, res) => {
     try {
