@@ -82,6 +82,27 @@ export const discoveryValidations = pgTable("discovery_validations", {
   timestamp: timestamp("timestamp").notNull().defaultNow(),
 });
 
+export const immutableRecordsPool = pgTable("immutable_records_pool", {
+  id: serial("id").primaryKey(),
+  recordType: text("record_type").notNull(), // 'validation_activity', 'consensus_decision', 'stake_slash', 'reputation_update'
+  activityHash: text("activity_hash").notNull().unique(), // Cryptographic hash of the activity
+  validationId: integer("validation_id").references(() => discoveryValidations.id),
+  stakerId: integer("staker_id").references(() => stakers.id).notNull(),
+  workId: integer("work_id").references(() => mathematicalWork.id),
+  blockId: integer("block_id").references(() => productiveBlocks.id),
+  activityData: jsonb("activity_data").notNull(), // Complete immutable record of the activity
+  previousRecordHash: text("previous_record_hash"), // Chain previous record for integrity
+  merkleRoot: text("merkle_root").notNull(), // Merkle tree root for batch verification
+  digitalSignature: text("digital_signature").notNull(), // Cryptographic signature
+  consensusParticipants: jsonb("consensus_participants"), // List of validators involved
+  reputationImpact: real("reputation_impact").default(0), // Impact on validator reputation
+  stakeImpact: real("stake_impact").default(0), // Impact on stake amount
+  isVerified: boolean("is_verified").notNull().default(false),
+  verificationProof: jsonb("verification_proof"), // Mathematical proof of verification
+  immutableSince: timestamp("immutable_since").notNull().defaultNow(),
+  lastVerificationCheck: timestamp("last_verification_check").defaultNow(),
+});
+
 // Insert schemas
 export const insertMathematicalWorkSchema = createInsertSchema(mathematicalWork);
 export const insertProductiveBlockSchema = createInsertSchema(productiveBlocks);
@@ -89,6 +110,7 @@ export const insertMiningOperationSchema = createInsertSchema(miningOperations);
 export const insertNetworkMetricsSchema = createInsertSchema(networkMetrics);
 export const insertStakerSchema = createInsertSchema(stakers);
 export const insertDiscoveryValidationSchema = createInsertSchema(discoveryValidations);
+export const insertImmutableRecordSchema = createInsertSchema(immutableRecordsPool);
 
 // Types
 export type MathematicalWork = typeof mathematicalWork.$inferSelect;
@@ -103,6 +125,8 @@ export type Staker = typeof stakers.$inferSelect;
 export type InsertStaker = z.infer<typeof insertStakerSchema>;
 export type DiscoveryValidation = typeof discoveryValidations.$inferSelect;
 export type InsertDiscoveryValidation = z.infer<typeof insertDiscoveryValidationSchema>;
+export type ImmutableRecord = typeof immutableRecordsPool.$inferSelect;
+export type InsertImmutableRecord = z.infer<typeof insertImmutableRecordSchema>;
 
 // WebSocket message types
 export interface WebSocketMessage {

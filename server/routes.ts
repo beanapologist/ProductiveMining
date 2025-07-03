@@ -578,6 +578,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Immutable Records Pool endpoints
+  app.get("/api/immutable-records", async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const records = await storage.getRecentValidationRecords(limit);
+      res.json(records);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch immutable records" });
+    }
+  });
+
+  app.get("/api/immutable-records/staker/:stakerId", async (req, res) => {
+    try {
+      const stakerId = parseInt(req.params.stakerId);
+      const records = await storage.getRecordsByStaker(stakerId);
+      res.json(records);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch staker records" });
+    }
+  });
+
+  app.get("/api/immutable-records/type/:type", async (req, res) => {
+    try {
+      const recordType = req.params.type;
+      const records = await storage.getRecordsByType(recordType);
+      res.json(records);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch records by type" });
+    }
+  });
+
+  app.get("/api/immutable-records/verify/:id", async (req, res) => {
+    try {
+      const recordId = parseInt(req.params.id);
+      const isValid = await storage.verifyRecordIntegrity(recordId);
+      res.json({ recordId, isValid });
+    } catch (error) {
+      res.status(500).json({ error: "Failed to verify record integrity" });
+    }
+  });
+
   // Get mining operations
   app.get("/api/mining/operations", async (req, res) => {
     try {
@@ -855,8 +896,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const selectedValidators = await selectValidators(activeStakers, discovery);
       
       // Create validation requests for selected validators
+      const { immutableRecordsEngine } = await import('./immutable-records-engine');
+      
       for (const validator of selectedValidators) {
-        await storage.createDiscoveryValidation({
+        const validation = await storage.createDiscoveryValidation({
           workId: discovery.id,
           stakerId: validator.id,
           validationType: 'pos_consensus',
@@ -869,6 +912,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           stakeAmount: validator.stakeAmount,
           status: 'pending'
         });
+
+        // Create immutable record for validation activity
+        try {
+          await immutableRecordsEngine.recordValidationActivity(validation, discovery, validator);
+        } catch (error) {
+          console.warn(`Failed to create immutable record for validation ${validation.id}:`, error);
+        }
       }
       
       console.log(`🔍 PoS VALIDATION: Initiated for discovery ${discovery.id} with ${selectedValidators.length} validators`);

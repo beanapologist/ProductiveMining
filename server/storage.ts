@@ -8,6 +8,7 @@ import {
   networkMetrics,
   stakers,
   discoveryValidations,
+  immutableRecordsPool,
   type MathematicalWork,
   type InsertMathematicalWork,
   type ProductiveBlock,
@@ -19,7 +20,9 @@ import {
   type Staker,
   type InsertStaker,
   type DiscoveryValidation,
-  type InsertDiscoveryValidation
+  type InsertDiscoveryValidation,
+  type ImmutableRecord,
+  type InsertImmutableRecord
 } from "@shared/schema";
 
 export interface IStorage {
@@ -58,6 +61,14 @@ export interface IStorage {
   getValidationsForWork(workId: number): Promise<DiscoveryValidation[]>;
   updateValidationStatus(validationId: number, status: string): Promise<DiscoveryValidation | undefined>;
   getStakerValidations(stakerId: number): Promise<DiscoveryValidation[]>;
+
+  // Immutable Records Pool
+  createImmutableRecord(record: InsertImmutableRecord): Promise<ImmutableRecord>;
+  getRecentValidationRecords(limit?: number): Promise<ImmutableRecord[]>;
+  getRecordsByStaker(stakerId: number): Promise<ImmutableRecord[]>;
+  getRecordsByType(recordType: string): Promise<ImmutableRecord[]>;
+  verifyRecordIntegrity(recordId: number): Promise<boolean>;
+  getRecordChain(recordId: number): Promise<ImmutableRecord[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -248,6 +259,68 @@ export class DatabaseStorage implements IStorage {
       .from(discoveryValidations)
       .where(eq(discoveryValidations.stakerId, stakerId))
       .orderBy(desc(discoveryValidations.timestamp));
+  }
+
+  // Immutable Records Pool Implementation
+  async createImmutableRecord(record: InsertImmutableRecord): Promise<ImmutableRecord> {
+    const [newRecord] = await db
+      .insert(immutableRecordsPool)
+      .values(record)
+      .returning();
+    return newRecord;
+  }
+
+  async getRecentValidationRecords(limit = 50): Promise<ImmutableRecord[]> {
+    return db.select().from(immutableRecordsPool)
+      .orderBy(desc(immutableRecordsPool.immutableSince))
+      .limit(limit);
+  }
+
+  async getRecordsByStaker(stakerId: number): Promise<ImmutableRecord[]> {
+    return db.select().from(immutableRecordsPool)
+      .where(eq(immutableRecordsPool.stakerId, stakerId))
+      .orderBy(desc(immutableRecordsPool.immutableSince));
+  }
+
+  async getRecordsByType(recordType: string): Promise<ImmutableRecord[]> {
+    return db.select().from(immutableRecordsPool)
+      .where(eq(immutableRecordsPool.recordType, recordType))
+      .orderBy(desc(immutableRecordsPool.immutableSince));
+  }
+
+  async verifyRecordIntegrity(recordId: number): Promise<boolean> {
+    const [record] = await db.select().from(immutableRecordsPool)
+      .where(eq(immutableRecordsPool.id, recordId));
+    
+    if (!record) return false;
+    
+    // Verify cryptographic hash integrity
+    const { cryptoEngine } = await import('./crypto-engine');
+    const activityHash = cryptoEngine.generateSecurityHash([record.activityData]);
+    
+    return activityHash.hash === record.activityHash;
+  }
+
+  async getRecordChain(recordId: number): Promise<ImmutableRecord[]> {
+    const records: ImmutableRecord[] = [];
+    let currentId = recordId;
+    
+    while (currentId) {
+      const [record] = await db.select().from(immutableRecordsPool)
+        .where(eq(immutableRecordsPool.id, currentId));
+      
+      if (!record) break;
+      records.push(record);
+      
+      // Find next record that references this one
+      const [nextRecord] = await db.select().from(immutableRecordsPool)
+        .where(eq(immutableRecordsPool.previousRecordHash, record.activityHash))
+        .limit(1);
+      
+      currentId = nextRecord?.id || 0;
+    }
+    
+    return records;
   }
 }
 
