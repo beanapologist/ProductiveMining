@@ -156,6 +156,7 @@ Changelog:
 - July 03, 2025. Fixed discovery statistics to show complete data (179+ discoveries) instead of limited WebSocket data
 - July 03, 2025. Enhanced frontend query with custom fetch function to properly load all discovery records with limit parameter
 - July 03, 2025. Enhanced dashboard with comprehensive token economics and market information including dedicated Token Market tab with price performance, market statistics, tokenomics breakdown, staking rewards, and Discovery NFT analytics
+- July 03, 2025. Updated about section with current live performance metrics showing 380+ mathematical discoveries, -565% energy efficiency (energy generation), $580M scientific value, 227 productive blocks, $582M token market cap, 1,960+ validation records, and 76.2% staking ratio with institutional validation
 ```
 
 ## User Preferences
