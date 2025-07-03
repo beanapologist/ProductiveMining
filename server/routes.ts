@@ -1584,10 +1584,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
                   currentResult: computationResult
                 });
 
-                // Ensure all numeric values fit within database constraints
-                const safeComputationalCost = Math.min(Math.floor(Number(computationResult?.computationalCost) || 900000), 2147483647);
-                const safeEnergyEfficiency = Math.min(Math.floor(Number(computationResult?.energyEfficiency) || 111), 2147483647);
-                const safeScientificValue = Math.min(Math.floor(Number(computationResult?.scientificValue) || 100000), 2147483647);
+                // Calculate realistic scientific value using the valuation engine
+                const { scientificValuationEngine } = await import('./scientific-valuation-engine');
+                const computationTime = Math.round(Number(computationResult?.computationResult?.computationTime) || 300); // seconds
+                const energyConsumed = Math.min(Number(computationResult?.energyConsumed) || 0.5, 10); // kWh
+                
+                const valuation = scientificValuationEngine.calculateScientificValue(
+                  workType,
+                  result.newDifficulty,
+                  computationTime,
+                  energyConsumed
+                );
+                
+                const validation = scientificValuationEngine.validateScientificValue(valuation.totalValue);
+                
+                // Use realistic values based on actual computation
+                const safeComputationalCost = Math.min(Math.floor(Number(computationResult?.computationalCost) || (computationTime * 100)), 2147483647);
+                const safeEnergyEfficiency = Math.min(Math.floor(Number(computationResult?.energyEfficiency) || Math.round(valuation.totalValue / energyConsumed)), 2147483647);
+                const safeScientificValue = validation.adjustedValue;
                 
                 const work = await storage.createMathematicalWork({
                   workType,
