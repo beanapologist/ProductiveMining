@@ -148,102 +148,101 @@ export default function BlockExplorerPage() {
   };
 
   return (
-    <div className="text-slate-100">
-      <div className="container mx-auto px-4 py-6">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center">
-            <Database className="h-10 w-10 mr-3 text-blue-400" />
-            Block Explorer
-          </h1>
-          <p className="text-xl text-slate-300">
-            Explore the blockchain of mathematical discoveries and scientific breakthroughs
-          </p>
-        </div>
+    <div className="container mx-auto p-6 space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold flex items-center text-white">
+          <Database className="mr-3 h-8 w-8 text-blue-400" />
+          Block Explorer
+        </h1>
+        <p className="text-gray-400 mt-2">
+          Explore the blockchain of mathematical discoveries and scientific breakthroughs
+        </p>
+      </div>
 
-        {/* Blockchain Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="pm-card border-blue-500/30">
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 rounded-full bg-blue-500/20">
-                  <Database className="h-5 w-5 text-blue-400" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-white">{actualBlockCount}</div>
-                  <div className="text-sm text-slate-400">Total Blocks</div>
-                </div>
+      {/* Blockchain Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <Card className="bg-slate-800 border-slate-700">
+          <CardContent className="pt-6">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 rounded-full bg-blue-500/20">
+                <Database className="h-5 w-5 text-blue-400" />
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="pm-card border-purple-500/30">
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 rounded-full bg-purple-500/20">
-                  <Award className="h-5 w-5 text-purple-400" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-white">{formatCurrency(totalScientificValue)}</div>
-                  <div className="text-sm text-slate-400">Scientific Value</div>
-                </div>
+              <div>
+                <div className="text-2xl font-bold text-white">{actualBlockCount}</div>
+                <div className="text-sm text-gray-400">Total Blocks</div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </CardContent>
+        </Card>
 
-          <Card className="pm-card border-green-500/30">
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 rounded-full bg-green-500/20">
-                  <Zap className="h-5 w-5 text-green-400" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-white">{totalEnergyEfficiency.toFixed(2)} kWh</div>
-                  <div className="text-sm text-slate-400">Total Energy</div>
-                </div>
+        <Card className="bg-slate-800 border-slate-700">
+          <CardContent className="pt-6">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 rounded-full bg-purple-500/20">
+                <Award className="h-5 w-5 text-purple-400" />
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="pm-card border-orange-500/30">
-            <CardContent className="pt-6">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 rounded-full bg-orange-500/20">
-                  <Hash className="h-5 w-5 text-orange-400" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-white">
-                    {latestDifficulty}
-                  </div>
-                  <div className="text-sm text-slate-400">Latest Difficulty</div>
-                </div>
+              <div>
+                <div className="text-2xl font-bold text-white">{formatCurrency(totalScientificValue)}</div>
+                <div className="text-sm text-gray-400">Scientific Value</div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Block List */}
-          <div className="lg:col-span-2">
-            <Card className="pm-card">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center">
-                  <Database className="h-5 w-5 mr-2 text-blue-400" />
-                  Blockchain Blocks
-                </CardTitle>
-                <CardDescription>
-                  Mathematical discoveries stored in the blockchain
-                </CardDescription>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                  <Input
-                    placeholder="Search by block number, hash, or miner..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-slate-800 border-slate-600 text-white"
-                  />
+        <Card className="bg-slate-800 border-slate-700">
+          <CardContent className="pt-6">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 rounded-full bg-green-500/20">
+                <Zap className="h-5 w-5 text-green-400" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-white">{totalEnergyEfficiency.toFixed(2)} kWh</div>
+                <div className="text-sm text-gray-400">Total Energy</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-slate-800 border-slate-700">
+          <CardContent className="pt-6">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 rounded-full bg-orange-500/20">
+                <Hash className="h-5 w-5 text-orange-400" />
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-white">
+                  {latestDifficulty}
                 </div>
-              </CardHeader>
+                <div className="text-sm text-gray-400">Latest Difficulty</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Block List */}
+        <div className="lg:col-span-2">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <Database className="h-5 w-5 mr-2 text-blue-400" />
+                Blockchain Blocks
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Mathematical discoveries stored in the blockchain
+              </CardDescription>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <Input
+                  placeholder="Search by block number, hash, or miner..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 bg-slate-800 border-slate-600 text-white"
+                />
+              </div>
+            </CardHeader>
               <CardContent>
                 <div className="space-y-3 max-h-[600px] overflow-y-auto">
                   {filteredBlocks.length === 0 ? (
@@ -303,26 +302,26 @@ export default function BlockExplorerPage() {
                 </div>
               </CardContent>
             </Card>
-          </div>
+        </div>
 
-          {/* Block Details */}
-          <div>
-            <Card className="pm-card">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center">
-                  <Hash className="h-5 w-5 mr-2 text-orange-400" />
-                  Block Details
-                </CardTitle>
-                <CardDescription>
-                  Detailed information about the selected block
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {!selectedBlock ? (
-                  <div className="text-center py-8 text-slate-400">
-                    <Hash className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                    <p>Select a block to view details</p>
-                  </div>
+        {/* Block Details */}
+        <div>
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <Hash className="h-5 w-5 mr-2 text-orange-400" />
+                Block Details
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Detailed information about the selected block
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {!selectedBlock ? (
+                <div className="text-center py-8 text-slate-400">
+                  <Hash className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                  <p>Select a block to view details</p>
+                </div>
                 ) : (
                   <div className="space-y-4">
                     {/* Block Header */}
