@@ -21,6 +21,7 @@ from database import DatabaseManager
 from models import *
 from scientific_valuation import ScientificValuationEngine
 from mathematical_engines import MathematicalEngines
+from hybrid_mathematical_system import HybridMathematicalSystem
 from mining_operations import MiningOperationManager
 from adaptive_security import AdaptiveSecurityEngine
 from recursive_enhancement import RecursiveEnhancementEngine
@@ -36,6 +37,7 @@ ws_manager: WebSocketManager = None
 mining_manager: MiningOperationManager = None
 valuation_engine: ScientificValuationEngine = None
 math_engines: MathematicalEngines = None
+hybrid_system: HybridMathematicalSystem = None
 adaptive_security: AdaptiveSecurityEngine = None
 recursive_enhancement: RecursiveEnhancementEngine = None
 
@@ -43,7 +45,7 @@ recursive_enhancement: RecursiveEnhancementEngine = None
 async def lifespan(app: FastAPI):
     """Initialize and cleanup resources"""
     global db_manager, ws_manager, mining_manager, valuation_engine, math_engines
-    global adaptive_security, recursive_enhancement
+    global hybrid_system, adaptive_security, recursive_enhancement
     
     # Initialize components
     logger.info("🐍 PYTHON BACKEND: Initializing productive mining platform...")
@@ -54,6 +56,7 @@ async def lifespan(app: FastAPI):
     ws_manager = WebSocketManager()
     valuation_engine = ScientificValuationEngine()
     math_engines = MathematicalEngines()
+    hybrid_system = HybridMathematicalSystem()
     mining_manager = MiningOperationManager(db_manager, ws_manager, valuation_engine, math_engines)
     adaptive_security = AdaptiveSecurityEngine()
     recursive_enhancement = RecursiveEnhancementEngine()
@@ -173,6 +176,114 @@ async def get_network_metrics():
         raise HTTPException(status_code=500, detail="Failed to fetch metrics")
 
 # ===== SCIENTIFIC VALUATION =====
+
+@app.get("/api/hybrid-system/test")
+async def test_hybrid_system():
+    """Test hybrid mathematical system with real computation examples"""
+    try:
+        logger.info("🔬 TESTING: Hybrid mathematical system capabilities...")
+        
+        # Test real mathematical computation
+        real_computation_tests = []
+        
+        # Test each real computation type
+        for work_type in ['goldbach_verification', 'prime_gap_analysis', 'fibonacci_patterns', 'collatz_verification']:
+            # Test with low difficulty (should use real computation)
+            real_result = hybrid_system.compute_mathematical_work(work_type, 5)
+            real_computation_tests.append({
+                'workType': work_type,
+                'difficulty': 5,
+                'mode': real_result.get('computationMode'),
+                'scientificValue': real_result.get('scientificValue'),
+                'computationTime': real_result.get('computationTime'),
+                'verified': real_result.get('verified'),
+                'result': {
+                    'sample': str(real_result.get('computationResult', {}))[:200] + "..."
+                }
+            })
+            
+            # Test with high difficulty (should fall back to simulation)
+            sim_result = hybrid_system.compute_mathematical_work(work_type, 300)
+            real_computation_tests.append({
+                'workType': work_type,
+                'difficulty': 300,
+                'mode': sim_result.get('computationMode'),
+                'scientificValue': sim_result.get('scientificValue'),
+                'computationTime': sim_result.get('computationTime'),
+                'verified': sim_result.get('verified'),
+                'fallback': True
+            })
+        
+        # Test system capabilities
+        capabilities = hybrid_system.get_system_capabilities()
+        
+        # Test verification system
+        sample_result = hybrid_system.compute_mathematical_work('goldbach_verification', 10)
+        verification = hybrid_system.verify_mathematical_result(sample_result)
+        
+        return {
+            'hybridSystemStatus': 'operational',
+            'realComputationTests': real_computation_tests,
+            'systemCapabilities': capabilities,
+            'verificationExample': {
+                'originalResult': sample_result.get('workType'),
+                'verificationScore': verification.get('verificationScore'),
+                'verified': verification.get('verified'),
+                'verificationMode': verification.get('verificationMode')
+            },
+            'testingSummary': {
+                'realComputationsAvailable': len(capabilities['realComputationTypes']),
+                'simulatedComputationsAvailable': len(capabilities['simulatedComputationTypes']),
+                'totalWorkTypes': capabilities['totalWorkTypes'],
+                'realComputationRatio': f"{capabilities['realComputationRatio']:.2%}",
+                'explanation': "Phase 1: Hybrid system routes low-difficulty work to real computation, high-difficulty to simulation"
+            }
+        }
+    except Exception as e:
+        logger.error(f"Error in hybrid system test: {e}")
+        raise HTTPException(status_code=500, detail="Failed to test hybrid system")
+
+@app.get("/api/real-mathematics/test") 
+async def test_real_mathematics():
+    """Test pure real mathematical computation capabilities"""
+    try:
+        logger.info("🔬 TESTING: Real mathematical computation engines...")
+        
+        real_results = []
+        
+        # Test each real computation at low difficulty
+        for work_type in ['goldbach_verification', 'prime_gap_analysis', 'fibonacci_patterns', 'collatz_verification']:
+            result = hybrid_system.real_engine.compute_real_mathematics(work_type, 3)
+            
+            real_results.append({
+                'workType': work_type,
+                'difficulty': 3,
+                'computationTime': result.get('computationTime'),
+                'energyConsumed': result.get('energyConsumed'),
+                'verificationData': result.get('verificationData'),
+                'realComputation': result.get('realComputation'),
+                'resultSample': {
+                    'verified': result.get('verificationData', {}).get('verified'),
+                    'method': result.get('verificationData', {}).get('method'),
+                    'independentVerification': result.get('verificationData', {}).get('independentVerification')
+                }
+            })
+        
+        return {
+            'realComputationStatus': 'operational',
+            'realMathematicsTests': real_results,
+            'availableComputations': hybrid_system.real_engine.get_available_real_computations(),
+            'testingSummary': {
+                'allTestsPassed': all(r['realComputation'] for r in real_results),
+                'averageComputationTime': sum(r['computationTime'] for r in real_results) / len(real_results),
+                'averageEnergyConsumed': sum(r['energyConsumed'] for r in real_results) / len(real_results),
+                'verificationRate': sum(1 for r in real_results if r['resultSample']['verified']) / len(real_results),
+                'explanation': "Real mathematical algorithms computing actual solutions to mathematical problems"
+            }
+        }
+    except Exception as e:
+        logger.error(f"Error in real mathematics test: {e}")
+        raise HTTPException(status_code=500, detail="Failed to test real mathematics")
 
 @app.get("/api/scientific-valuation/test")
 async def test_scientific_valuation():
