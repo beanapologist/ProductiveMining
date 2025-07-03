@@ -154,7 +154,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get recent blocks
   app.get("/api/blocks", async (req, res) => {
     try {
-      const limit = parseInt(req.query.limit as string) || 10;
+      const limit = parseInt(req.query.limit as string) || 1000; // Return all blocks by default
       const blocks = await storage.getRecentBlocks(limit);
       res.json(blocks);
     } catch (error) {
