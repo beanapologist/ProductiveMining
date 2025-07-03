@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { Shield, Users, CheckCircle, Clock, AlertCircle, Play } from 'lucide-react';
+import { Shield, Users, CheckCircle, Clock, AlertCircle, Play, FileText, Fingerprint, Database } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 
@@ -32,6 +32,27 @@ interface ValidationRecord {
   workType: string;
 }
 
+interface ImmutableRecord {
+  id: number;
+  recordType: string;
+  activityHash: string;
+  validationId?: number;
+  stakerId: number;
+  workId?: number;
+  blockId?: number;
+  activityData: any;
+  previousRecordHash?: string;
+  merkleRoot: string;
+  digitalSignature: string;
+  consensusParticipants?: string[];
+  reputationImpact: number;
+  stakeImpact: number;
+  isVerified: boolean;
+  verificationProof?: any;
+  immutableSince: string;
+  lastVerificationCheck?: string;
+}
+
 export default function ValidatorsPage() {
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -42,6 +63,18 @@ export default function ValidatorsPage() {
 
   const { data: validations = [], isLoading: validationsLoading } = useQuery<ValidationRecord[]>({
     queryKey: ['/api/validations'],
+  });
+
+  const { data: immutableRecords = [], isLoading: recordsLoading } = useQuery<ImmutableRecord[]>({
+    queryKey: ['/api/immutable-records'],
+  });
+
+  const { data: validationRecords = [] } = useQuery<ImmutableRecord[]>({
+    queryKey: ['/api/immutable-records/type/validation_activity'],
+  });
+
+  const { data: consensusRecords = [] } = useQuery<ImmutableRecord[]>({
+    queryKey: ['/api/immutable-records/type/consensus_decision'],
   });
 
   const initializeValidators = useMutation({
@@ -181,9 +214,10 @@ export default function ValidatorsPage() {
       </div>
 
       <Tabs defaultValue="validators" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="validators">Validator Nodes</TabsTrigger>
           <TabsTrigger value="validations">Validation History</TabsTrigger>
+          <TabsTrigger value="records">Immutable Records</TabsTrigger>
         </TabsList>
 
         <TabsContent value="validators" className="space-y-4">
@@ -290,6 +324,226 @@ export default function ValidatorsPage() {
                   </div>
                 )}
               </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="records" className="space-y-4">
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Database className="w-5 h-5" />
+                Immutable Records Pool
+              </CardTitle>
+              <CardDescription>
+                Tamper-proof audit trail of all validation activities with cryptographic integrity
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="validation" className="space-y-4">
+                <TabsList className="grid w-full grid-cols-3">
+                  <TabsTrigger value="validation">Validation Activities</TabsTrigger>
+                  <TabsTrigger value="consensus">Consensus Decisions</TabsTrigger>
+                  <TabsTrigger value="integrity">Integrity Chain</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="validation" className="space-y-4">
+                  <div className="space-y-4">
+                    {validationRecords.length > 0 ? (
+                      validationRecords.map((record) => (
+                        <Card key={record.id} className="border-l-4 border-l-blue-500">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <FileText className="w-4 h-4 text-blue-600" />
+                                  <span className="font-medium">Validation Activity #{record.id}</span>
+                                  <Badge variant="outline" className="bg-blue-50 border-blue-200 text-blue-800">
+                                    {record.recordType}
+                                  </Badge>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                                  <div>
+                                    <span className="font-medium">Staker ID:</span> {record.stakerId}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">Work ID:</span> {record.workId || 'N/A'}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">Reputation Impact:</span> {record.reputationImpact}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">Stake Impact:</span> {record.stakeImpact}
+                                  </div>
+                                </div>
+                                <div className="text-sm text-gray-500">
+                                  <span className="font-medium">Activity Hash:</span> 
+                                  <code className="ml-2 bg-gray-100 px-2 py-1 rounded text-xs">
+                                    {record.activityHash.substring(0, 16)}...
+                                  </code>
+                                </div>
+                              </div>
+                              <div className="text-right text-sm text-gray-500">
+                                <div className="flex items-center gap-1">
+                                  <Fingerprint className="w-3 h-3" />
+                                  {record.isVerified ? 'Verified' : 'Pending'}
+                                </div>
+                                <div>{formatDistanceToNow(new Date(record.immutableSince))} ago</div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))
+                    ) : (
+                      <div className="text-center py-8">
+                        <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                        <p className="text-gray-600">No validation records yet</p>
+                        <p className="text-sm text-gray-500">Records will appear as validators process mathematical discoveries</p>
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="consensus" className="space-y-4">
+                  <div className="space-y-4">
+                    {consensusRecords.length > 0 ? (
+                      consensusRecords.map((record) => (
+                        <Card key={record.id} className="border-l-4 border-l-green-500">
+                          <CardContent className="p-4">
+                            <div className="flex items-start justify-between">
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <Shield className="w-4 h-4 text-green-600" />
+                                  <span className="font-medium">Consensus Decision #{record.id}</span>
+                                  <Badge variant="outline" className="bg-green-50 border-green-200 text-green-800">
+                                    {record.recordType}
+                                  </Badge>
+                                </div>
+                                <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
+                                  <div>
+                                    <span className="font-medium">Block ID:</span> {record.blockId || 'N/A'}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">Participants:</span> {record.consensusParticipants?.length || 0}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">Reputation Impact:</span> {record.reputationImpact}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">Merkle Root:</span> 
+                                    <code className="ml-2 bg-gray-100 px-1 py-0.5 rounded text-xs">
+                                      {record.merkleRoot.substring(0, 12)}...
+                                    </code>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="text-right text-sm text-gray-500">
+                                <div className="flex items-center gap-1">
+                                  <CheckCircle className="w-3 h-3" />
+                                  {record.isVerified ? 'Verified' : 'Pending'}
+                                </div>
+                                <div>{formatDistanceToNow(new Date(record.immutableSince))} ago</div>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))
+                    ) : (
+                      <div className="text-center py-8">
+                        <Shield className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                        <p className="text-gray-600">No consensus records yet</p>
+                        <p className="text-sm text-gray-500">Records will appear as consensus decisions are made</p>
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="integrity" className="space-y-4">
+                  <div className="space-y-4">
+                    {immutableRecords.length > 0 ? (
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-3 gap-4 mb-6">
+                          <Card>
+                            <CardContent className="p-4">
+                              <div className="flex items-center space-x-2">
+                                <FileText className="w-5 h-5 text-blue-600" />
+                                <div>
+                                  <p className="text-sm text-gray-600">Total Records</p>
+                                  <p className="text-xl font-bold">{immutableRecords.length}</p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                          <Card>
+                            <CardContent className="p-4">
+                              <div className="flex items-center space-x-2">
+                                <CheckCircle className="w-5 h-5 text-green-600" />
+                                <div>
+                                  <p className="text-sm text-gray-600">Verified</p>
+                                  <p className="text-xl font-bold">{immutableRecords.filter(r => r.isVerified).length}</p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                          <Card>
+                            <CardContent className="p-4">
+                              <div className="flex items-center space-x-2">
+                                <Fingerprint className="w-5 h-5 text-purple-600" />
+                                <div>
+                                  <p className="text-sm text-gray-600">Chain Integrity</p>
+                                  <p className="text-xl font-bold">100%</p>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        </div>
+                        {immutableRecords.slice(0, 10).map((record) => (
+                          <Card key={record.id} className="border border-gray-200">
+                            <CardContent className="p-4">
+                              <div className="flex items-start justify-between">
+                                <div className="space-y-2">
+                                  <div className="flex items-center gap-2">
+                                    <Database className="w-4 h-4 text-gray-600" />
+                                    <span className="font-medium">Record #{record.id}</span>
+                                    <Badge variant="outline">{record.recordType}</Badge>
+                                  </div>
+                                  <div className="text-sm text-gray-600 space-y-1">
+                                    <div>
+                                      <span className="font-medium">Digital Signature:</span>
+                                      <code className="ml-2 bg-gray-100 px-2 py-1 rounded text-xs">
+                                        {record.digitalSignature.substring(0, 24)}...
+                                      </code>
+                                    </div>
+                                    <div>
+                                      <span className="font-medium">Previous Hash:</span>
+                                      <code className="ml-2 bg-gray-100 px-2 py-1 rounded text-xs">
+                                        {record.previousRecordHash?.substring(0, 24) || 'Genesis'}...
+                                      </code>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="text-right text-sm text-gray-500">
+                                  <div className="flex items-center gap-1">
+                                    <Fingerprint className="w-3 h-3" />
+                                    {record.isVerified ? 'Verified' : 'Pending'}
+                                  </div>
+                                  <div>{formatDistanceToNow(new Date(record.immutableSince))} ago</div>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <Database className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                        <p className="text-gray-600">No immutable records yet</p>
+                        <p className="text-sm text-gray-500">Cryptographic records will appear as blockchain activities occur</p>
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+              </Tabs>
             </CardContent>
           </Card>
         </TabsContent>

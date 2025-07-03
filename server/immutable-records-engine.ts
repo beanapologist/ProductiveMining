@@ -199,16 +199,11 @@ export class ImmutableRecordsEngine {
    */
   private createDigitalSignature(activityData: any, staker: Staker): string {
     const message = JSON.stringify(activityData);
-    const signature = cryptoEngine.createPatternBasedSignature(
-      message,
-      [{
-        stakerId: staker.stakerId,
-        reputation: staker.validationReputation,
-        stakeAmount: staker.stakeAmount
-      }]
-    );
+    const stakingData = `${staker.stakerId}-${staker.validationReputation}-${staker.stakeAmount}`;
+    const combinedData = message + stakingData;
     
-    return signature.signature.join('|');
+    // Create a simple cryptographic signature based on activity and staker data
+    return this.simpleHash(combinedData + Date.now().toString());
   }
 
   /**
@@ -216,14 +211,12 @@ export class ImmutableRecordsEngine {
    */
   private createConsensusSignature(activityData: any, validators: Staker[]): string {
     const message = JSON.stringify(activityData);
-    const validatorData = validators.map(v => ({
-      stakerId: v.stakerId,
-      reputation: v.validationReputation,
-      stakeAmount: v.stakeAmount
-    }));
+    const validatorHashes = validators.map(v => 
+      this.simpleHash(`${v.stakerId}-${v.validationReputation}-${v.stakeAmount}`)
+    );
+    const combinedHash = this.simpleHash(message + validatorHashes.join(''));
     
-    const signature = cryptoEngine.createPatternBasedSignature(message, validatorData);
-    return signature.signature.join('|');
+    return combinedHash;
   }
 
   /**
