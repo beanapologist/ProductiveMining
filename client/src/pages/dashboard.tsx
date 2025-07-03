@@ -135,7 +135,7 @@ export default function Dashboard() {
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
         <div className="game-card p-8 text-center">
           <div className="animate-spin text-6xl mb-4">⚡</div>
-          <h2 className="text-xl font-bold text-blue-400">Loading Neural Hub...</h2>
+          <h2 className="text-xl font-bold text-blue-400">Loading Productive Mining...</h2>
         </div>
       </div>
     );
@@ -149,11 +149,11 @@ export default function Dashboard() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">
-                🧠 Research Neural Hub
+                ⛏️ Productive Mining Dashboard
               </h1>
               <div className="flex items-center gap-4 mt-2">
                 <div className="player-level">
-                  Level {computedStats?.playerLevel || 1} Researcher
+                  Level {computedStats?.playerLevel || 1} Miner
                 </div>
                 <div className="achievement-badge">
                   🏆 {computedStats?.achievements || 0} Achievements
@@ -164,7 +164,7 @@ export default function Dashboard() {
               <div className="text-3xl font-bold text-yellow-400">
                 💰 {formatNumber(computedStats?.totalScientificValue || 0)}
               </div>
-              <div className="text-sm text-yellow-200">Research Coins</div>
+              <div className="text-sm text-yellow-200">Mining Rewards</div>
             </div>
           </div>
 
@@ -181,7 +181,7 @@ export default function Dashboard() {
               ></div>
             </div>
             <div className="text-center text-xs mt-1 text-slate-400">
-              {formatNumber(computedStats?.totalScientificValue || 0)} / {formatNumber(computedStats?.nextLevelReq || 100000)} Research Points
+              {formatNumber(computedStats?.totalScientificValue || 0)} / {formatNumber(computedStats?.nextLevelReq || 100000)} Mining Points
             </div>
           </div>
         </div>
@@ -195,7 +195,7 @@ export default function Dashboard() {
             <div className="stat-label">Active Operations</div>
             <div className="stat-description">
               <Activity className="h-4 w-4 text-blue-400" />
-              <span>Quantum mining in progress</span>
+              <span>Productive mining in progress</span>
             </div>
           </div>
 
@@ -227,10 +227,10 @@ export default function Dashboard() {
           <div className="game-card stat-card">
             <div className="stat-icon">🔥</div>
             <div className="stat-value combo-multiplier">x{computedStats?.comboMultiplier || 1}</div>
-            <div className="stat-label">Knowledge Combo</div>
+            <div className="stat-label">Mining Combo</div>
             <div className="stat-description">
               <Flame className="h-4 w-4 text-orange-400" />
-              <span>Research multiplier</span>
+              <span>Efficiency multiplier</span>
             </div>
           </div>
         </div>
