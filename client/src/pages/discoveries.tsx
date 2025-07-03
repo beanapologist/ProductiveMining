@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StakingValidations from "@/components/staking-validations";
 import { useState } from "react";
-import { Brain, Search, Trophy, Clock, Zap, Target, Award, TrendingUp, Hash, Users, CheckCircle, Shield, Database, FileText, ExternalLink } from "lucide-react";
+import { Brain, Search, Trophy, Clock, Zap, Target, Award, TrendingUp, Hash, Users, CheckCircle, Shield, Database, FileText, ExternalLink, BarChart3, Calendar, Filter, Eye, ChevronDown, ChevronUp, Activity } from "lucide-react";
 
 interface MathematicalWork {
   id: number;
@@ -51,6 +51,12 @@ export default function DiscoveriesPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [workTypeFilter, setWorkTypeFilter] = useState("all");
   const [selectedDiscovery, setSelectedDiscovery] = useState<MathematicalWork | null>(null);
+  const [sortBy, setSortBy] = useState("timestamp");
+  const [sortOrder, setSortOrder] = useState("desc");
+  const [difficultyFilter, setDifficultyFilter] = useState("all");
+  const [valueFilter, setValueFilter] = useState("all");
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [activeTab, setActiveTab] = useState("discoveries");
 
   const { data: initialDiscoveries = [] } = useQuery({
     queryKey: ["/api/discoveries"],
@@ -59,6 +65,14 @@ export default function DiscoveriesPage() {
 
   const { data: immutableRecords = [] } = useQuery<ImmutableRecord[]>({
     queryKey: ['/api/immutable-records'],
+  });
+
+  const { data: validationsData = [] } = useQuery({
+    queryKey: ['/api/validations'],
+  });
+
+  const { data: blocksData = [] } = useQuery({
+    queryKey: ['/api/blocks'],
   });
 
   const currentDiscoveries = discoveries && discoveries.length > 0 ? discoveries : (initialDiscoveries as MathematicalWork[] || []);
@@ -92,15 +106,56 @@ export default function DiscoveriesPage() {
     { value: "qdt_validation", label: "⚡ QDT Validation" }
   ];
 
-  const filteredDiscoveries = currentDiscoveries.filter((discovery: MathematicalWork) => {
-    const matchesSearch = !searchQuery || 
-      discovery.workType.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      discovery.workerId.toLowerCase().includes(searchQuery.toLowerCase());
+  // Enhanced filtering with sorting and advanced filters
+  const filteredDiscoveries = currentDiscoveries
+    .filter((discovery: MathematicalWork) => {
+      const matchesSearch = !searchQuery || 
+        discovery.workType.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        discovery.workerId.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const matchesType = workTypeFilter === "all" || discovery.workType === workTypeFilter;
+      
+      const matchesDifficulty = difficultyFilter === "all" || 
+        (difficultyFilter === "low" && discovery.difficulty < 30) ||
+        (difficultyFilter === "medium" && discovery.difficulty >= 30 && discovery.difficulty < 50) ||
+        (difficultyFilter === "high" && discovery.difficulty >= 50);
+      
+      const matchesValue = valueFilter === "all" ||
+        (valueFilter === "low" && discovery.scientificValue < 1000000) ||
+        (valueFilter === "medium" && discovery.scientificValue >= 1000000 && discovery.scientificValue < 5000000) ||
+        (valueFilter === "high" && discovery.scientificValue >= 5000000);
     
-    const matchesType = workTypeFilter === "all" || discovery.workType === workTypeFilter;
-    
-    return matchesSearch && matchesType;
-  });
+      return matchesSearch && matchesType && matchesDifficulty && matchesValue;
+    })
+    .sort((a, b) => {
+      let aValue, bValue;
+      
+      switch (sortBy) {
+        case "timestamp":
+          aValue = new Date(a.timestamp).getTime();
+          bValue = new Date(b.timestamp).getTime();
+          break;
+        case "difficulty":
+          aValue = a.difficulty;
+          bValue = b.difficulty;
+          break;
+        case "scientificValue":
+          aValue = a.scientificValue;
+          bValue = b.scientificValue;
+          break;
+        case "workType":
+          aValue = a.workType;
+          bValue = b.workType;
+          break;
+        default:
+          aValue = new Date(a.timestamp).getTime();
+          bValue = new Date(b.timestamp).getTime();
+      }
+      
+      return sortOrder === "asc" ? 
+        (aValue > bValue ? 1 : -1) : 
+        (aValue < bValue ? 1 : -1);
+    });
 
   const formatTimestamp = (timestamp: Date | string) => {
     const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
@@ -137,6 +192,38 @@ export default function DiscoveriesPage() {
     : 0;
 
   const uniqueWorkers = new Set(currentDiscoveries.map((d: MathematicalWork) => d.workerId)).size;
+
+  // Advanced database analytics
+  const discoveryTypeStats = currentDiscoveries.reduce((acc: any, discovery) => {
+    acc[discovery.workType] = (acc[discovery.workType] || 0) + 1;
+    return acc;
+  }, {});
+
+  const validationStats = {
+    totalValidations: validationsData.length,
+    pendingValidations: validationsData.filter((v: any) => v.status === 'pending').length,
+    approvedValidations: validationsData.filter((v: any) => v.status === 'approved').length,
+    rejectedValidations: validationsData.filter((v: any) => v.status === 'rejected').length,
+  };
+
+  const immutableRecordsStats = {
+    totalRecords: immutableRecords.length,
+    validationRecords: immutableRecords.filter(r => r.recordType === 'validation_activity').length,
+    consensusRecords: immutableRecords.filter(r => r.recordType === 'consensus_decision').length,
+    verifiedRecords: immutableRecords.filter(r => r.isVerified).length,
+  };
+
+  const difficultyRanges = {
+    low: currentDiscoveries.filter(d => d.difficulty < 30).length,
+    medium: currentDiscoveries.filter(d => d.difficulty >= 30 && d.difficulty < 50).length,
+    high: currentDiscoveries.filter(d => d.difficulty >= 50).length,
+  };
+
+  const valueRanges = {
+    low: currentDiscoveries.filter(d => d.scientificValue < 1000000).length,
+    medium: currentDiscoveries.filter(d => d.scientificValue >= 1000000 && d.scientificValue < 5000000).length,
+    high: currentDiscoveries.filter(d => d.scientificValue >= 5000000).length,
+  };
 
   return (
     <div className="text-slate-100">
@@ -224,29 +311,126 @@ export default function DiscoveriesPage() {
                   Scientific discoveries made through productive mining
                 </CardDescription>
                 
-                {/* Filters */}
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
-                    <Input
-                      placeholder="Search discoveries..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 bg-slate-800 border-slate-600 text-white"
-                    />
+                {/* Enhanced Filters with Database Analytics */}
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                      <Input
+                        placeholder="Search discoveries, workers, types..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10 bg-slate-800 border-slate-600 text-white"
+                      />
+                    </div>
+                    <Select value={workTypeFilter} onValueChange={setWorkTypeFilter}>
+                      <SelectTrigger className="bg-slate-800 border-slate-600 sm:w-[200px]">
+                        <SelectValue placeholder="Filter by type" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-800 border-slate-600">
+                        {workTypes.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
+                            {type.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                      className="bg-slate-800 border-slate-600 text-white hover:bg-slate-700"
+                    >
+                      <Filter className="h-4 w-4 mr-2" />
+                      Advanced
+                      {showAdvancedFilters ? <ChevronUp className="h-4 w-4 ml-2" /> : <ChevronDown className="h-4 w-4 ml-2" />}
+                    </Button>
                   </div>
-                  <Select value={workTypeFilter} onValueChange={setWorkTypeFilter}>
-                    <SelectTrigger className="bg-slate-800 border-slate-600 sm:w-[200px]">
-                      <SelectValue placeholder="Filter by type" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-slate-800 border-slate-600">
-                      {workTypes.map((type) => (
-                        <SelectItem key={type.value} value={type.value}>
-                          {type.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+
+                  {/* Advanced Filters */}
+                  {showAdvancedFilters && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 p-4 rounded-lg bg-slate-800/50 border border-slate-700/50">
+                      <div>
+                        <label className="text-xs text-slate-400 mb-1 block">Sort By</label>
+                        <Select value={sortBy} onValueChange={setSortBy}>
+                          <SelectTrigger className="bg-slate-900 border-slate-600 text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-slate-800 border-slate-600">
+                            <SelectItem value="timestamp">Date Created</SelectItem>
+                            <SelectItem value="difficulty">Difficulty</SelectItem>
+                            <SelectItem value="scientificValue">Scientific Value</SelectItem>
+                            <SelectItem value="workType">Discovery Type</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <label className="text-xs text-slate-400 mb-1 block">Order</label>
+                        <Select value={sortOrder} onValueChange={setSortOrder}>
+                          <SelectTrigger className="bg-slate-900 border-slate-600 text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-slate-800 border-slate-600">
+                            <SelectItem value="desc">High to Low</SelectItem>
+                            <SelectItem value="asc">Low to High</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <label className="text-xs text-slate-400 mb-1 block">Difficulty</label>
+                        <Select value={difficultyFilter} onValueChange={setDifficultyFilter}>
+                          <SelectTrigger className="bg-slate-900 border-slate-600 text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-slate-800 border-slate-600">
+                            <SelectItem value="all">All Levels</SelectItem>
+                            <SelectItem value="low">Low (&lt;30)</SelectItem>
+                            <SelectItem value="medium">Medium (30-49)</SelectItem>
+                            <SelectItem value="high">High (50+)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div>
+                        <label className="text-xs text-slate-400 mb-1 block">Value Range</label>
+                        <Select value={valueFilter} onValueChange={setValueFilter}>
+                          <SelectTrigger className="bg-slate-900 border-slate-600 text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="bg-slate-800 border-slate-600">
+                            <SelectItem value="all">All Values</SelectItem>
+                            <SelectItem value="low">Low (&lt;$1M)</SelectItem>
+                            <SelectItem value="medium">Medium ($1M-$5M)</SelectItem>
+                            <SelectItem value="high">High ($5M+)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Filter Results Summary */}
+                  <div className="flex items-center justify-between text-sm text-slate-400">
+                    <span>
+                      Showing {filteredDiscoveries.length} of {currentDiscoveries.length} discoveries
+                    </span>
+                    {(searchQuery || workTypeFilter !== "all" || difficultyFilter !== "all" || valueFilter !== "all") && (
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => {
+                          setSearchQuery("");
+                          setWorkTypeFilter("all");
+                          setDifficultyFilter("all");
+                          setValueFilter("all");
+                        }}
+                        className="text-slate-400 hover:text-white"
+                      >
+                        Clear Filters
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -319,19 +503,253 @@ export default function DiscoveriesPage() {
             </Card>
           </div>
 
-          {/* Discovery Details */}
+          {/* Database Analytics Sidebar */}
           <div>
             <Card className="pm-card">
               <CardHeader>
                 <CardTitle className="text-white flex items-center">
-                  <Trophy className="h-5 w-5 mr-2 text-yellow-400" />
-                  Discovery Details
+                  <BarChart3 className="h-5 w-5 mr-2 text-blue-400" />
+                  Database Analytics
                 </CardTitle>
                 <CardDescription>
-                  Detailed information about the selected discovery
+                  Comprehensive insights from discovery records and validation data
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+                  <TabsList className="grid w-full grid-cols-3 bg-slate-800/50">
+                    <TabsTrigger value="discoveries" className="flex items-center space-x-2">
+                      <Brain className="h-4 w-4" />
+                      <span>Overview</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="validations" className="flex items-center space-x-2">
+                      <Shield className="h-4 w-4" />
+                      <span>Validations</span>
+                    </TabsTrigger>
+                    <TabsTrigger value="records" className="flex items-center space-x-2">
+                      <Database className="h-4 w-4" />
+                      <span>Records</span>
+                    </TabsTrigger>
+                  </TabsList>
+
+                  {/* Discovery Overview Analytics */}
+                  <TabsContent value="discoveries" className="space-y-4">
+                    <div className="space-y-4">
+                      {/* Discovery Type Distribution */}
+                      <div className="p-4 bg-slate-800/50 rounded-lg">
+                        <h4 className="text-white font-semibold mb-3 flex items-center">
+                          <BarChart3 className="h-4 w-4 mr-2" />
+                          Discovery Types
+                        </h4>
+                        <div className="space-y-2">
+                          {Object.entries(discoveryTypeStats).map(([type, count]) => (
+                            <div key={type} className="flex justify-between items-center">
+                              <span className="text-sm text-slate-300 flex items-center">
+                                <span className="mr-2">{getWorkTypeIcon(type)}</span>
+                                {formatWorkType(type)}
+                              </span>
+                              <Badge variant="outline" className="text-white">
+                                {count}
+                              </Badge>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Difficulty Distribution */}
+                      <div className="p-4 bg-slate-800/50 rounded-lg">
+                        <h4 className="text-white font-semibold mb-3 flex items-center">
+                          <Target className="h-4 w-4 mr-2" />
+                          Difficulty Ranges
+                        </h4>
+                        <div className="space-y-2">
+                          <div className="flex justify-between">
+                            <span className="text-sm text-slate-300">Low (&lt;30)</span>
+                            <Badge variant="outline" className="text-green-400 border-green-400">
+                              {difficultyRanges.low}
+                            </Badge>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-slate-300">Medium (30-49)</span>
+                            <Badge variant="outline" className="text-yellow-400 border-yellow-400">
+                              {difficultyRanges.medium}
+                            </Badge>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-slate-300">High (50+)</span>
+                            <Badge variant="outline" className="text-red-400 border-red-400">
+                              {difficultyRanges.high}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Value Distribution */}
+                      <div className="p-4 bg-slate-800/50 rounded-lg">
+                        <h4 className="text-white font-semibold mb-3 flex items-center">
+                          <Award className="h-4 w-4 mr-2" />
+                          Value Ranges
+                        </h4>
+                        <div className="space-y-2">
+                          <div className="flex justify-between">
+                            <span className="text-sm text-slate-300">Low (&lt;$1M)</span>
+                            <Badge variant="outline" className="text-blue-400 border-blue-400">
+                              {valueRanges.low}
+                            </Badge>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-slate-300">Medium ($1M-$5M)</span>
+                            <Badge variant="outline" className="text-purple-400 border-purple-400">
+                              {valueRanges.medium}
+                            </Badge>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-slate-300">High ($5M+)</span>
+                            <Badge variant="outline" className="text-green-400 border-green-400">
+                              {valueRanges.high}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  {/* Validation Analytics */}
+                  <TabsContent value="validations" className="space-y-4">
+                    <div className="space-y-4">
+                      {/* Validation Status */}
+                      <div className="p-4 bg-slate-800/50 rounded-lg">
+                        <h4 className="text-white font-semibold mb-3 flex items-center">
+                          <Shield className="h-4 w-4 mr-2" />
+                          Validation Status
+                        </h4>
+                        <div className="space-y-2">
+                          <div className="flex justify-between">
+                            <span className="text-sm text-slate-300">Total Validations</span>
+                            <Badge variant="outline" className="text-white">
+                              {validationStats.totalValidations}
+                            </Badge>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-slate-300">Pending</span>
+                            <Badge variant="outline" className="text-yellow-400 border-yellow-400">
+                              {validationStats.pendingValidations}
+                            </Badge>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-slate-300">Approved</span>
+                            <Badge variant="outline" className="text-green-400 border-green-400">
+                              {validationStats.approvedValidations}
+                            </Badge>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-slate-300">Rejected</span>
+                            <Badge variant="outline" className="text-red-400 border-red-400">
+                              {validationStats.rejectedValidations}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Approval Rate */}
+                      <div className="p-4 bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-lg border border-green-500/20">
+                        <h4 className="text-white font-semibold mb-3 flex items-center">
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          Approval Rate
+                        </h4>
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-green-400">
+                            {validationStats.totalValidations > 0 
+                              ? ((validationStats.approvedValidations / (validationStats.approvedValidations + validationStats.rejectedValidations)) * 100).toFixed(1)
+                              : 0}%
+                          </div>
+                          <div className="text-sm text-slate-400 mt-1">
+                            {validationStats.approvedValidations} of {validationStats.approvedValidations + validationStats.rejectedValidations} processed
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+
+                  {/* Immutable Records Analytics */}
+                  <TabsContent value="records" className="space-y-4">
+                    <div className="space-y-4">
+                      {/* Records Overview */}
+                      <div className="p-4 bg-slate-800/50 rounded-lg">
+                        <h4 className="text-white font-semibold mb-3 flex items-center">
+                          <Database className="h-4 w-4 mr-2" />
+                          Immutable Records
+                        </h4>
+                        <div className="space-y-2">
+                          <div className="flex justify-between">
+                            <span className="text-sm text-slate-300">Total Records</span>
+                            <Badge variant="outline" className="text-white">
+                              {immutableRecordsStats.totalRecords}
+                            </Badge>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-slate-300">Validation Records</span>
+                            <Badge variant="outline" className="text-blue-400 border-blue-400">
+                              {immutableRecordsStats.validationRecords}
+                            </Badge>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-slate-300">Consensus Records</span>
+                            <Badge variant="outline" className="text-purple-400 border-purple-400">
+                              {immutableRecordsStats.consensusRecords}
+                            </Badge>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-sm text-slate-300">Verified Records</span>
+                            <Badge variant="outline" className="text-green-400 border-green-400">
+                              {immutableRecordsStats.verifiedRecords}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Data Integrity */}
+                      <div className="p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg border border-blue-500/20">
+                        <h4 className="text-white font-semibold mb-3 flex items-center">
+                          <Shield className="h-4 w-4 mr-2" />
+                          Data Integrity
+                        </h4>
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-blue-400">
+                            {immutableRecordsStats.totalRecords > 0 
+                              ? ((immutableRecordsStats.verifiedRecords / immutableRecordsStats.totalRecords) * 100).toFixed(1)
+                              : 0}%
+                          </div>
+                          <div className="text-sm text-slate-400 mt-1">
+                            Records verified and immutable
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Network Activity */}
+                      <div className="p-4 bg-slate-800/50 rounded-lg">
+                        <h4 className="text-white font-semibold mb-3 flex items-center">
+                          <Activity className="h-4 w-4 mr-2" />
+                          Network Activity
+                        </h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-slate-300">Active Blocks</span>
+                            <span className="text-white">{(blocksData as any[])?.length || 0}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-slate-300">Unique Workers</span>
+                            <span className="text-white">{uniqueWorkers}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-slate-300">Avg Difficulty</span>
+                            <span className="text-white">{averageDifficulty.toFixed(1)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </TabsContent>
+                </Tabs>
                 {!selectedDiscovery ? (
                   <div className="text-center py-8 text-slate-400">
                     <Trophy className="h-12 w-12 mx-auto mb-3 opacity-50" />
