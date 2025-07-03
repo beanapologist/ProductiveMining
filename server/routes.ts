@@ -1083,6 +1083,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Discovery security audit endpoints
+  app.post("/api/discoveries/audit", async (req, res) => {
+    try {
+      const { discoveryAuditEngine } = await import('./discovery-audit-engine');
+      console.log('🔍 DISCOVERY AUDIT: Starting comprehensive security audit...');
+      
+      const auditResults = await discoveryAuditEngine.auditAllDiscoveries();
+      
+      res.json({
+        message: "Discovery security audit completed",
+        ...auditResults,
+        timestamp: new Date().toISOString()
+      });
+
+      // Broadcast audit completion
+      broadcast({
+        type: 'discovery_made',
+        data: { 
+          audit: {
+            totalDiscoveries: auditResults.totalDiscoveries,
+            securityScore: auditResults.overallSecurityScore,
+            flaggedCount: auditResults.flaggedDiscoveries.length
+          }
+        }
+      });
+      
+    } catch (error) {
+      console.error('Discovery audit error:', error);
+      res.status(500).json({ error: "Discovery audit failed" });
+    }
+  });
+
+  app.get("/api/discoveries/:id/audit", async (req, res) => {
+    try {
+      const { discoveryAuditEngine } = await import('./discovery-audit-engine');
+      const discoveryId = parseInt(req.params.id);
+      
+      const auditResult = await discoveryAuditEngine.auditSingleDiscovery(discoveryId);
+      
+      res.json({
+        discovery: auditResult,
+        timestamp: new Date().toISOString()
+      });
+      
+    } catch (error) {
+      console.error('Single discovery audit error:', error);
+      res.status(500).json({ error: "Failed to audit discovery" });
+    }
+  });
+
+  app.post("/api/discoveries/:id/fraud-check", async (req, res) => {
+    try {
+      const { discoveryAuditEngine } = await import('./discovery-audit-engine');
+      const discoveryId = parseInt(req.params.id);
+      
+      const fraudAnalysis = await discoveryAuditEngine.detectDiscoveryFraud(discoveryId);
+      
+      res.json({
+        discoveryId,
+        fraudAnalysis,
+        timestamp: new Date().toISOString()
+      });
+      
+    } catch (error) {
+      console.error('Fraud detection error:', error);
+      res.status(500).json({ error: "Fraud detection failed" });
+    }
+  });
+
   // Data integrity check endpoint
   app.post("/api/integrity/check", async (req, res) => {
     try {
