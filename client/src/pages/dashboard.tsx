@@ -208,7 +208,7 @@ export default function Dashboard() {
           </div>
           <div className="metric-label text-gray-300">Discovery Blocks</div>
           <div className="text-sm text-gray-400 mt-1">
-            +{metrics?.blocksPerHour || 0}/hour discovery rate
+            +{Math.abs(metrics?.blocksPerHour || 0)}/hour discovery rate
           </div>
           <div className="absolute bottom-2 right-2">
             <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
