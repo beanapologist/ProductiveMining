@@ -95,6 +95,13 @@ export function useWebSocket() {
         setDiscoveries(prev => [message.data, ...prev.slice(0, 9)]); // Keep latest 10
         break;
 
+      case 'integrity_update':
+      case 'security_alert':
+      case 'mitigation_deployed':
+        // Handle security and integrity messages (for logging/debugging)
+        console.log(`Security event: ${message.type}`, message.data);
+        break;
+
       default:
         console.log('Unknown message type:', message.type);
     }
