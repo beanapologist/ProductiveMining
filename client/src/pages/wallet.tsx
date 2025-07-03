@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { 
   Wallet, Copy, Check, Coins, Lock, Award, TrendingUp, 
   PieChart, Zap, Plus, ExternalLink, Unlock 
@@ -92,26 +95,25 @@ export default function WalletPage() {
   const totalPortfolioValue = targetPortfolioValue;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header with Wallet Address */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-              Research Vault Portfolio
-            </h1>
-            <p className="text-gray-300 mt-2">Your productive mining ecosystem dashboard</p>
-          </div>
-          <button 
-            onClick={copyAddress}
-            className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-gray-800 to-gray-700 hover:from-gray-700 hover:to-gray-600 rounded-xl transition-all border border-gray-600/50"
-            title="Copy wallet address"
-          >
-            <Wallet className="h-5 w-5 text-cyan-400" />
-            <span className="font-mono text-white">{walletAddress}</span>
-            {copied ? <Check className="h-5 w-5 text-green-400" /> : <Copy className="h-5 w-5 text-gray-400" />}
-          </button>
+    <div className="container mx-auto p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-white">Research Vault Portfolio</h1>
+          <p className="text-gray-400 mt-2">
+            Your productive mining ecosystem dashboard
+          </p>
         </div>
+        <Button
+          onClick={copyAddress}
+          variant="outline"
+          className="border-slate-600 text-gray-300 flex items-center gap-2"
+        >
+          <Wallet className="h-4 w-4" />
+          <span className="font-mono">{walletAddress.slice(0, 10)}...{walletAddress.slice(-4)}</span>
+          {copied ? <Check className="h-4 w-4 text-green-400" /> : <Copy className="h-4 w-4" />}
+        </Button>
+      </div>
 
         {/* Dashboard Grid Layout */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
