@@ -82,17 +82,17 @@ export class ScientificValuationEngine {
    */
   private getBaseResearchValues(): Record<string, number> {
     return {
-      // Values in USD, based on typical research funding
-      riemann_zero: 2500,           // $2.5K - Advanced number theory research
-      prime_pattern: 1800,          // $1.8K - Computational number theory
-      yang_mills: 3500,            // $3.5K - Theoretical physics (Millennium Prize)
-      navier_stokes: 3200,         // $3.2K - Applied mathematics (Millennium Prize)
-      poincare_conjecture: 3000,   // $3K - Topology research (Solved Millennium Prize)
-      goldbach_verification: 1500, // $1.5K - Number theory verification
-      birch_swinnerton_dyer: 2800, // $2.8K - Algebraic geometry (Millennium Prize)
-      elliptic_curve_crypto: 2200, // $2.2K - Applied cryptography
-      lattice_crypto: 2000,        // $2K - Post-quantum cryptography
-      default: 1200                // $1.2K - General mathematical research
+      // Values in USD, based on realistic research computation costs
+      riemann_zero: 800,            // $800 - Advanced number theory research
+      prime_pattern: 600,           // $600 - Computational number theory
+      yang_mills: 1200,            // $1.2K - Theoretical physics (Millennium Prize)
+      navier_stokes: 1000,         // $1K - Applied mathematics (Millennium Prize)
+      poincare_conjecture: 900,    // $900 - Topology research (Solved Millennium Prize)
+      goldbach_verification: 500,  // $500 - Number theory verification
+      birch_swinnerton_dyer: 850,  // $850 - Algebraic geometry (Millennium Prize)
+      elliptic_curve_crypto: 700,  // $700 - Applied cryptography
+      lattice_crypto: 650,         // $650 - Post-quantum cryptography
+      default: 400                 // $400 - General mathematical research
     };
   }
 
@@ -124,22 +124,22 @@ export class ScientificValuationEngine {
    */
   private calculateResearchImpact(workType: string, difficulty: number): number {
     const impactFactors: Record<string, number> = {
-      riemann_zero: 800,           // High theoretical importance
-      prime_pattern: 600,          // Cryptographic applications
-      yang_mills: 1200,           // Millennium Prize problem
-      navier_stokes: 1000,        // Engineering applications
-      poincare_conjecture: 900,   // Fundamental topology
-      goldbach_verification: 400, // Classical number theory
-      birch_swinnerton_dyer: 700, // Modern algebraic geometry
-      elliptic_curve_crypto: 500, // Practical cryptography
-      lattice_crypto: 450,        // Quantum-resistant crypto
-      default: 300
+      riemann_zero: 200,           // High theoretical importance
+      prime_pattern: 150,          // Cryptographic applications
+      yang_mills: 300,            // Millennium Prize problem
+      navier_stokes: 250,         // Engineering applications
+      poincare_conjecture: 225,   // Fundamental topology
+      goldbach_verification: 100, // Classical number theory
+      birch_swinnerton_dyer: 175, // Modern algebraic geometry
+      elliptic_curve_crypto: 125, // Practical cryptography
+      lattice_crypto: 110,        // Quantum-resistant crypto
+      default: 75
     };
 
     const baseFactor = impactFactors[workType] || impactFactors.default;
     
-    // Scale with difficulty but keep reasonable bounds
-    const difficultyScale = Math.min(1 + (difficulty / 200), 3.0);
+    // Scale with difficulty but keep reasonable bounds (reduced scaling)
+    const difficultyScale = Math.min(1 + (difficulty / 400), 1.5);
     
     return Math.round(baseFactor * difficultyScale);
   }

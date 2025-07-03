@@ -4441,6 +4441,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Test valuation endpoint 
+  app.post('/api/test-valuation', async (req, res) => {
+    try {
+      const { workType, difficulty, computationTime, energyConsumed } = req.body;
+      const { scientificValuationEngine } = await import('./scientific-valuation-engine');
+      const valuation = scientificValuationEngine.calculateScientificValue(
+        workType, 
+        difficulty, 
+        computationTime || 1000, 
+        energyConsumed || 100
+      );
+      res.json(valuation);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   return httpServer;
 }
 
