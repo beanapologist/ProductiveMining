@@ -42,6 +42,81 @@ interface SecurityDiscoveryLink {
   };
 }
 
+interface ThreatAlert {
+  id: number;
+  threatType: 'quantum_attack' | 'pattern_exploitation' | 'validation_manipulation' | 'mining_hijack' | 'discovery_fraud' | 'network_compromise' | 'ai_adversarial';
+  severity: 'critical' | 'high' | 'medium' | 'low';
+  confidence: number;
+  description: string;
+  affectedSystems: string[];
+  detectionMethod: string;
+  mitigationStrategy: string;
+  automaticResponse: boolean;
+  timestamp: Date;
+  resolved: boolean;
+  relatedDiscoveries: number[];
+  threatVector: {
+    source: string;
+    target: string;
+    method: string;
+    impact: string;
+  };
+  aiAnalysis: {
+    patternMatching: number;
+    anomalyScore: number;
+    riskAssessment: string;
+    emergingThreatProbability: number;
+  };
+}
+
+interface SecurityMitigation {
+  id: number;
+  threatId: number;
+  mitigationType: 'cryptographic_enhancement' | 'network_hardening' | 'validation_strengthening' | 'discovery_verification' | 'ai_defense' | 'quantum_resistance';
+  status: 'planned' | 'implementing' | 'active' | 'completed' | 'failed';
+  effectiveness: number;
+  automatedResponse: boolean;
+  implementationDetails: {
+    method: string;
+    parameters: Record<string, any>;
+    timeframe: string;
+    resources: string[];
+  };
+  verificationMetrics: {
+    securityImprovement: number;
+    performanceImpact: number;
+    reliabilityScore: number;
+  };
+  timestamp: Date;
+}
+
+interface ThreatIntelligence {
+  globalThreats: {
+    quantumAttacks: number;
+    aiAdversarial: number;
+    networkIntrusions: number;
+    validationAttacks: number;
+  };
+  emergingPatterns: {
+    type: string;
+    frequency: number;
+    riskLevel: string;
+    firstDetected: Date;
+  }[];
+  defensivePosture: {
+    overallRisk: number;
+    mitigationCoverage: number;
+    responseTime: number;
+    adaptiveDefenses: number;
+  };
+  predictionModel: {
+    nextThreatProbability: number;
+    estimatedImpact: string;
+    preparednessLevel: number;
+    recommendedActions: string[];
+  };
+}
+
 interface SecurityInsights {
   totalSecurityDiscoveries: number;
   quantumResistant: number;
@@ -98,6 +173,9 @@ interface IntegrityResults {
 export default function SecurityDashboard() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [lastAnalysis, setLastAnalysis] = useState<SecurityAnalysis | null>(null);
+  const [threatFilter, setThreatFilter] = useState<string>('all');
+  const [selectedThreat, setSelectedThreat] = useState<ThreatAlert | null>(null);
+  const [isScanning, setIsScanning] = useState(false);
   const [integrityResults, setIntegrityResults] = useState<IntegrityResults | null>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -114,6 +192,37 @@ export default function SecurityDashboard() {
   const { data: immutableRecords = [] } = useQuery<ImmutableRecord[]>({
     queryKey: ['/api/immutable-records'],
     refetchInterval: 30000,
+  });
+
+  // Threat Detection Queries
+  const { data: threats = [], isLoading: loadingThreats, refetch: refetchThreats } = useQuery<ThreatAlert[]>({
+    queryKey: ['/api/security/threats', threatFilter],
+    queryFn: async () => {
+      const params = threatFilter !== 'all' ? `?severity=${threatFilter}` : '';
+      const response = await fetch(`/api/security/threats${params}`);
+      if (!response.ok) throw new Error('Failed to fetch threats');
+      return response.json();
+    },
+    staleTime: 15000,
+    refetchInterval: 30000,
+  });
+
+  const { data: mitigations = [] } = useQuery<SecurityMitigation[]>({
+    queryKey: ['/api/security/mitigations'],
+    staleTime: 30000,
+    refetchInterval: 60000,
+  });
+
+  const { data: threatIntelligence } = useQuery<{threatIntelligence: ThreatIntelligence}>({
+    queryKey: ['/api/security/threat-intelligence'],
+    staleTime: 60000,
+    refetchInterval: 5 * 60 * 1000, // 5 minutes
+  });
+
+  const { data: aiRecommendations = [] } = useQuery<any[]>({
+    queryKey: ['/api/security/ai-recommendations'],
+    staleTime: 120000,
+    refetchInterval: 10 * 60 * 1000, // 10 minutes
   });
 
   const runSecurityAnalysis = async () => {
@@ -155,6 +264,70 @@ export default function SecurityDashboard() {
       });
     },
   });
+
+  // Threat Detection Mutations
+  const threatScanMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/security/threat-scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (!response.ok) throw new Error('Threat scan failed');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setIsScanning(false);
+      refetchThreats();
+      toast({
+        title: "Threat Scan Completed",
+        description: `Detected ${data.threatsDetected} potential threats`,
+        variant: data.threatsDetected > 0 ? "destructive" : "default",
+      });
+    },
+    onError: () => {
+      setIsScanning(false);
+      toast({
+        title: "Threat Scan Failed",
+        description: "Could not complete security scan",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const mitigateThreatMutation = useMutation({
+    mutationFn: async (threatId: number) => {
+      const response = await fetch(`/api/security/threats/${threatId}/mitigate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (!response.ok) throw new Error('Mitigation failed');
+      return response.json();
+    },
+    onSuccess: () => {
+      refetchThreats();
+      queryClient.invalidateQueries({ queryKey: ['/api/security/mitigations'] });
+      toast({
+        title: "Mitigation Deployed",
+        description: "Security measures have been implemented",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Mitigation Failed",
+        description: "Could not deploy security countermeasures",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const runThreatScan = () => {
+    setIsScanning(true);
+    threatScanMutation.mutate();
+  };
+
+  const handleMitigateThreat = (threatId: number) => {
+    mitigateThreatMutation.mutate(threatId);
+  };
 
   useEffect(() => {
     if (discoveries?.length > 0) {
@@ -660,6 +833,178 @@ export default function SecurityDashboard() {
               <p className="text-gray-400">AI security insights will appear here</p>
             </div>
           )}
+        </CardContent>
+      </Card>
+
+      {/* AI-Powered Threat Detection */}
+      <Card className="bg-slate-800 border-slate-700">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center justify-between">
+            <div className="flex items-center">
+              <AlertTriangle className="mr-2 h-5 w-5 text-red-400" />
+              AI Threat Detection & Mitigation
+            </div>
+            <div className="flex space-x-2">
+              <Button
+                onClick={runThreatScan}
+                disabled={isScanning}
+                variant="outline"
+                className="border-red-400 text-red-400 hover:bg-red-400 hover:text-white"
+                size="sm"
+              >
+                {isScanning ? (
+                  <>
+                    <Search className="mr-2 h-4 w-4 animate-pulse" />
+                    Scanning...
+                  </>
+                ) : (
+                  <>
+                    <Search className="mr-2 h-4 w-4" />
+                    Threat Scan
+                  </>
+                )}
+              </Button>
+            </div>
+          </CardTitle>
+          <CardDescription className="text-gray-400">
+            Advanced AI-powered threat detection using mathematical discovery patterns
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-6">
+            {/* Threat Intelligence Overview */}
+            {threatIntelligence && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="text-center p-3 bg-red-900/20 rounded-lg border border-red-500/20">
+                  <div className="text-2xl font-bold text-red-400">
+                    {threatIntelligence.threatIntelligence.globalThreats.quantumAttacks}
+                  </div>
+                  <div className="text-sm text-gray-400">Quantum Attacks</div>
+                </div>
+                <div className="text-center p-3 bg-purple-900/20 rounded-lg border border-purple-500/20">
+                  <div className="text-2xl font-bold text-purple-400">
+                    {threatIntelligence.threatIntelligence.globalThreats.aiAdversarial}
+                  </div>
+                  <div className="text-sm text-gray-400">AI Adversarial</div>
+                </div>
+                <div className="text-center p-3 bg-orange-900/20 rounded-lg border border-orange-500/20">
+                  <div className="text-2xl font-bold text-orange-400">
+                    {threatIntelligence.threatIntelligence.globalThreats.networkIntrusions}
+                  </div>
+                  <div className="text-sm text-gray-400">Network Threats</div>
+                </div>
+                <div className="text-center p-3 bg-yellow-900/20 rounded-lg border border-yellow-500/20">
+                  <div className="text-2xl font-bold text-yellow-400">
+                    {threatIntelligence.threatIntelligence.globalThreats.validationAttacks}
+                  </div>
+                  <div className="text-sm text-gray-400">Validation Attacks</div>
+                </div>
+              </div>
+            )}
+
+            {/* Active Threats */}
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="text-white font-medium flex items-center">
+                  <AlertTriangle className="mr-2 h-4 w-4 text-red-400" />
+                  Active Threats ({threats.filter(t => !t.resolved).length})
+                </h4>
+                <div className="flex space-x-2">
+                  <select
+                    value={threatFilter}
+                    onChange={(e) => setThreatFilter(e.target.value)}
+                    className="bg-slate-700 text-white border border-slate-600 rounded px-3 py-1 text-sm"
+                  >
+                    <option value="all">All Threats</option>
+                    <option value="critical">Critical Only</option>
+                    <option value="high">High Priority</option>
+                    <option value="medium">Medium Priority</option>
+                    <option value="low">Low Priority</option>
+                  </select>
+                </div>
+              </div>
+              
+              {loadingThreats ? (
+                <div className="text-center py-8">
+                  <div className="animate-pulse text-gray-400">Loading threat data...</div>
+                </div>
+              ) : threats.length > 0 ? (
+                <div className="space-y-3 max-h-64 overflow-y-auto">
+                  {threats.filter(t => !t.resolved).slice(0, 10).map((threat) => (
+                    <div key={threat.id} className="p-4 bg-slate-700/50 rounded-lg border border-slate-600">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center space-x-3">
+                          <Badge className={`${
+                            threat.severity === 'critical' ? 'bg-red-600' :
+                            threat.severity === 'high' ? 'bg-orange-600' :
+                            threat.severity === 'medium' ? 'bg-yellow-600' : 'bg-gray-600'
+                          } text-white`}>
+                            {threat.severity}
+                          </Badge>
+                          <span className="text-white font-medium">
+                            {threat.threatType.replace('_', ' ').toUpperCase()}
+                          </span>
+                          <Badge variant="outline" className="text-blue-400 border-blue-400">
+                            {threat.confidence.toFixed(1)}% confidence
+                          </Badge>
+                        </div>
+                        <Button
+                          onClick={() => handleMitigateThreat(threat.id)}
+                          disabled={mitigateThreatMutation.isPending}
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          {mitigateThreatMutation.isPending ? 'Deploying...' : 'Mitigate'}
+                        </Button>
+                      </div>
+                      <p className="text-sm text-gray-300 mb-2">{threat.description}</p>
+                      <div className="text-xs text-gray-400">
+                        <div>Detection: {threat.detectionMethod}</div>
+                        <div>AI Analysis: {threat.aiAnalysis.riskAssessment} (Score: {threat.aiAnalysis.anomalyScore.toFixed(2)})</div>
+                        <div>Affected Systems: {threat.affectedSystems.join(', ')}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <CheckCircle className="h-12 w-12 mx-auto mb-3 text-green-400" />
+                  <p className="text-gray-400">No active threats detected</p>
+                  <p className="text-sm text-gray-500">All systems secure</p>
+                </div>
+              )}
+            </div>
+
+            {/* AI Recommendations */}
+            {aiRecommendations.length > 0 && (
+              <div>
+                <h4 className="text-white font-medium flex items-center mb-3">
+                  <Brain className="mr-2 h-4 w-4 text-purple-400" />
+                  AI Security Recommendations
+                </h4>
+                <div className="space-y-2">
+                  {aiRecommendations.slice(0, 3).map((rec, index) => (
+                    <div key={index} className="p-3 bg-purple-900/10 border border-purple-500/20 rounded-lg">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-purple-400 font-medium text-sm">{rec.type?.replace('_', ' ')}</span>
+                        <Badge variant="outline" className={`text-xs ${
+                          rec.priority === 'high' ? 'text-red-400 border-red-400' :
+                          rec.priority === 'medium' ? 'text-yellow-400 border-yellow-400' :
+                          'text-gray-400 border-gray-400'
+                        }`}>
+                          {rec.priority} priority
+                        </Badge>
+                      </div>
+                      <div className="text-sm text-gray-300">{rec.description}</div>
+                      <div className="text-xs text-gray-400 mt-1">
+                        Confidence: {rec.confidence?.toFixed(1)}% • Related Discovery: #{rec.relatedDiscovery}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </CardContent>
       </Card>
 

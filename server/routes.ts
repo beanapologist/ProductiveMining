@@ -8,6 +8,7 @@ import { immutableRecordsEngine } from "./immutable-records-engine";
 import { posAuditEngine } from "./pos-audit-engine";
 import { institutionalValidationEngine } from "./institutional-validation-engine";
 import { discoveryAIEngine } from "./discovery-ai-engine";
+import { threatDetectionEngine } from "./threat-detection-engine";
 
 // Blockchain utility functions
 function generateSimpleHash(input: string): string {
@@ -1190,6 +1191,158 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Data integrity check error:', error);
       res.status(500).json({ error: "Data integrity check failed" });
+    }
+  });
+
+  // Threat Detection API Endpoints
+  
+  // Perform comprehensive threat scan
+  app.post("/api/security/threat-scan", async (req, res) => {
+    try {
+      console.log('🔍 THREAT DETECTION: Starting comprehensive security scan...');
+      
+      const threats = await threatDetectionEngine.performThreatScan();
+      
+      res.json({
+        message: "Threat scan completed",
+        threatsDetected: threats.length,
+        threats: threats,
+        scanTimestamp: new Date().toISOString()
+      });
+
+      // Broadcast critical threats to connected clients
+      const criticalThreats = threats.filter(t => t.severity === 'critical');
+      if (criticalThreats.length > 0) {
+        broadcast({
+          type: 'security_alert',
+          data: { criticalThreats, totalThreats: threats.length }
+        });
+      }
+
+    } catch (error) {
+      console.error('Threat scan error:', error);
+      res.status(500).json({ error: "Threat scan failed" });
+    }
+  });
+
+  // Get active threats
+  app.get("/api/security/threats", async (req, res) => {
+    try {
+      const { threatType, severity, resolved } = req.query;
+      
+      const filter: any = {};
+      if (threatType) filter.threatType = threatType as string;
+      if (severity) filter.severity = severity as string;
+      if (resolved !== undefined) filter.resolved = resolved === 'true';
+      
+      const threats = threatDetectionEngine.getActiveThreats(filter);
+      res.json(threats);
+    } catch (error) {
+      console.error('Get threats error:', error);
+      res.status(500).json({ error: "Failed to get threats" });
+    }
+  });
+
+  // Implement mitigation for a specific threat
+  app.post("/api/security/threats/:id/mitigate", async (req, res) => {
+    try {
+      const threatId = parseInt(req.params.id);
+      console.log(`🔒 THREAT MITIGATION: Implementing mitigation for threat ${threatId}...`);
+      
+      const mitigation = await threatDetectionEngine.implementMitigation(threatId);
+      
+      res.json({
+        message: "Mitigation implemented successfully",
+        mitigation,
+        timestamp: new Date().toISOString()
+      });
+
+      // Broadcast mitigation update
+      broadcast({
+        type: 'mitigation_deployed',
+        data: { threatId, mitigation }
+      });
+
+    } catch (error) {
+      console.error('Mitigation error:', error);
+      res.status(500).json({ error: "Mitigation failed" });
+    }
+  });
+
+  // Get mitigation strategies
+  app.get("/api/security/mitigations", async (req, res) => {
+    try {
+      const mitigations = threatDetectionEngine.getMitigationStrategies();
+      res.json(mitigations);
+    } catch (error) {
+      console.error('Get mitigations error:', error);
+      res.status(500).json({ error: "Failed to get mitigations" });
+    }
+  });
+
+  // Generate threat intelligence report
+  app.get("/api/security/threat-intelligence", async (req, res) => {
+    try {
+      console.log('📊 THREAT INTELLIGENCE: Generating comprehensive threat intelligence report...');
+      
+      const intelligence = await threatDetectionEngine.generateThreatIntelligence();
+      
+      res.json({
+        threatIntelligence: intelligence,
+        generatedAt: new Date().toISOString(),
+        nextScanRecommended: new Date(Date.now() + 30 * 60 * 1000).toISOString() // 30 minutes
+      });
+    } catch (error) {
+      console.error('Threat intelligence error:', error);
+      res.status(500).json({ error: "Failed to generate threat intelligence" });
+    }
+  });
+
+  // AI-powered security recommendations
+  app.get("/api/security/ai-recommendations", async (req, res) => {
+    try {
+      const discoveries = await database.getAllDiscoveries();
+      const recentDiscoveries = discoveries.slice(-20);
+      
+      const securityRecommendations = [];
+      
+      // Analyze recent discoveries for security implications
+      for (const discovery of recentDiscoveries) {
+        try {
+          const aiAnalysis = await discoveryAIEngine.analyzeDiscovery(discovery);
+          
+          if (aiAnalysis.verification.mathematical_validity < 0.7) {
+            securityRecommendations.push({
+              type: 'validation_enhancement',
+              priority: 'high',
+              description: `Discovery #${discovery.id} shows low validation scores - enhance verification protocols`,
+              relatedDiscovery: discovery.id,
+              confidence: (1 - aiAnalysis.verification.mathematical_validity) * 100
+            });
+          }
+          
+          if (discovery.workType === 'elliptic_curve_crypto' || discovery.workType === 'lattice_crypto') {
+            securityRecommendations.push({
+              type: 'quantum_resistance',
+              priority: 'medium',
+              description: `Cryptographic discovery #${discovery.id} - monitor for quantum vulnerabilities`,
+              relatedDiscovery: discovery.id,
+              confidence: 80
+            });
+          }
+        } catch (error) {
+          console.error(`Error analyzing discovery ${discovery.id} for security:`, error);
+        }
+      }
+      
+      res.json({
+        recommendations: securityRecommendations,
+        analysisCount: recentDiscoveries.length,
+        generatedAt: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('AI recommendations error:', error);
+      res.status(500).json({ error: "Failed to generate AI recommendations" });
     }
   });
 
