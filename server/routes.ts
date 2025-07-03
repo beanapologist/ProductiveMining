@@ -9,6 +9,7 @@ import { posAuditEngine } from "./pos-audit-engine";
 import { institutionalValidationEngine } from "./institutional-validation-engine";
 import { discoveryAIEngine } from "./discovery-ai-engine";
 import { threatDetectionEngine } from "./threat-detection-engine";
+import { quantumComplexityEngine } from "./quantum-complexity-engine";
 
 // Blockchain utility functions
 function generateSimpleHash(input: string): string {
@@ -4038,3 +4039,5 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   return httpServer;
 }
+
+

@@ -29,8 +29,8 @@ interface ComplexityAnalysis {
 
 export class ComplexityScalingEngine {
   private static instance: ComplexityScalingEngine;
-  private baselineDifficulty = 150;
-  private maxDifficulty = 300;
+  private baselineDifficulty = 300;
+  private maxDifficulty = 800;
   private scalingHistory: Array<{
     timestamp: Date;
     difficulty: number;
