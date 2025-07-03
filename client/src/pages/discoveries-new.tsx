@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+// import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // import StakingValidations from "@/components/staking-validations";
 import { useState } from "react";
@@ -666,16 +666,27 @@ export default function DiscoveriesPage() {
         </TabsContent>
       </Tabs>
 
-      {/* Discovery Detail Modal */}
+      {/* Discovery Detail Overlay */}
       {selectedDiscovery && (
-        <Dialog open={!!selectedDiscovery} onOpenChange={() => setSelectedDiscovery(null)}>
-          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-slate-800 border-slate-700">
-            <DialogHeader>
-              <DialogTitle className="text-white flex items-center">
-                <Hash className="mr-2 h-5 w-5 text-purple-400" />
-                Discovery #{selectedDiscovery.id} - {selectedDiscovery.workType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-              </DialogTitle>
-            </DialogHeader>
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setSelectedDiscovery(null)}>
+          <Card className="max-w-4xl max-h-[80vh] overflow-y-auto bg-slate-800 border-slate-700" onClick={(e) => e.stopPropagation()}>
+            <CardHeader>
+              <CardTitle className="text-white flex items-center justify-between">
+                <div className="flex items-center">
+                  <Hash className="mr-2 h-5 w-5 text-purple-400" />
+                  Discovery #{selectedDiscovery.id} - {selectedDiscovery.workType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                </div>
+                <Button
+                  onClick={() => setSelectedDiscovery(null)}
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-400 hover:text-white"
+                >
+                  ✕
+                </Button>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
             <div className="space-y-6">
               {/* Basic Information */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -768,8 +779,9 @@ export default function DiscoveriesPage() {
                 </div>
               )}
             </div>
-          </DialogContent>
-        </Dialog>
+            </CardContent>
+          </Card>
+        </div>
       )}
     </div>
   );
