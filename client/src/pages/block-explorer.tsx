@@ -404,13 +404,15 @@ export default function BlockExplorerPage() {
                     </div>
 
                     {/* Mathematical Discoveries */}
-                    {blockWork && (
-                      <div className="p-4 bg-slate-800/50 rounded-lg">
-                        <h4 className="text-white font-semibold mb-3 flex items-center">
-                          <LinkIcon className="h-4 w-4 mr-2" />
-                          Mathematical Discoveries ({blockWork.work?.length || 0})
-                        </h4>
-                        {blockWork.work && blockWork.work.length > 0 ? (
+                    <div className="p-4 bg-slate-800/50 rounded-lg">
+                      <h4 className="text-white font-semibold mb-3 flex items-center">
+                        <LinkIcon className="h-4 w-4 mr-2" />
+                        Mathematical Discoveries ({blockWork?.work?.length || 0})
+                        {!blockWork && selectedBlock && (
+                          <span className="ml-2 text-xs text-yellow-400">(Loading...)</span>
+                        )}
+                      </h4>
+                      {blockWork?.work && blockWork.work.length > 0 ? (
                           <div className="space-y-3">
                             {blockWork.work.map((work: any, index: number) => (
                               <div key={index} className="p-3 bg-slate-700/50 rounded-lg border border-slate-600 hover:border-purple-500/50 transition-colors">
@@ -448,14 +450,18 @@ export default function BlockExplorerPage() {
                               </div>
                             ))}
                           </div>
-                        ) : (
-                          <div className="text-center py-4 text-slate-400">
-                            <Brain className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                            <p className="text-sm">No mathematical discoveries linked to this block</p>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                      ) : (
+                        <div className="text-center py-4 text-slate-400">
+                          <Brain className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                          <p className="text-sm">No mathematical discoveries linked to this block</p>
+                          {selectedBlock && (
+                            <p className="text-xs text-yellow-400 mt-1">
+                              Debug: Block ID {selectedBlock.id}, Query enabled: {String(!!selectedBlock)}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </CardContent>
