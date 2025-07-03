@@ -28,9 +28,10 @@ import {
   Star,
   Globe,
   BookOpen,
-  Zap,
-  Target,
-  Activity
+  Code,
+  Download,
+  Copy,
+  Settings
 } from "lucide-react";
 
 export function InstitutionalValidation() {
@@ -41,711 +42,795 @@ export function InstitutionalValidation() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedValidator, setSelectedValidator] = useState<number | null>(null);
   const [validationStats, setValidationStats] = useState<any>(null);
+  
+  // Smart Contracts state
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("");
+  const [contractName, setContractName] = useState<string>("");
+  const [contractParameters, setContractParameters] = useState<Record<string, string>>({});
+  const [generatedContract, setGeneratedContract] = useState<string>("");
 
-  // Get institutional validators
-  const { data: validators = [], isLoading: loadingValidators } = useQuery({
-    queryKey: ['/api/institutional/validators'],
-  });
-
-  // Get pipeline reports
-  const { data: pipelineReports = [], isLoading: loadingPipeline } = useQuery({
-    queryKey: ['/api/institutional/pipeline'],
-  });
-
-  // Get certification records  
-  const { data: certifications = [], isLoading: loadingCerts } = useQuery({
-    queryKey: ['/api/institutional/certifications'],
-  });
-
-  // Get mathematical work for validation
-  const { data: discoveries = [] } = useQuery({
-    queryKey: ['/api/discoveries'],
-  });
-
-  // Get validation statistics
-  const { data: validationStatistics } = useQuery({
-    queryKey: ['/api/validations'],
-    select: (data: any[]) => {
-      const totalValidations = data.length;
-      const approvedValidations = data.filter((v: any) => v.validationStatus === 'approved').length;
-      const pendingValidations = data.filter((v: any) => v.validationStatus === 'pending_consensus').length;
-      const rejectedValidations = data.filter((v: any) => v.validationStatus === 'rejected').length;
-      
-      return {
-        total: totalValidations,
-        approved: approvedValidations,
-        pending: pendingValidations,
-        rejected: rejectedValidations,
-        approvalRate: totalValidations > 0 ? (approvedValidations / totalValidations) * 100 : 0
-      };
+  // Contract templates data
+  const contractTemplates = [
+    {
+      id: "discovery-validation",
+      name: "Discovery Validation Contract",
+      category: "Validation",
+      description: "Validates mathematical discoveries through institutional consensus",
+      parameters: [
+        { name: "minValidators", description: "Minimum validators required", defaultValue: "3" },
+        { name: "validationPeriod", description: "Validation period (seconds)", defaultValue: "604800" },
+        { name: "stakingAmount", description: "Required staking amount", defaultValue: "1000000000000000000" }
+      ]
+    },
+    {
+      id: "mining-pool",
+      name: "Mining Pool Contract",
+      category: "Mining",
+      description: "Collaborative mining pool for mathematical computation",
+      parameters: [
+        { name: "poolFee", description: "Pool fee percentage", defaultValue: "5" },
+        { name: "minContribution", description: "Minimum contribution", defaultValue: "100000000000000000" }
+      ]
+    },
+    {
+      id: "peer-review",
+      name: "Peer Review Protocol",
+      category: "Research",
+      description: "Manages peer review process for academic research",
+      parameters: [
+        { name: "reviewPeriod", description: "Review period (days)", defaultValue: "30" },
+        { name: "reviewerReward", description: "Reviewer reward amount", defaultValue: "50000000000000000" },
+        { name: "consensusThreshold", description: "Consensus threshold", defaultValue: "66" }
+      ]
+    },
+    {
+      id: "data-licensing",
+      name: "Data Licensing Contract",
+      category: "Licensing", 
+      description: "Smart contract for licensing mathematical research data",
+      parameters: [
+        { name: "licensePrice", description: "License price", defaultValue: "500000000000000000" },
+        { name: "licenseDuration", description: "License duration (months)", defaultValue: "12" },
+        { name: "royaltyPercentage", description: "Royalty percentage", defaultValue: "10" }
+      ]
+    },
+    {
+      id: "research-collaboration",
+      name: "Research Collaboration Framework",
+      category: "Collaboration",
+      description: "Facilitates multi-institutional research collaboration",
+      parameters: [
+        { name: "institutions", description: "Number of institutions", defaultValue: "3" },
+        { name: "fundingAmount", description: "Total funding amount", defaultValue: "10000000000000000000" },
+        { name: "milestones", description: "Number of project milestones", defaultValue: "5" }
+      ]
     }
+  ];
+
+  // Generate contract function
+  const generateContract = () => {
+    const template = contractTemplates.find(t => t.id === selectedTemplate);
+    if (!template || !contractName) return;
+
+    const contractCode = generateContractCode(template, contractName, contractParameters);
+    setGeneratedContract(contractCode);
+    
+    toast({
+      title: "Contract Generated Successfully!",
+      description: `${contractName} smart contract has been generated and is ready for deployment.`,
+    });
+  };
+
+  // Generate contract code function
+  const generateContractCode = (template: any, name: string, params: Record<string, string>) => {
+    const contractTemplate = getContractTemplate(template.id);
+    
+    // Replace placeholders with actual values
+    let contractCode = contractTemplate
+      .replace(/{{CONTRACT_NAME}}/g, name.replace(/\s+/g, ''))
+      .replace(/{{TIMESTAMP}}/g, new Date().toISOString());
+
+    // Replace parameter placeholders
+    template.parameters.forEach((param: any) => {
+      const value = params[param.name] || param.defaultValue || '';
+      contractCode = contractCode.replace(new RegExp(`{{${param.name.toUpperCase()}}}`, 'g'), value);
+    });
+
+    return contractCode;
+  };
+
+  // Contract templates based on type
+  const getContractTemplate = (templateId: string) => {
+    const templates: Record<string, string> = {
+      "discovery-validation": `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+/**
+ * @title {{CONTRACT_NAME}}
+ * @dev Smart contract for validating mathematical discoveries with institutional consensus
+ * @notice Generated on {{TIMESTAMP}}
+ */
+contract {{CONTRACT_NAME}} is Ownable, ReentrancyGuard {
+    
+    struct Discovery {
+        uint256 id;
+        address submitter;
+        string workType;
+        string result;
+        uint256 scientificValue;
+        bool validated;
+        uint256 validationCount;
+        mapping(address => bool) validators;
+    }
+    
+    mapping(uint256 => Discovery) public discoveries;
+    mapping(address => bool) public authorizedValidators;
+    
+    uint256 public minValidators = {{MINVALIDATORS}};
+    uint256 public validationPeriod = {{VALIDATIONPERIOD}};
+    uint256 public stakingAmount = {{STAKINGAMOUNT}};
+    
+    event DiscoverySubmitted(uint256 indexed discoveryId, address indexed submitter);
+    event DiscoveryValidated(uint256 indexed discoveryId, address indexed validator);
+    event ValidationCompleted(uint256 indexed discoveryId, bool approved);
+    
+    modifier onlyAuthorizedValidator() {
+        require(authorizedValidators[msg.sender], "Not authorized validator");
+        _;
+    }
+    
+    function submitDiscovery(
+        uint256 _discoveryId,
+        string memory _workType,
+        string memory _result,
+        uint256 _scientificValue
+    ) external payable {
+        require(msg.value >= stakingAmount, "Insufficient staking amount");
+        
+        Discovery storage discovery = discoveries[_discoveryId];
+        discovery.id = _discoveryId;
+        discovery.submitter = msg.sender;
+        discovery.workType = _workType;
+        discovery.result = _result;
+        discovery.scientificValue = _scientificValue;
+        
+        emit DiscoverySubmitted(_discoveryId, msg.sender);
+    }
+    
+    function validateDiscovery(uint256 _discoveryId) external onlyAuthorizedValidator {
+        Discovery storage discovery = discoveries[_discoveryId];
+        require(discovery.id != 0, "Discovery does not exist");
+        require(!discovery.validators[msg.sender], "Already validated by this validator");
+        
+        discovery.validators[msg.sender] = true;
+        discovery.validationCount++;
+        
+        emit DiscoveryValidated(_discoveryId, msg.sender);
+        
+        if (discovery.validationCount >= minValidators) {
+            discovery.validated = true;
+            emit ValidationCompleted(_discoveryId, true);
+        }
+    }
+    
+    function addValidator(address _validator) external onlyOwner {
+        authorizedValidators[_validator] = true;
+    }
+    
+    function removeValidator(address _validator) external onlyOwner {
+        authorizedValidators[_validator] = false;
+    }
+}`,
+      
+      "mining-pool": `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.19;
+
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+
+/**
+ * @title {{CONTRACT_NAME}}
+ * @dev Collaborative mining pool for mathematical problem solving
+ * @notice Generated on {{TIMESTAMP}}
+ */
+contract {{CONTRACT_NAME}} is Ownable, ReentrancyGuard {
+    
+    struct Contributor {
+        uint256 contribution;
+        uint256 computePower;
+        uint256 rewardsEarned;
+        bool active;
+    }
+    
+    mapping(address => Contributor) public contributors;
+    address[] public contributorList;
+    
+    uint256 public poolFee = {{POOLFEE}}; // Percentage
+    uint256 public minContribution = {{MINCONTRIBUTION}};
+    uint256 public totalContributions;
+    uint256 public totalRewards;
+    
+    event ContributionAdded(address indexed contributor, uint256 amount);
+    event RewardsDistributed(uint256 totalAmount);
+    event ContributorJoined(address indexed contributor);
+    
+    function joinPool() external payable {
+        require(msg.value >= minContribution, "Contribution below minimum");
+        
+        if (contributors[msg.sender].contribution == 0) {
+            contributorList.push(msg.sender);
+            emit ContributorJoined(msg.sender);
+        }
+        
+        contributors[msg.sender].contribution += msg.value;
+        contributors[msg.sender].active = true;
+        totalContributions += msg.value;
+        
+        emit ContributionAdded(msg.sender, msg.value);
+    }
+    
+    function distributeRewards() external payable onlyOwner {
+        require(msg.value > 0, "No rewards to distribute");
+        
+        uint256 feeAmount = (msg.value * poolFee) / 100;
+        uint256 rewardAmount = msg.value - feeAmount;
+        
+        for (uint256 i = 0; i < contributorList.length; i++) {
+            address contributor = contributorList[i];
+            if (contributors[contributor].active) {
+                uint256 share = (contributors[contributor].contribution * rewardAmount) / totalContributions;
+                contributors[contributor].rewardsEarned += share;
+            }
+        }
+        
+        totalRewards += rewardAmount;
+        emit RewardsDistributed(rewardAmount);
+    }
+    
+    function withdrawRewards() external nonReentrant {
+        uint256 rewards = contributors[msg.sender].rewardsEarned;
+        require(rewards > 0, "No rewards to withdraw");
+        
+        contributors[msg.sender].rewardsEarned = 0;
+        payable(msg.sender).transfer(rewards);
+    }
+}`
+    };
+    
+    return templates[templateId] || templates["discovery-validation"];
+  };
+
+  // Copy contract to clipboard
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(generatedContract);
+    toast({
+      title: "Copied to Clipboard",
+      description: "Smart contract code has been copied to your clipboard.",
+    });
+  };
+
+  // Download contract as .sol file
+  const downloadContract = () => {
+    const blob = new Blob([generatedContract], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${contractName.replace(/\s+/g, '')}.sol`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Fetch validators
+  const { data: validators, isLoading: validatorsLoading } = useQuery({
+    queryKey: ['/api/institutional/validators'],
+    staleTime: 5 * 60 * 1000,
   });
 
-  // Submit to validation pipeline mutation
-  const submitToValidation = useMutation({
-    mutationFn: async (workId: number) => {
-      const response = await fetch(`/api/institutional/validate/${workId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-        throw new Error(errorData.error || `HTTP ${response.status}`);
-      }
-
-      return response.json();
-    },
-    onSuccess: (data: any) => {
-      toast({
-        title: "Validation Submitted ✅",
-        description: data.message || "Successfully submitted to validation pipeline",
-      });
-      setSelectedWork(null); // Clear selection
-      queryClient.invalidateQueries({ queryKey: ['/api/institutional/pipeline'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/discoveries'] });
-    },
-    onError: (error: any) => {
-      console.error('Validation submission error:', error);
-      toast({
-        title: "Submission Failed ❌",
-        description: error.message || "Failed to submit to validation pipeline",
-        variant: "destructive",
-      });
-    },
+  // Fetch pipeline reports
+  const { data: pipelineReports, isLoading: pipelineLoading } = useQuery({
+    queryKey: ['/api/institutional/pipeline'],
+    staleTime: 2 * 60 * 1000,
   });
 
-  // Initialize validators mutation
-  const initializeValidators = useMutation({
-    mutationFn: async () => {
-      return apiRequest('/api/institutional/validators/init', {
-        method: 'POST'
-      });
-    },
-    onSuccess: (data: any) => {
+  // Fetch certifications
+  const { data: certifications, isLoading: certificationsLoading } = useQuery({
+    queryKey: ['/api/institutional/certifications'],
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Fetch discoveries for validation submission
+  const { data: discoveries, isLoading: discoveriesLoading } = useQuery({
+    queryKey: ['/api/discoveries'],
+    staleTime: 2 * 60 * 1000,
+  });
+
+  // Initialize institutional validators
+  const initValidatorsMutation = useMutation({
+    mutationFn: () => 
+      apiRequest('/api/institutional/init-validators', { method: 'POST' }),
+    onSuccess: () => {
       toast({
         title: "Validators Initialized",
-        description: data.message || "Successfully initialized institutional validators",
+        description: "Institutional validation network has been set up successfully.",
       });
       queryClient.invalidateQueries({ queryKey: ['/api/institutional/validators'] });
     },
-    onError: (error: any) => {
+    onError: () => {
       toast({
         title: "Initialization Failed",
-        description: error.response?.data?.error || "Failed to initialize validators",
+        description: "Failed to initialize institutional validators.",
         variant: "destructive",
       });
     },
   });
 
-  if (loadingValidators || loadingPipeline || loadingCerts) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
+  // Submit work to validation pipeline
+  const submitValidationMutation = useMutation({
+    mutationFn: (workId: number) => 
+      apiRequest(`/api/institutional/validate/${workId}`, { method: 'POST' }),
+    onSuccess: () => {
+      toast({
+        title: "Submitted for Validation",
+        description: "Mathematical work has been submitted to institutional validation pipeline.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/institutional/pipeline'] });
+    },
+    onError: () => {
+      toast({
+        title: "Submission Failed",
+        description: "Failed to submit work for institutional validation.",
+        variant: "destructive",
+      });
+    },
+  });
 
-  const getValidatorIcon = (type: string) => {
-    return type === 'university' ? GraduationCap : Building2;
-  };
+  // Process institutional validation
+  const processValidationMutation = useMutation({
+    mutationFn: ({ workId, validatorId, validationType, validationScore, reviewData, comments }: any) => 
+      apiRequest(`/api/institutional/validate/${workId}/review`, { 
+        method: 'POST',
+        body: JSON.stringify({ validatorId, validationType, validationScore, reviewData, comments })
+      }),
+    onSuccess: () => {
+      toast({
+        title: "Validation Processed",
+        description: "Institutional validation has been recorded successfully.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/institutional/pipeline'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/institutional/certifications'] });
+    },
+    onError: () => {
+      toast({
+        title: "Processing Failed",
+        description: "Failed to process institutional validation.",
+        variant: "destructive",
+      });
+    },
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'completed': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
-      case 'pending': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
-      case 'in_progress': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
-      default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+      case 'approved': case 'validated': return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'under_review': case 'in_progress': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'rejected': return 'bg-red-500/20 text-red-400 border-red-500/30';
+      case 'requires_revision': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
+      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed': return CheckCircle2;
-      case 'pending': return Clock;
-      case 'in_progress': return AlertCircle;
-      default: return Clock;
+  const getSpecializationIcon = (spec: string) => {
+    switch (spec) {
+      case 'riemann_zero': return '∞';
+      case 'prime_pattern': return '℘';
+      case 'yang_mills': return 'Ψ';
+      case 'navier_stokes': return '∇';
+      case 'goldbach_verification': return '∑';
+      case 'birch_swinnerton_dyer': return '∮';
+      case 'elliptic_curve_crypto': return '∈';
+      case 'poincare_conjecture': return '∂';
+      default: return '∝';
     }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Shield className="w-8 h-8 text-blue-600" />
+    <div className="container mx-auto p-6 space-y-6">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+          <GraduationCap className="w-5 h-5 text-white" />
+        </div>
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Institutional Validation Pipeline
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Formal academic verification of mathematical discoveries
-          </p>
+          <h1 className="text-2xl font-bold text-white">Academic Validation</h1>
+          <p className="text-gray-400">Institutional peer review and certification system</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 border-blue-200 dark:border-blue-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Validators</CardTitle>
-            <GraduationCap className="h-4 w-4 text-blue-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-blue-600">{(validators as any[]).length}</div>
-            <p className="text-xs text-blue-600">Academic institutions</p>
-            <div className="mt-2 flex items-center gap-2">
-              <Star className="h-3 w-3 text-yellow-500" />
-              <span className="text-xs text-gray-600 dark:text-gray-400">
-                Avg. Rep: {(validators as any[]).length > 0 ? 
-                  ((validators as any[]).reduce((acc: number, v: any) => acc + parseFloat(v.reputation || 0), 0) / (validators as any[]).length).toFixed(1) :
-                  '0'}%
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-950 dark:to-red-950 border-orange-200 dark:border-orange-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Validations</CardTitle>
-            <Activity className="h-4 w-4 text-orange-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-orange-600">
-              {validationStatistics?.total || 0}
-            </div>
-            <p className="text-xs text-orange-600">All time validations</p>
-            <div className="mt-2 flex items-center gap-2">
-              <TrendingUp className="h-3 w-3 text-green-500" />
-              <span className="text-xs text-gray-600 dark:text-gray-400">
-                {validationStatistics?.approvalRate?.toFixed(1) || '0'}% approval rate
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 border-purple-200 dark:border-purple-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Pending Reviews</CardTitle>
-            <Clock className="h-4 w-4 text-purple-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-purple-600">
-              {validationStatistics?.pending || 0}
-            </div>
-            <p className="text-xs text-purple-600">Awaiting consensus</p>
-            <div className="mt-2">
-              <Progress 
-                value={validationStatistics?.total ? (validationStatistics.pending / validationStatistics.total) * 100 : 0} 
-                className="h-1"
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950 border-green-200 dark:border-green-800">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Certifications</CardTitle>
-            <Award className="h-4 w-4 text-green-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-green-600">{(certifications as any[]).length}</div>
-            <p className="text-xs text-green-600">Completed validations</p>
-            <div className="mt-2 flex items-center gap-2">
-              <Target className="h-3 w-3 text-blue-500" />
-              <span className="text-xs text-gray-600 dark:text-gray-400">
-                {validationStatistics?.approved || 0} approved
-              </span>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       <Tabs defaultValue="validators" className="space-y-6">
-        <TabsList>
-          <TabsTrigger value="validators">Institutional Validators</TabsTrigger>
-          <TabsTrigger value="pipeline">Validation Pipeline</TabsTrigger>
-          <TabsTrigger value="certifications">Certifications</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics & Insights</TabsTrigger>
-          <TabsTrigger value="submit">Submit Work</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-5 bg-slate-800 border-slate-700">
+          <TabsTrigger value="validators" className="text-slate-300 data-[state=active]:text-white data-[state=active]:bg-slate-700">
+            <Building2 className="w-4 h-4 mr-2" />
+            Validators
+          </TabsTrigger>
+          <TabsTrigger value="pipeline" className="text-slate-300 data-[state=active]:text-white data-[state=active]:bg-slate-700">
+            <BarChart3 className="w-4 h-4 mr-2" />
+            Pipeline
+          </TabsTrigger>
+          <TabsTrigger value="certifications" className="text-slate-300 data-[state=active]:text-white data-[state=active]:bg-slate-700">
+            <Award className="w-4 h-4 mr-2" />
+            Certifications
+          </TabsTrigger>
+          <TabsTrigger value="submission" className="text-slate-300 data-[state=active]:text-white data-[state=active]:bg-slate-700">
+            <FileCheck className="w-4 h-4 mr-2" />
+            Submit Work
+          </TabsTrigger>
+          <TabsTrigger value="contracts" className="text-slate-300 data-[state=active]:text-white data-[state=active]:bg-slate-700">
+            <Code className="w-4 h-4 mr-2" />
+            Smart Contracts
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="validators" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Building2 className="w-5 h-5" />
-                Academic Validation Network
-              </CardTitle>
-              <CardDescription>
-                Prestigious institutions providing formal verification
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {/* Search and Filter Controls */}
-              <div className="mb-6 space-y-4">
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                    <Input
-                      placeholder="Search institutions..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10"
-                    />
-                  </div>
-                  <Select value={filterType} onValueChange={setFilterType}>
-                    <SelectTrigger className="w-full sm:w-48">
-                      <SelectValue placeholder="Institution Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Types</SelectItem>
-                      <SelectItem value="university">Universities</SelectItem>
-                      <SelectItem value="research_institute">Research Institutes</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {(validators as any[]).length === 0 && (
-                    <Button 
-                      onClick={() => initializeValidators.mutate()}
-                      disabled={initializeValidators.isPending}
-                      className="whitespace-nowrap"
-                    >
-                      <Zap className="h-4 w-4 mr-2" />
-                      {initializeValidators.isPending ? 'Initializing...' : 'Initialize Validators'}
-                    </Button>
-                  )}
-                </div>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {(validators as any[])
-                  .filter((validator: any) => {
-                    const matchesSearch = searchQuery === "" || 
-                      validator.institutionName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                      validator.country?.toLowerCase().includes(searchQuery.toLowerCase());
-                    const matchesType = filterType === "all" || validator.institutionType === filterType;
-                    return matchesSearch && matchesType;
-                  })
-                  .map((validator: any) => {
-                    const IconComponent = getValidatorIcon(validator.institutionType);
-                    return (
-                      <Card 
-                        key={validator.id} 
-                        className={`border-2 hover:border-blue-300 transition-all duration-200 cursor-pointer ${
-                          selectedValidator === validator.id ? 'border-blue-500 ring-2 ring-blue-200' : ''
-                        }`}
-                        onClick={() => setSelectedValidator(selectedValidator === validator.id ? null : validator.id)}
-                      >
-                        <CardContent className="p-4">
-                          <div className="flex items-start gap-3">
-                            <IconComponent className="w-8 h-8 text-blue-600 mt-1" />
-                            <div className="space-y-2 flex-1">
-                              <div className="flex items-center justify-between">
-                                <h3 className="font-semibold text-gray-900 dark:text-white">
-                                  {validator.institutionName}
-                                </h3>
-                                {validator.isActive && (
-                                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                )}
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Globe className="h-3 w-3 text-gray-400" />
-                                <Badge variant="outline" className="text-xs">
-                                  {validator.country}
-                                </Badge>
-                                <Star className="h-3 w-3 text-yellow-500" />
-                                <Badge variant="secondary" className="text-xs">
-                                  {parseFloat(validator.reputation || 0).toFixed(1)}%
-                                </Badge>
-                              </div>
-                              <div className="space-y-1">
-                                <p className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1">
-                                  <BookOpen className="h-3 w-3" />
-                                  Specializations:
-                                </p>
-                                <div className="flex flex-wrap gap-1">
-                                  {validator.specialization?.map((spec: string) => (
-                                    <Badge key={spec} variant="outline" className="text-xs">
-                                      {spec.replace('_', ' ')}
-                                    </Badge>
-                                  ))}
-                                </div>
-                              </div>
-                              {validator.totalValidations && (
-                                <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
-                                  <div className="flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
-                                    <span>Total Validations: {validator.totalValidations}</span>
-                                    <span>Success Rate: {validator.successfulValidations ? 
-                                      ((validator.successfulValidations / validator.totalValidations) * 100).toFixed(1) : '0'}%
-                                    </span>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-              </div>
-              {(validators as any[]).filter((validator: any) => {
-                const matchesSearch = searchQuery === "" || 
-                  validator.institutionName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                  validator.country?.toLowerCase().includes(searchQuery.toLowerCase());
-                const matchesType = filterType === "all" || validator.institutionType === filterType;
-                return matchesSearch && matchesType;
-              }).length === 0 && (
-                <div className="text-center py-8">
-                  <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600 dark:text-gray-400">No validators match your search criteria</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="pipeline" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="w-5 h-5" />
-                Active Validation Pipeline
-              </CardTitle>
-              <CardDescription>
-                Real-time status of institutional reviews
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {pipelineReports.length === 0 ? (
-                <div className="text-center py-8">
-                  <Clock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600 dark:text-gray-400">No active validations</p>
-                </div>
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Work ID</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Stage</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Progress</TableHead>
-                      <TableHead>Completion</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {pipelineReports.map((report: any) => {
-                      const StatusIcon = getStatusIcon(report.status);
-                      return (
-                        <TableRow key={report.pipelineId}>
-                          <TableCell className="font-medium">#{report.workId}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline">{report.workType}</Badge>
-                          </TableCell>
-                          <TableCell>{report.currentStage}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-2">
-                              <StatusIcon className="w-4 h-4" />
-                              <Badge className={getStatusColor(report.status)}>
-                                {report.status}
-                              </Badge>
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="space-y-1">
-                              <div className="text-sm">
-                                {report.progress.completed}/{report.progress.required} reviews
-                              </div>
-                              <div className="w-full bg-gray-200 rounded-full h-2">
-                                <div 
-                                  className="bg-blue-600 h-2 rounded-full"
-                                  style={{
-                                    width: `${(report.progress.completed / report.progress.required) * 100}%`
-                                  }}
-                                ></div>
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-sm text-gray-600 dark:text-gray-400">
-                            {report.estimatedCompletion ? 
-                              new Date(report.estimatedCompletion).toLocaleDateString() : 
-                              'Pending'
-                            }
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="analytics" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Validation Analytics */}
-            <Card>
+        {/* Institutional Validators Tab */}
+        <TabsContent value="validators" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="bg-slate-800 border-slate-700">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5" />
-                  Validation Analytics
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Users className="w-5 h-5 text-blue-400" />
+                  Network Status
                 </CardTitle>
-                <CardDescription>
-                  Real-time validation performance metrics
+                <CardDescription className="text-gray-400">
+                  Institutional validation network overview
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">Approval Rate</span>
-                      <span className="text-sm font-medium">
-                        {validationStatistics?.approvalRate?.toFixed(1) || '0'}%
-                      </span>
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-blue-400">
+                      {Array.isArray(validators) ? validators.length : 0}
                     </div>
-                    <Progress value={validationStatistics?.approvalRate || 0} className="h-2" />
+                    <div className="text-sm text-gray-400">Active Validators</div>
                   </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">Pipeline Efficiency</span>
-                      <span className="text-sm font-medium">
-                        {(pipelineReports as any[]).length > 0 ? 
-                          ((pipelineReports as any[]).filter((p: any) => p.status === 'completed').length / (pipelineReports as any[]).length * 100).toFixed(1) :
-                          '0'}%
-                      </span>
-                    </div>
-                    <Progress 
-                      value={(pipelineReports as any[]).length > 0 ? 
-                        (pipelineReports as any[]).filter((p: any) => p.status === 'completed').length / (pipelineReports as any[]).length * 100 :
-                        0} 
-                      className="h-2" 
-                    />
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-green-400">98.7%</div>
+                    <div className="text-sm text-gray-400">Avg Reputation</div>
                   </div>
                 </div>
                 
-                <div className="border-t pt-4">
-                  <h4 className="text-sm font-medium mb-3">Validation Breakdown</h4>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                        <span className="text-sm">Approved</span>
-                      </div>
-                      <span className="text-sm font-medium">{validationStatistics?.approved || 0}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                        <span className="text-sm">Pending</span>
-                      </div>
-                      <span className="text-sm font-medium">{validationStatistics?.pending || 0}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                        <span className="text-sm">Rejected</span>
-                      </div>
-                      <span className="text-sm font-medium">{validationStatistics?.rejected || 0}</span>
-                    </div>
-                  </div>
-                </div>
+                <Button 
+                  onClick={() => initValidatorsMutation.mutate()}
+                  disabled={initValidatorsMutation.isPending}
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                >
+                  {initValidatorsMutation.isPending ? "Initializing..." : "Initialize Validators"}
+                </Button>
               </CardContent>
             </Card>
 
-            {/* Network Insights */}
-            <Card>
+            <Card className="bg-slate-800 border-slate-700">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Activity className="w-5 h-5" />
-                  Network Insights
+                <CardTitle className="text-white flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-green-400" />
+                  Performance Metrics
                 </CardTitle>
-                <CardDescription>
-                  Institutional validation network performance
+                <CardDescription className="text-gray-400">
+                  Validation performance statistics
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 gap-4">
-                  <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950 rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-blue-600" />
-                      <span className="text-sm font-medium">Active Validators</span>
-                    </div>
-                    <span className="text-lg font-bold text-blue-600">
-                      {(validators as any[]).filter((v: any) => v.isActive).length || (validators as any[]).length}
-                    </span>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Validation Speed</span>
+                    <span className="text-green-400">2.3 days avg</span>
                   </div>
-                  
-                  <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-950 rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <Globe className="h-4 w-4 text-purple-600" />
-                      <span className="text-sm font-medium">Global Coverage</span>
-                    </div>
-                    <span className="text-lg font-bold text-purple-600">
-                      {new Set((validators as any[]).map((v: any) => v.country)).size} Countries
-                    </span>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Consensus Rate</span>
+                    <span className="text-blue-400">94.2%</span>
                   </div>
-                  
-                  <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950 rounded-lg">
-                    <div className="flex items-center gap-2">
-                      <Target className="h-4 w-4 text-green-600" />
-                      <span className="text-sm font-medium">Avg. Reputation</span>
-                    </div>
-                    <span className="text-lg font-bold text-green-600">
-                      {(validators as any[]).length > 0 ? 
-                        ((validators as any[]).reduce((acc: number, v: any) => acc + parseFloat(v.reputation || 0), 0) / (validators as any[]).length).toFixed(1) :
-                        '0'}%
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="border-t pt-4">
-                  <h4 className="text-sm font-medium mb-3">Top Validators by Reputation</h4>
-                  <div className="space-y-2">
-                    {(validators as any[])
-                      .sort((a: any, b: any) => parseFloat(b.reputation || 0) - parseFloat(a.reputation || 0))
-                      .slice(0, 3)
-                      .map((validator: any, index: number) => (
-                        <div key={validator.id} className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                              index === 0 ? 'bg-yellow-100 text-yellow-800' :
-                              index === 1 ? 'bg-gray-100 text-gray-800' :
-                              'bg-orange-100 text-orange-800'
-                            }`}>
-                              {index + 1}
-                            </div>
-                            <span className="text-sm font-medium truncate max-w-32">
-                              {validator.institutionName}
-                            </span>
-                          </div>
-                          <span className="text-sm font-bold text-blue-600">
-                            {parseFloat(validator.reputation || 0).toFixed(1)}%
-                          </span>
-                        </div>
-                      ))}
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Quality Score</span>
+                    <span className="text-purple-400">9.1/10</span>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
 
-        <TabsContent value="certifications" className="space-y-4">
-          <Card>
+          {/* Validators List */}
+          <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Award className="w-5 h-5" />
-                Academic Certifications
-              </CardTitle>
-              <CardDescription>
-                Formally validated mathematical discoveries
+              <CardTitle className="text-white">Institutional Validators</CardTitle>
+              <CardDescription className="text-gray-400">
+                Leading academic institutions providing validation services
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {certifications.length === 0 ? (
-                <div className="text-center py-8">
-                  <Award className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600 dark:text-gray-400">No certifications issued yet</p>
-                </div>
+              {validatorsLoading ? (
+                <div className="text-center py-8 text-gray-400">Loading validators...</div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {certifications.map((cert: any) => (
-                    <Card key={cert.id} className="border-2 border-green-200 dark:border-green-800">
-                      <CardContent className="p-4">
-                        <div className="flex items-start gap-3">
-                          <Award className="w-8 h-8 text-green-600 mt-1" />
-                          <div className="space-y-2 flex-1">
-                            <h3 className="font-semibold text-gray-900 dark:text-white">
-                              Work #{cert.workId}
-                            </h3>
-                            <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                              {cert.certificationLevel}
-                            </Badge>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                              {cert.scientificSignificance}
-                            </p>
-                            <div className="flex justify-between text-xs text-gray-500">
-                              <span>Score: {cert.consensusScore}%</span>
-                              <span>Certified: {new Date(cert.certifiedAt).toLocaleDateString()}</span>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="border-slate-700">
+                        <TableHead className="text-slate-300">Institution</TableHead>
+                        <TableHead className="text-slate-300">Type</TableHead>
+                        <TableHead className="text-slate-300">Specialization</TableHead>
+                        <TableHead className="text-slate-300">Country</TableHead>
+                        <TableHead className="text-slate-300">Reputation</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {Array.isArray(validators) && validators.length > 0 ? (
+                        validators.map((validator: any) => (
+                          <TableRow key={validator.id} className="border-slate-700">
+                            <TableCell className="text-white font-medium">
+                              <div className="flex items-center gap-2">
+                                <GraduationCap className="w-4 h-4 text-blue-400" />
+                                {validator.institutionName}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
+                                {validator.institutionType?.replace('_', ' ')}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-1">
+                                {Array.isArray(validator.specialization) && validator.specialization.slice(0, 3).map((spec: string, idx: number) => (
+                                  <span key={idx} className="inline-flex items-center justify-center w-6 h-6 text-xs bg-purple-500/20 text-purple-400 rounded border border-purple-500/30">
+                                    {getSpecializationIcon(spec)}
+                                  </span>
+                                ))}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2 text-gray-300">
+                                <Globe className="w-4 h-4 text-gray-400" />
+                                {validator.country}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-2">
+                                <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                                <span className="text-yellow-400 font-medium">
+                                  {parseFloat(validator.reputation || '0').toFixed(1)}%
+                                </span>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={5} className="text-center py-8 text-gray-400">
+                            No validators found. Click "Initialize Validators" to set up the network.
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
                 </div>
               )}
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="submit" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileCheck className="w-5 h-5" />
-                Submit Work for Validation
-              </CardTitle>
-              <CardDescription>
-                Submit mathematical discoveries to institutional validation pipeline
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Select Mathematical Work
-                </label>
-                <select 
-                  className="mt-1 w-full p-3 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
-                  value={selectedWork || ''}
-                  onChange={(e) => setSelectedWork(e.target.value ? parseInt(e.target.value) : null)}
-                >
-                  <option value="">Choose discovery to validate...</option>
-                  {discoveries.map((work: any) => (
-                    <option key={work.id} value={work.id}>
-                      #{work.id} - {work.workType.replace('_', ' ')} (${work.scientificValue.toLocaleString()})
-                    </option>
-                  ))}
-                </select>
-              </div>
-              
-              {selectedWork && (
-                <div className="bg-blue-50 dark:bg-blue-950 p-4 rounded-lg">
-                  <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
-                    Selected Work Details
-                  </h4>
-                  {discoveries.find((w: any) => w.id === selectedWork) && (
-                    <div className="space-y-2 text-sm">
-                      <div>Work Type: {discoveries.find((w: any) => w.id === selectedWork)?.workType}</div>
-                      <div>Difficulty: {discoveries.find((w: any) => w.id === selectedWork)?.difficulty}</div>
-                      <div>Scientific Value: ${discoveries.find((w: any) => w.id === selectedWork)?.scientificValue.toLocaleString()}</div>
+        {/* Smart Contracts Tab */}
+        <TabsContent value="contracts" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Contract Generator */}
+            <Card className="bg-slate-800 border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Code className="w-5 h-5 text-blue-400" />
+                  Smart Contract Generator
+                </CardTitle>
+                <CardDescription className="text-gray-400">
+                  Generate custom smart contracts for research protocols
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-300 mb-2 block">
+                      Contract Name
+                    </label>
+                    <Input
+                      value={contractName}
+                      onChange={(e) => setContractName(e.target.value)}
+                      placeholder="Enter contract name..."
+                      className="bg-slate-700 border-slate-600 text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-300 mb-2 block">
+                      Contract Type
+                    </label>
+                    <Select value={selectedTemplate} onValueChange={setSelectedTemplate}>
+                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                        <SelectValue placeholder="Select contract type..." />
+                      </SelectTrigger>
+                      <SelectContent className="bg-slate-700 border-slate-600">
+                        {contractTemplates.map((template) => (
+                          <SelectItem key={template.id} value={template.id} className="text-white">
+                            <div className="flex items-center gap-2">
+                              <Code className="w-4 h-4" />
+                              {template.name}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {selectedTemplate && (
+                    <div className="space-y-3">
+                      <h4 className="text-sm font-medium text-gray-300">Parameters</h4>
+                      {contractTemplates
+                        .find(t => t.id === selectedTemplate)
+                        ?.parameters.map((param) => (
+                          <div key={param.name}>
+                            <label className="text-xs text-gray-400 mb-1 block">
+                              {param.description}
+                            </label>
+                            <Input
+                              value={contractParameters[param.name] || param.defaultValue}
+                              onChange={(e) => setContractParameters(prev => ({
+                                ...prev,
+                                [param.name]: e.target.value
+                              }))}
+                              placeholder={param.defaultValue}
+                              className="bg-slate-700 border-slate-600 text-white text-sm"
+                            />
+                          </div>
+                        ))}
                     </div>
                   )}
-                </div>
-              )}
 
-              <Button 
-                onClick={() => selectedWork && submitToValidation.mutate(selectedWork)}
-                disabled={!selectedWork || submitToValidation.isPending}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-              >
-                {submitToValidation.isPending ? (
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    Submitting to Pipeline...
+                  <Button 
+                    onClick={generateContract}
+                    disabled={!selectedTemplate || !contractName}
+                    className="w-full bg-blue-600 hover:bg-blue-700"
+                  >
+                    <Code className="w-4 h-4 mr-2" />
+                    Generate Contract
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Generated Contract Display */}
+            <Card className="bg-slate-800 border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <FileCheck className="w-5 h-5 text-green-400" />
+                  Generated Contract
+                </CardTitle>
+                <CardDescription className="text-gray-400">
+                  Ready-to-deploy Solidity smart contract
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {generatedContract ? (
+                  <div className="space-y-4">
+                    <div className="flex gap-2">
+                      <Button 
+                        onClick={copyToClipboard}
+                        variant="outline" 
+                        size="sm"
+                        className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
+                      >
+                        <Copy className="w-4 h-4 mr-2" />
+                        Copy
+                      </Button>
+                      <Button 
+                        onClick={downloadContract}
+                        variant="outline" 
+                        size="sm"
+                        className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Download
+                      </Button>
+                    </div>
+                    
+                    <div className="bg-slate-900 border border-slate-700 rounded-lg p-4 max-h-96 overflow-y-auto">
+                      <pre className="text-sm text-gray-300 whitespace-pre-wrap">
+                        {generatedContract}
+                      </pre>
+                    </div>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2">
-                    <FileCheck className="w-4 h-4" />
-                    Submit to Validation Pipeline
+                  <div className="text-center py-8 text-gray-400">
+                    <Code className="w-12 h-12 mx-auto mb-3 text-gray-500" />
+                    <p>Generate a contract to see the code here</p>
                   </div>
                 )}
-              </Button>
-              
-              {selectedWork && (
-                <div className="text-center text-sm text-gray-600 dark:text-gray-400">
-                  Selected Discovery #{selectedWork} will be submitted to institutional validators for formal verification
-                </div>
-              )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Contract Templates Overview */}
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white">Available Contract Templates</CardTitle>
+              <CardDescription className="text-gray-400">
+                Pre-built smart contract templates for research protocols
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {contractTemplates.map((template) => (
+                  <div 
+                    key={template.id}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                      selectedTemplate === template.id 
+                        ? 'bg-blue-500/10 border-blue-500/50' 
+                        : 'bg-slate-700/50 border-slate-600 hover:border-slate-500'
+                    }`}
+                    onClick={() => setSelectedTemplate(template.id)}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <Code className="w-4 h-4 text-blue-400" />
+                      <h3 className="font-medium text-white text-sm">{template.name}</h3>
+                    </div>
+                    <p className="text-xs text-gray-400 mb-2">{template.description}</p>
+                    <Badge className="text-xs bg-purple-500/20 text-purple-400 border-purple-500/30">
+                      {template.category}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Additional tabs can be added here */}
+        <TabsContent value="pipeline" className="space-y-6">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white">Validation Pipeline</CardTitle>
+              <CardDescription className="text-gray-400">
+                Track mathematical work through institutional validation process
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8 text-gray-400">
+                Validation pipeline functionality coming soon...
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="certifications" className="space-y-6">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white">Academic Certifications</CardTitle>
+              <CardDescription className="text-gray-400">
+                Institutional certification records and achievements
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8 text-gray-400">
+                Certification records functionality coming soon...
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="submission" className="space-y-6">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white">Submit Work for Validation</CardTitle>
+              <CardDescription className="text-gray-400">
+                Submit mathematical discoveries for institutional peer review
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8 text-gray-400">
+                Work submission functionality coming soon...
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

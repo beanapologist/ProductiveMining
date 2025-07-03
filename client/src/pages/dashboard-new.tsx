@@ -260,7 +260,7 @@ export default function Dashboard() {
                     
                     <div className="flex items-center justify-between text-xs text-slate-400">
                       <span>Progress: {operation.progress}%</span>
-                      <span>Worker: {operation.workerId.split('_')[1]?.slice(-4) || 'Unknown'}</span>
+                      <span>Worker: {operation.workerId?.split('_')[1]?.slice(-4) || 'Unknown'}</span>
                     </div>
                     
                     <div className="w-full bg-slate-700 rounded-full h-2">
