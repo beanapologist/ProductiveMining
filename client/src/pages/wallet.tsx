@@ -155,7 +155,7 @@ export default function WalletPage() {
                 ${adjustedProdValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </div>
               <Badge variant="outline" className="text-blue-400 border-blue-400">
-                {((adjustedProdValue / totalPortfolioValue) * 100).toFixed(1)}%
+                {((adjustedProdValue && totalPortfolioValue ? (adjustedProdValue / totalPortfolioValue) * 100 : 0)).toFixed(1)}%
               </Badge>
             </div>
           </div>
@@ -166,7 +166,7 @@ export default function WalletPage() {
               <div>
                 <div className="text-white font-bold">Staked PROD</div>
                 <div className="text-gray-400 text-sm">
-                  {myStaked.toLocaleString()} tokens earning {(stakingData?.rewardsAPY || 18.7).toFixed(1)}% APY
+                  {myStaked.toLocaleString()} tokens earning {((stakingData?.rewardsAPY || 18.7)).toFixed(1)}% APY
                 </div>
               </div>
             </div>
@@ -175,7 +175,7 @@ export default function WalletPage() {
                 ${adjustedStakedValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </div>
               <Badge variant="outline" className="text-purple-400 border-purple-400">
-                {((adjustedStakedValue / totalPortfolioValue) * 100).toFixed(1)}%
+                {((adjustedStakedValue && totalPortfolioValue ? (adjustedStakedValue / totalPortfolioValue) * 100 : 0)).toFixed(1)}%
               </Badge>
             </div>
           </div>
@@ -193,7 +193,7 @@ export default function WalletPage() {
                 ${adjustedNftValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </div>
               <Badge variant="outline" className="text-pink-400 border-pink-400">
-                {((adjustedNftValue / totalPortfolioValue) * 100).toFixed(1)}%
+                {((adjustedNftValue && totalPortfolioValue ? (adjustedNftValue / totalPortfolioValue) * 100 : 0)).toFixed(1)}%
               </Badge>
             </div>
           </div>

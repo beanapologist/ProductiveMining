@@ -491,7 +491,7 @@ export default function DiscoveriesAIPage() {
                         </div>
                         <div className="flex items-center justify-between text-xs text-slate-400">
                           <span>ID: {discovery.id}</span>
-                          <span>${(discovery.scientificValue / 1000000).toFixed(1)}M</span>
+                          <span>${(discovery.scientificValue ? (discovery.scientificValue / 1000000).toFixed(1) : '0.0')}M</span>
                         </div>
                       </div>
                     ))}
