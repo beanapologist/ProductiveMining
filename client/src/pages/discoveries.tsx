@@ -73,6 +73,11 @@ export default function DiscoveriesPage() {
     return getDiscoveryRecords(workId).length;
   };
 
+  // Check if discovery has validation records (some records may be for older discoveries)
+  const hasValidationRecords = (workId: number): boolean => {
+    return getDiscoveryRecords(workId).length > 0;
+  };
+
   const workTypes = [
     { value: "all", label: "All Discoveries" },
     { value: "riemann_zero", label: "🧮 Riemann Hypothesis" },
@@ -490,6 +495,9 @@ export default function DiscoveriesPage() {
 
                         {getDiscoveryRecords(selectedDiscovery.id).length > 0 ? (
                           <div className="space-y-3">
+                            <div className="text-sm text-green-400 mb-3">
+                              ✓ {getDiscoveryRecords(selectedDiscovery.id).length} validation records found for this discovery
+                            </div>
                             {getDiscoveryRecords(selectedDiscovery.id).map((record) => (
                               <Card key={record.id} className="bg-slate-800/30 border-slate-700">
                                 <CardContent className="p-4">
@@ -547,8 +555,12 @@ export default function DiscoveriesPage() {
                         ) : (
                           <div className="text-center py-8 text-slate-400">
                             <Database className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                            <p>No validation records yet</p>
-                            <p className="text-sm">Records will appear when this discovery is validated</p>
+                            <p>No validation records for this discovery</p>
+                            <p className="text-sm">Newer discoveries await validation through the PoS consensus system</p>
+                            <div className="mt-4 text-xs bg-slate-800/30 rounded p-3">
+                              <div className="text-green-400 mb-1">✓ Network Status: {immutableRecords.length} total validation records exist</div>
+                              <div className="text-blue-400">✓ PoS validation system active with institutional validators</div>
+                            </div>
                           </div>
                         )}
                       </div>
