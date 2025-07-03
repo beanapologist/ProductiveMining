@@ -367,6 +367,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Data integrity check endpoint
+  app.post("/api/integrity/check", async (req, res) => {
+    try {
+      const { dataIntegrityEngine } = await import('./data-integrity');
+      console.log('🔍 DATA INTEGRITY: Starting comprehensive blockchain validation...');
+      
+      const integrityReport = await dataIntegrityEngine.performFullIntegrityCheck();
+      
+      // Update security metrics based on integrity results
+      const securityMetrics = {
+        totalBlocksValidated: integrityReport.summary.totalBlocks,
+        validBlocks: integrityReport.summary.validBlocks,
+        integrityScore: integrityReport.summary.overallIntegrity,
+        lastValidation: new Date().toISOString(),
+        cryptographicStrength: integrityReport.reports
+          .filter(r => r.securityAnalysis.cryptographicStrength !== 'UNKNOWN')
+          .map(r => r.securityAnalysis.cryptographicStrength)[0] || 'MODERATE',
+        averageQuantumResistance: integrityReport.reports.reduce((sum, r) => 
+          sum + r.securityAnalysis.quantumResistance, 0) / integrityReport.reports.length || 0
+      };
+
+      res.json({
+        message: "Data integrity check completed",
+        summary: integrityReport.summary,
+        securityMetrics,
+        detailedReports: integrityReport.reports.slice(0, 10), // Return first 10 detailed reports
+        timestamp: new Date().toISOString()
+      });
+
+      // Broadcast update to connected clients
+      broadcast({
+        type: 'integrity_update',
+        data: { summary: integrityReport.summary, securityMetrics }
+      });
+
+    } catch (error) {
+      console.error('Data integrity check error:', error);
+      res.status(500).json({ error: "Data integrity check failed" });
+    }
+  });
+
   // Initialize PoS validator network
   app.post("/api/validators/initialize", async (req, res) => {
     try {

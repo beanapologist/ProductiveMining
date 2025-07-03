@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Shield, Lock, Key, Zap, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Shield, Lock, Key, Zap, AlertTriangle, CheckCircle, Database, Search } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface SecurityAnalysis {
   discoveryCount: number;
@@ -28,9 +29,31 @@ interface SecurityAnalysis {
   timestamp: string;
 }
 
+interface IntegrityResults {
+  summary: {
+    totalBlocks: number;
+    validBlocks: number;
+    invalidBlocks: number;
+    warningBlocks: number;
+    overallIntegrity: number;
+  };
+  securityMetrics: {
+    totalBlocksValidated: number;
+    validBlocks: number;
+    integrityScore: number;
+    lastValidation: string;
+    cryptographicStrength: string;
+    averageQuantumResistance: number;
+  };
+  timestamp: string;
+}
+
 export default function SecurityDashboard() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [lastAnalysis, setLastAnalysis] = useState<SecurityAnalysis | null>(null);
+  const [integrityResults, setIntegrityResults] = useState<IntegrityResults | null>(null);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: discoveries } = useQuery({
     queryKey: ['/api/discoveries'],
@@ -49,6 +72,33 @@ export default function SecurityDashboard() {
       setIsAnalyzing(false);
     }
   };
+
+  const integrityCheckMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/integrity/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (!response.ok) throw new Error('Integrity check failed');
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setIntegrityResults(data);
+      queryClient.invalidateQueries({ queryKey: ['/api/blocks'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/stakers'] });
+      toast({
+        title: "Data Integrity Check Completed",
+        description: `Validated ${data.summary.totalBlocks} blocks with ${data.summary.overallIntegrity.toFixed(1)}% integrity`,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Integrity Check Failed",
+        description: "Could not complete blockchain validation",
+        variant: "destructive",
+      });
+    },
+  });
 
   useEffect(() => {
     if (discoveries?.length > 0) {
@@ -203,6 +253,126 @@ export default function SecurityDashboard() {
           </Card>
         )}
       </div>
+
+      {/* Data Integrity Section */}
+      <Card className="bg-slate-800 border-slate-700">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center justify-between">
+            <div className="flex items-center">
+              <Database className="mr-2 h-5 w-5 text-blue-400" />
+              Blockchain Data Integrity
+            </div>
+            <Button 
+              onClick={() => integrityCheckMutation.mutate()}
+              disabled={integrityCheckMutation.isPending}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+              size="sm"
+            >
+              {integrityCheckMutation.isPending ? (
+                <>
+                  <Search className="mr-2 h-4 w-4 animate-spin" />
+                  Validating...
+                </>
+              ) : (
+                <>
+                  <Search className="mr-2 h-4 w-4" />
+                  Run Integrity Check
+                </>
+              )}
+            </Button>
+          </CardTitle>
+          <CardDescription className="text-gray-400">
+            Comprehensive validation of all blocks and mathematical formulas through PoS consensus
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {integrityResults ? (
+            <div className="space-y-4">
+              {/* Integrity Summary */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                  <div className="text-2xl font-bold text-green-400">
+                    {integrityResults.summary.totalBlocks}
+                  </div>
+                  <div className="text-sm text-gray-400">Total Blocks</div>
+                </div>
+                <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                  <div className="text-2xl font-bold text-blue-400">
+                    {integrityResults.summary.validBlocks}
+                  </div>
+                  <div className="text-sm text-gray-400">Valid Blocks</div>
+                </div>
+                <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                  <div className="text-2xl font-bold text-orange-400">
+                    {integrityResults.summary.warningBlocks}
+                  </div>
+                  <div className="text-sm text-gray-400">Warnings</div>
+                </div>
+                <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                  <div className="text-2xl font-bold text-red-400">
+                    {integrityResults.summary.invalidBlocks}
+                  </div>
+                  <div className="text-sm text-gray-400">Invalid</div>
+                </div>
+              </div>
+
+              {/* Overall Integrity Score */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-white font-medium">Overall Integrity Score</span>
+                  <span className="text-green-400 font-bold">
+                    {integrityResults.summary.overallIntegrity.toFixed(1)}%
+                  </span>
+                </div>
+                <Progress 
+                  value={integrityResults.summary.overallIntegrity} 
+                  className="h-2"
+                />
+              </div>
+
+              {/* Security Metrics */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-400">Cryptographic Strength:</span>
+                    <Badge 
+                      className={`${getSecurityLevelColor(integrityResults.securityMetrics.cryptographicStrength)} text-white`}
+                    >
+                      {integrityResults.securityMetrics.cryptographicStrength}
+                    </Badge>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-400">Quantum Resistance:</span>
+                    <span className="text-purple-400 font-semibold">
+                      {integrityResults.securityMetrics.averageQuantumResistance.toFixed(1)}%
+                    </span>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-400">Last Validation:</span>
+                    <span className="text-blue-400 text-sm">
+                      {new Date(integrityResults.securityMetrics.lastValidation).toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-400">PoS Consensus:</span>
+                    <span className="text-green-400 font-semibold">Active</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <Database className="h-12 w-12 mx-auto mb-3 text-gray-500" />
+              <p className="text-gray-400">Click "Run Integrity Check" to validate blockchain data</p>
+              <p className="text-sm text-gray-500 mt-1">
+                This will examine all blocks, verify mathematical formulas, and validate through PoS consensus
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Enhancement Sources */}
       {lastAnalysis?.enhancedCryptoKey?.enhancementSources && (
