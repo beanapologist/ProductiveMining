@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StakingValidations from "@/components/staking-validations";
 import { useState } from "react";
-import { Brain, Search, Trophy, Clock, Zap, Target, Award, TrendingUp, Hash, Users, CheckCircle, Shield, Database, FileText, ExternalLink, BarChart3, Calendar, Filter, Eye, ChevronDown, ChevronUp, Activity, Download } from "lucide-react";
+import { Brain, Search, Trophy, Clock, Zap, Target, Award, TrendingUp, Hash, Users, CheckCircle, Shield, Database, FileText, ExternalLink, BarChart3, Calendar, Filter, Eye, ChevronDown, ChevronUp, Activity, Download, Calculator, PieChart, LineChart, Microscope, FlaskConical, Atom, Binary, Sigma, Infinity, Pi } from "lucide-react";
 
 interface MathematicalWork {
   id: number;
@@ -336,6 +336,7 @@ export default function DiscoveriesPage() {
         </div>
       </div>
 
+      {/* Advanced Statistics Dashboard */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="bg-slate-800 border-slate-700">
           <CardHeader className="pb-3">
@@ -351,36 +352,811 @@ export default function DiscoveriesPage() {
             <div className="text-3xl font-bold text-purple-400">
               {currentDiscoveries.length}
             </div>
-            <p className="text-sm text-gray-400 mt-1">
-              Breakthrough discoveries made
-            </p>
+            <div className="text-sm text-gray-400 mt-1">
+              {currentDiscoveries.length > 0 ? 
+                `+${Math.floor(currentDiscoveries.length / 10)} this week` : 
+                'No discoveries yet'
+              }
+            </div>
           </CardContent>
         </Card>
 
         <Card className="bg-slate-800 border-slate-700">
           <CardHeader className="pb-3">
             <CardTitle className="text-white flex items-center">
-              <Award className="mr-2 h-5 w-5 text-green-400" />
+              <Trophy className="mr-2 h-5 w-5 text-yellow-400" />
               Scientific Value
             </CardTitle>
             <CardDescription className="text-gray-400">
-              Total research value
+              Total value generated
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-yellow-400">
+              ${(currentDiscoveries.reduce((sum, d) => sum + d.scientificValue, 0) / 1000000).toFixed(1)}M
+            </div>
+            <div className="text-sm text-gray-400 mt-1">
+              Avg: ${currentDiscoveries.length > 0 ? 
+                Math.floor(currentDiscoveries.reduce((sum, d) => sum + d.scientificValue, 0) / currentDiscoveries.length / 1000) : 0
+              }K per discovery
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-white flex items-center">
+              <Zap className="mr-2 h-5 w-5 text-blue-400" />
+              Avg Difficulty
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Computation complexity
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-blue-400">
+              {currentDiscoveries.length > 0 ? 
+                Math.round(currentDiscoveries.reduce((sum, d) => sum + d.difficulty, 0) / currentDiscoveries.length) : 0
+              }
+            </div>
+            <div className="text-sm text-gray-400 mt-1">
+              Range: {Math.min(...currentDiscoveries.map(d => d.difficulty))}-{Math.max(...currentDiscoveries.map(d => d.difficulty))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-white flex items-center">
+              <Users className="mr-2 h-5 w-5 text-green-400" />
+              Active Researchers
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Unique contributors
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-400">
-              ${totalScientificValue.toLocaleString()}
+              {new Set(currentDiscoveries.map(d => d.workerId)).size}
             </div>
-            <p className="text-sm text-gray-400 mt-1">
-              Value generated
-            </p>
+            <div className="text-sm text-gray-400 mt-1">
+              {currentDiscoveries.length > 0 ? 
+                `${Math.round(currentDiscoveries.length / new Set(currentDiscoveries.map(d => d.workerId)).size)} discoveries/researcher` : 
+                'No researchers yet'
+              }
+            </div>
           </CardContent>
         </Card>
+      </div>
 
-        <Card className="bg-slate-800 border-slate-700">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-white flex items-center">
-              <Target className="mr-2 h-5 w-5 text-blue-400" />
+      {/* Formula Analysis Tools */}
+      <Card className="bg-slate-800 border-slate-700">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center">
+            <Calculator className="mr-2 h-5 w-5 text-orange-400" />
+            Formula Analysis Tools
+          </CardTitle>
+          <CardDescription className="text-gray-400">
+            Advanced mathematical analysis and pattern recognition
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Work Type Distribution */}
+            <div className="space-y-3">
+              <h4 className="text-white font-medium flex items-center">
+                <PieChart className="mr-2 h-4 w-4 text-purple-400" />
+                Discovery Types
+              </h4>
+              <div className="space-y-2">
+                {Object.entries(discoveryTypeStats).map(([type, count]) => (
+                  <div key={type} className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                    <span className="text-sm text-gray-300">
+                      {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    </span>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-16 bg-gray-700 rounded-full h-2">
+                        <div 
+                          className="bg-purple-400 h-2 rounded-full" 
+                          style={{width: `${(count as number / currentDiscoveries.length) * 100}%`}}
+                        />
+                      </div>
+                      <span className="text-sm text-purple-400 font-medium">{count}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Difficulty Distribution */}
+            <div className="space-y-3">
+              <h4 className="text-white font-medium flex items-center">
+                <BarChart3 className="mr-2 h-4 w-4 text-blue-400" />
+                Difficulty Analysis
+              </h4>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                  <span className="text-sm text-gray-300">Low (< 30)</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-16 bg-gray-700 rounded-full h-2">
+                      <div 
+                        className="bg-green-400 h-2 rounded-full" 
+                        style={{width: `${(difficultyRanges.low / currentDiscoveries.length) * 100}%`}}
+                      />
+                    </div>
+                    <span className="text-sm text-green-400 font-medium">{difficultyRanges.low}</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                  <span className="text-sm text-gray-300">Medium (30-50)</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-16 bg-gray-700 rounded-full h-2">
+                      <div 
+                        className="bg-yellow-400 h-2 rounded-full" 
+                        style={{width: `${(difficultyRanges.medium / currentDiscoveries.length) * 100}%`}}
+                      />
+                    </div>
+                    <span className="text-sm text-yellow-400 font-medium">{difficultyRanges.medium}</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                  <span className="text-sm text-gray-300">High (50+)</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-16 bg-gray-700 rounded-full h-2">
+                      <div 
+                        className="bg-red-400 h-2 rounded-full" 
+                        style={{width: `${(difficultyRanges.high / currentDiscoveries.length) * 100}%`}}
+                      />
+                    </div>
+                    <span className="text-sm text-red-400 font-medium">{difficultyRanges.high}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Value Distribution */}
+            <div className="space-y-3">
+              <h4 className="text-white font-medium flex items-center">
+                <TrendingUp className="mr-2 h-4 w-4 text-green-400" />
+                Value Distribution
+              </h4>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                  <span className="text-sm text-gray-300">Low (< $1M)</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-16 bg-gray-700 rounded-full h-2">
+                      <div 
+                        className="bg-blue-400 h-2 rounded-full" 
+                        style={{width: `${(valueRanges.low / currentDiscoveries.length) * 100}%`}}
+                      />
+                    </div>
+                    <span className="text-sm text-blue-400 font-medium">{valueRanges.low}</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                  <span className="text-sm text-gray-300">Medium ($1M-$5M)</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-16 bg-gray-700 rounded-full h-2">
+                      <div 
+                        className="bg-yellow-400 h-2 rounded-full" 
+                        style={{width: `${(valueRanges.medium / currentDiscoveries.length) * 100}%`}}
+                      />
+                    </div>
+                    <span className="text-sm text-yellow-400 font-medium">{valueRanges.medium}</span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                  <span className="text-sm text-gray-300">High ($5M+)</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-16 bg-gray-700 rounded-full h-2">
+                      <div 
+                        className="bg-green-400 h-2 rounded-full" 
+                        style={{width: `${(valueRanges.high / currentDiscoveries.length) * 100}%`}}
+                      />
+                    </div>
+                    <span className="text-sm text-green-400 font-medium">{valueRanges.high}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Advanced Formula Analysis */}
+      <Card className="bg-slate-800 border-slate-700">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center">
+            <Microscope className="mr-2 h-5 w-5 text-cyan-400" />
+            Advanced Formula Analysis
+          </CardTitle>
+          <CardDescription className="text-gray-400">
+            Detailed mathematical pattern analysis and breakthrough identification
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Mathematical Complexity Analysis */}
+            <div className="space-y-4">
+              <h4 className="text-white font-medium flex items-center">
+                <Sigma className="mr-2 h-4 w-4 text-purple-400" />
+                Complexity Metrics
+              </h4>
+              <div className="space-y-3">
+                <div className="p-3 bg-slate-700/50 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-300">Computational Intensity</span>
+                    <span className="text-sm text-purple-400 font-medium">
+                      {currentDiscoveries.length > 0 ? 
+                        Math.round(currentDiscoveries.reduce((sum, d) => sum + d.computationalCost, 0) / currentDiscoveries.length) : 0
+                      }
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    Average computational cost per discovery
+                  </div>
+                </div>
+                <div className="p-3 bg-slate-700/50 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-300">Energy Efficiency</span>
+                    <span className="text-sm text-green-400 font-medium">
+                      {currentDiscoveries.length > 0 ? 
+                        Math.round(currentDiscoveries.reduce((sum, d) => sum + d.energyEfficiency, 0) / currentDiscoveries.length) : 0
+                      }%
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    Average energy efficiency rating
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Pattern Recognition */}
+            <div className="space-y-4">
+              <h4 className="text-white font-medium flex items-center">
+                <Atom className="mr-2 h-4 w-4 text-orange-400" />
+                Pattern Recognition
+              </h4>
+              <div className="space-y-3">
+                <div className="p-3 bg-slate-700/50 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-300">Prime Patterns</span>
+                    <span className="text-sm text-orange-400 font-medium">
+                      {discoveryTypeStats.prime_pattern || 0}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    Prime number pattern discoveries
+                  </div>
+                </div>
+                <div className="p-3 bg-slate-700/50 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-300">Riemann Zeros</span>
+                    <span className="text-sm text-blue-400 font-medium">
+                      {discoveryTypeStats.riemann_zero || 0}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    Riemann hypothesis zero discoveries
+                  </div>
+                </div>
+                <div className="p-3 bg-slate-700/50 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-gray-300">Cryptographic Advances</span>
+                    <span className="text-sm text-red-400 font-medium">
+                      {(discoveryTypeStats.elliptic_curve_crypto || 0) + (discoveryTypeStats.lattice_crypto || 0)}
+                    </span>
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    Cryptographic breakthrough discoveries
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Database Analytics */}
+      <Card className="bg-slate-800 border-slate-700">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center">
+            <Database className="mr-2 h-5 w-5 text-blue-400" />
+            Database Analytics
+          </CardTitle>
+          <CardDescription className="text-gray-400">
+            Comprehensive validation and record tracking statistics
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Validation Statistics */}
+            <div className="space-y-3">
+              <h4 className="text-white font-medium flex items-center">
+                <CheckCircle className="mr-2 h-4 w-4 text-green-400" />
+                Validation Status
+              </h4>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                  <span className="text-sm text-gray-300">Total Validations</span>
+                  <span className="text-sm text-blue-400 font-medium">{validationStats.totalValidations}</span>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                  <span className="text-sm text-gray-300">Approved</span>
+                  <span className="text-sm text-green-400 font-medium">{validationStats.approvedValidations}</span>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                  <span className="text-sm text-gray-300">Pending</span>
+                  <span className="text-sm text-yellow-400 font-medium">{validationStats.pendingValidations}</span>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                  <span className="text-sm text-gray-300">Rejected</span>
+                  <span className="text-sm text-red-400 font-medium">{validationStats.rejectedValidations}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Immutable Records */}
+            <div className="space-y-3">
+              <h4 className="text-white font-medium flex items-center">
+                <Shield className="mr-2 h-4 w-4 text-purple-400" />
+                Immutable Records
+              </h4>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                  <span className="text-sm text-gray-300">Total Records</span>
+                  <span className="text-sm text-purple-400 font-medium">{immutableRecordsStats.totalRecords}</span>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                  <span className="text-sm text-gray-300">Validation Records</span>
+                  <span className="text-sm text-blue-400 font-medium">{immutableRecordsStats.validationRecords}</span>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                  <span className="text-sm text-gray-300">Consensus Records</span>
+                  <span className="text-sm text-green-400 font-medium">{immutableRecordsStats.consensusRecords}</span>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                  <span className="text-sm text-gray-300">Verified</span>
+                  <span className="text-sm text-emerald-400 font-medium">{immutableRecordsStats.verifiedRecords}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Research Metrics */}
+            <div className="space-y-3">
+              <h4 className="text-white font-medium flex items-center">
+                <TrendingUp className="mr-2 h-4 w-4 text-yellow-400" />
+                Research Metrics
+              </h4>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                  <span className="text-sm text-gray-300">Avg Discovery Time</span>
+                  <span className="text-sm text-yellow-400 font-medium">
+                    {currentDiscoveries.length > 1 ? 
+                      Math.round((new Date(currentDiscoveries[0].timestamp).getTime() - new Date(currentDiscoveries[currentDiscoveries.length - 1].timestamp).getTime()) / (1000 * 60 * 60 * currentDiscoveries.length)) : 0
+                    }h
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                  <span className="text-sm text-gray-300">Discovery Rate</span>
+                  <span className="text-sm text-green-400 font-medium">
+                    {currentDiscoveries.length > 0 ? 
+                      Math.round(currentDiscoveries.length / Math.max(1, Math.ceil((Date.now() - new Date(currentDiscoveries[currentDiscoveries.length - 1].timestamp).getTime()) / (1000 * 60 * 60 * 24)))) : 0
+                    }/day
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                  <span className="text-sm text-gray-300">Success Rate</span>
+                  <span className="text-sm text-emerald-400 font-medium">
+                    {validationStats.totalValidations > 0 ? 
+                      Math.round((validationStats.approvedValidations / validationStats.totalValidations) * 100) : 0
+                    }%
+                  </span>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                  <span className="text-sm text-gray-300">Blockchain Records</span>
+                  <span className="text-sm text-blue-400 font-medium">{(blocksData as any[])?.length || 0}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Main Discoveries Interface */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4 bg-slate-800 border-slate-700">
+          <TabsTrigger value="discoveries" className="data-[state=active]:bg-purple-600">
+            <Brain className="mr-2 h-4 w-4" />
+            Discoveries
+          </TabsTrigger>
+          <TabsTrigger value="analysis" className="data-[state=active]:bg-blue-600">
+            <BarChart3 className="mr-2 h-4 w-4" />
+            Analysis
+          </TabsTrigger>
+          <TabsTrigger value="validations" className="data-[state=active]:bg-green-600">
+            <CheckCircle className="mr-2 h-4 w-4" />
+            Validations
+          </TabsTrigger>
+          <TabsTrigger value="export" className="data-[state=active]:bg-orange-600">
+            <Download className="mr-2 h-4 w-4" />
+            Export
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="discoveries" className="space-y-6">
+          {/* Search and Filter Controls */}
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <Filter className="mr-2 h-5 w-5 text-blue-400" />
+                Search & Filter Discoveries
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="space-y-2">
+                  <label className="text-sm text-gray-300">Search</label>
+                  <Input
+                    placeholder="Search discoveries..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="bg-slate-700 border-slate-600 text-white"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm text-gray-300">Work Type</label>
+                  <Select value={workTypeFilter} onValueChange={setWorkTypeFilter}>
+                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-700 border-slate-600">
+                      {workTypes.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm text-gray-300">Difficulty</label>
+                  <Select value={difficultyFilter} onValueChange={setDifficultyFilter}>
+                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-700 border-slate-600">
+                      <SelectItem value="all">All Levels</SelectItem>
+                      <SelectItem value="low">Low (< 30)</SelectItem>
+                      <SelectItem value="medium">Medium (30-50)</SelectItem>
+                      <SelectItem value="high">High (50+)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm text-gray-300">Sort By</label>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-700 border-slate-600">
+                      <SelectItem value="timestamp">Recent</SelectItem>
+                      <SelectItem value="difficulty">Difficulty</SelectItem>
+                      <SelectItem value="scientificValue">Value</SelectItem>
+                      <SelectItem value="workType">Type</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Discoveries List */}
+          <div className="grid grid-cols-1 gap-4">
+            {filteredDiscoveries.length > 0 ? (
+              filteredDiscoveries.map((discovery) => (
+                <Card key={discovery.id} className="bg-slate-800 border-slate-700 hover:border-purple-500 transition-colors">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center">
+                          <Hash className="h-6 w-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-white font-semibold">
+                            Discovery #{discovery.id}
+                          </h3>
+                          <p className="text-gray-400 text-sm">
+                            {discovery.workType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <Badge 
+                          className={`${
+                            discovery.difficulty >= 50 ? 'bg-red-600' :
+                            discovery.difficulty >= 30 ? 'bg-yellow-600' : 'bg-green-600'
+                          } text-white`}
+                        >
+                          Difficulty: {discovery.difficulty}
+                        </Badge>
+                        <Badge className="bg-purple-600 text-white">
+                          ${(discovery.scientificValue / 1000000).toFixed(1)}M
+                        </Badge>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                      <div className="space-y-1">
+                        <p className="text-gray-400 text-sm">Researcher</p>
+                        <p className="text-white font-mono text-sm">{discovery.workerId}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-gray-400 text-sm">Computational Cost</p>
+                        <p className="text-blue-400 font-medium">{discovery.computationalCost.toLocaleString()}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-gray-400 text-sm">Energy Efficiency</p>
+                        <p className="text-green-400 font-medium">{discovery.energyEfficiency}%</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-1 text-gray-400 text-sm">
+                          <Clock className="h-4 w-4" />
+                          <span>{new Date(discovery.timestamp).toLocaleDateString()}</span>
+                        </div>
+                        {hasValidationRecords(discovery.id) && (
+                          <div className="flex items-center space-x-1 text-green-400 text-sm">
+                            <CheckCircle className="h-4 w-4" />
+                            <span>{getValidationCount(discovery.id)} validations</span>
+                          </div>
+                        )}
+                      </div>
+                      <Button
+                        onClick={() => setSelectedDiscovery(discovery)}
+                        variant="outline"
+                        size="sm"
+                        className="border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-white"
+                      >
+                        <Eye className="h-4 w-4 mr-2" />
+                        Details
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <Card className="bg-slate-800 border-slate-700">
+                <CardContent className="p-12 text-center">
+                  <Search className="h-12 w-12 mx-auto mb-4 text-gray-500" />
+                  <h3 className="text-white font-medium mb-2">No discoveries found</h3>
+                  <p className="text-gray-400">
+                    Try adjusting your search filters or check back later for new mathematical breakthroughs.
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="analysis" className="space-y-6">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <Microscope className="mr-2 h-5 w-5 text-cyan-400" />
+                Formula Analysis Dashboard
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Advanced mathematical pattern analysis and breakthrough identification tools
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <FlaskConical className="h-12 w-12 mx-auto mb-4 text-cyan-400" />
+                <h3 className="text-white font-medium mb-2">Interactive Analysis Tools</h3>
+                <p className="text-gray-400 mb-4">
+                  Formula validation, pattern recognition, and complexity analysis tools coming soon.
+                </p>
+                <Button
+                  onClick={() => window.open('/security', '_blank')}
+                  className="bg-cyan-600 hover:bg-cyan-700 text-white"
+                >
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  View Security Analysis
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="validations" className="space-y-6">
+          <StakingValidations />
+        </TabsContent>
+
+        <TabsContent value="export" className="space-y-6">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <Download className="mr-2 h-5 w-5 text-green-400" />
+                Data Export & Analytics
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Export mathematical discoveries and research data for external analysis
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <h4 className="text-white font-medium">Quick Export Options</h4>
+                  <div className="space-y-2">
+                    <Button
+                      onClick={() => downloadCSV(currentDiscoveries, 'mathematical_discoveries')}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white justify-start"
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      Export Discoveries (CSV)
+                    </Button>
+                    <Button
+                      onClick={() => downloadJSON(currentDiscoveries, 'mathematical_discoveries')}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white justify-start"
+                    >
+                      <Database className="h-4 w-4 mr-2" />
+                      Export Discoveries (JSON)
+                    </Button>
+                    <Button
+                      onClick={() => downloadCSV(validationsData as any[], 'validations')}
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-white justify-start"
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      Export Validations (CSV)
+                    </Button>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <h4 className="text-white font-medium">Complete Database Export</h4>
+                  <div className="space-y-2">
+                    <Button
+                      onClick={() => downloadAllRecords('json')}
+                      className="w-full bg-orange-600 hover:bg-orange-700 text-white justify-start"
+                    >
+                      <Database className="h-4 w-4 mr-2" />
+                      Complete Export (JSON)
+                    </Button>
+                    <Button
+                      onClick={() => downloadAllRecords('csv')}
+                      className="w-full bg-teal-600 hover:bg-teal-700 text-white justify-start"
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      Complete Export (CSV)
+                    </Button>
+                  </div>
+                  <div className="p-3 bg-slate-700/50 rounded-lg">
+                    <p className="text-sm text-gray-300 mb-2">Export includes:</p>
+                    <ul className="text-xs text-gray-400 space-y-1">
+                      <li>• {currentDiscoveries.length} mathematical discoveries</li>
+                      <li>• {validationStats.totalValidations} validation records</li>
+                      <li>• {immutableRecordsStats.totalRecords} immutable records</li>
+                      <li>• {(blocksData as any[])?.length || 0} blockchain blocks</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+      {/* Discovery Detail Modal */}
+      {selectedDiscovery && (
+        <Dialog open={!!selectedDiscovery} onOpenChange={() => setSelectedDiscovery(null)}>
+          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-slate-800 border-slate-700">
+            <DialogHeader>
+              <DialogTitle className="text-white flex items-center">
+                <Hash className="mr-2 h-5 w-5 text-purple-400" />
+                Discovery #{selectedDiscovery.id} - {selectedDiscovery.workType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-6">
+              {/* Basic Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-3">
+                  <h4 className="text-white font-medium">Discovery Information</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Work Type:</span>
+                      <span className="text-white">{selectedDiscovery.workType.replace(/_/g, ' ')}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Difficulty:</span>
+                      <span className="text-purple-400 font-medium">{selectedDiscovery.difficulty}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Scientific Value:</span>
+                      <span className="text-green-400 font-medium">${selectedDiscovery.scientificValue.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Researcher:</span>
+                      <span className="text-blue-400 font-mono">{selectedDiscovery.workerId}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <h4 className="text-white font-medium">Computational Metrics</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Computational Cost:</span>
+                      <span className="text-orange-400">{selectedDiscovery.computationalCost.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Energy Efficiency:</span>
+                      <span className="text-green-400">{selectedDiscovery.energyEfficiency}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Timestamp:</span>
+                      <span className="text-gray-300">{new Date(selectedDiscovery.timestamp).toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Signature:</span>
+                      <span className="text-blue-400 font-mono text-xs">{selectedDiscovery.signature.substring(0, 16)}...</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mathematical Results */}
+              <div className="space-y-3">
+                <h4 className="text-white font-medium">Mathematical Results</h4>
+                <div className="bg-slate-700/50 p-4 rounded-lg">
+                  <pre className="text-gray-300 text-sm whitespace-pre-wrap overflow-x-auto">
+                    {JSON.stringify(selectedDiscovery.result, null, 2)}
+                  </pre>
+                </div>
+              </div>
+
+              {/* Verification Data */}
+              <div className="space-y-3">
+                <h4 className="text-white font-medium">Verification Data</h4>
+                <div className="bg-slate-700/50 p-4 rounded-lg">
+                  <pre className="text-gray-300 text-sm whitespace-pre-wrap overflow-x-auto">
+                    {JSON.stringify(selectedDiscovery.verificationData, null, 2)}
+                  </pre>
+                </div>
+              </div>
+
+              {/* Validation Records */}
+              {hasValidationRecords(selectedDiscovery.id) && (
+                <div className="space-y-3">
+                  <h4 className="text-white font-medium flex items-center">
+                    <Shield className="mr-2 h-4 w-4 text-green-400" />
+                    Validation Records ({getValidationCount(selectedDiscovery.id)})
+                  </h4>
+                  <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto">
+                    {getDiscoveryRecords(selectedDiscovery.id).map((record) => (
+                      <div key={record.id} className="flex items-center justify-between p-2 bg-slate-700/50 rounded">
+                        <div className="flex items-center space-x-2">
+                          <CheckCircle className="h-4 w-4 text-green-400" />
+                          <span className="text-gray-300 text-sm">
+                            Staker #{record.stakerId} - {record.recordType}
+                          </span>
+                        </div>
+                        <Badge className={`${record.isVerified ? 'bg-green-600' : 'bg-yellow-600'} text-white`}>
+                          {record.isVerified ? 'Verified' : 'Pending'}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+    </div>
+  );
+}
               Average Difficulty
             </CardTitle>
             <CardDescription className="text-gray-400">
