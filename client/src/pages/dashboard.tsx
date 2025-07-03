@@ -129,11 +129,11 @@ export default function Dashboard() {
 
         <div className="metric-item">
           <div className="metric-value text-green-400">
-            {Array.isArray(operations) ? operations.filter((op: any) => op.status === 'active').length : 0}
+            {Array.isArray(blocks) ? new Set(blocks.map((block: any) => block.minerId)).size : 0}
           </div>
-          <div className="metric-label">Active Computing Nodes</div>
+          <div className="metric-label">Unique Miners</div>
           <div className="text-sm text-muted-foreground mt-1">
-            {Array.isArray(operations) ? operations.length : 0} total operations
+            {Array.isArray(operations) ? operations.filter((op: any) => op.status === 'active').length : 0} active now
           </div>
         </div>
 
