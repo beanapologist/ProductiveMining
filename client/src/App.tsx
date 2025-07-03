@@ -4,7 +4,8 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { BarChart3, Pickaxe, Database, Brain, Info, Shield, Users, GraduationCap, HardDrive, Coins } from "lucide-react";
+import { useState } from "react";
+import { BarChart3, Pickaxe, Database, Brain, Info, Shield, Users, GraduationCap, HardDrive, Coins, Wallet, Copy, Check } from "lucide-react";
 import Dashboard from "@/pages/dashboard";
 import BlockExplorer from "@/pages/block-explorer";
 import MiningPage from "@/pages/mining";
@@ -38,20 +39,57 @@ function Router() {
   );
 }
 
+function WalletComponent() {
+  const [walletAddress] = useState("0x742d35Cc6634C0532925a3b8D");
+  const [balance] = useState(15847.23);
+  const [copied, setCopied] = useState(false);
+
+  const copyAddress = () => {
+    navigator.clipboard.writeText(walletAddress);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="flex items-center gap-3 mr-4">
+      <div className="wallet-display">
+        <div className="wallet-balance">
+          <span className="text-lg font-bold text-green-400">
+            {balance.toLocaleString()} PROD
+          </span>
+        </div>
+        <div className="wallet-address-container">
+          <span className="wallet-address text-sm text-gray-400">
+            {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+          </span>
+          <button
+            onClick={copyAddress}
+            className="wallet-copy-btn"
+            title="Copy wallet address"
+          >
+            {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+          </button>
+        </div>
+      </div>
+      <Wallet className="h-6 w-6 text-cyan-400" />
+    </div>
+  );
+}
+
 function Navigation() {
   const [location] = useLocation();
   
   const navItems = [
-    { path: '/', label: '🎮 Adventure Hub', icon: BarChart3 },
-    { path: '/mining', label: '⛏️ Mining Quest', icon: Pickaxe },
-    { path: '/discoveries', label: '🧬 Discovery Lab', icon: Brain },
-    { path: '/validators', label: '🏛️ Guild Council', icon: Users },
-    { path: '/institutional', label: '🎓 Academy', icon: GraduationCap },
-    { path: '/security', label: '🛡️ Crypto Fortress', icon: Shield },
-    { path: '/blocks', label: '📊 Data Vault', icon: Database },
-    { path: '/token', label: '🪙 Token Vault', icon: Coins },
-    { path: '/data-management', label: '🏛️ Data Center', icon: HardDrive },
-    { path: '/about', label: 'ℹ️ Game Info', icon: Info }
+    { path: '/', title: 'Adventure Hub', icon: BarChart3 },
+    { path: '/mining', title: 'Mining Quest', icon: Pickaxe },
+    { path: '/discoveries', title: 'Discovery Lab', icon: Brain },
+    { path: '/validators', title: 'Guild Council', icon: Users },
+    { path: '/institutional', title: 'Academy', icon: GraduationCap },
+    { path: '/security', title: 'Crypto Fortress', icon: Shield },
+    { path: '/blocks', title: 'Data Vault', icon: Database },
+    { path: '/token', title: 'Token Vault', icon: Coins },
+    { path: '/data-management', title: 'Data Center', icon: HardDrive },
+    { path: '/about', title: 'Game Info', icon: Info }
   ];
 
   return (
@@ -70,13 +108,15 @@ function Navigation() {
                 key={item.path}
                 href={item.path}
                 className={`nav-link ${isActive ? 'active' : ''}`}
+                title={item.title}
               >
-                <Icon className="h-4 w-4" />
-                <span className="hidden md:inline">{item.label}</span>
+                <Icon className="h-5 w-5" />
               </Link>
             );
           })}
         </div>
+
+        <WalletComponent />
       </div>
     </nav>
   );
