@@ -279,7 +279,7 @@ export default function DiscoveriesAIPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-white">{insights?.averageConfidence?.toFixed(1) || '0.0'}%</div>
+                <div className="text-3xl font-bold text-white">{insights?.averageConfidence ? insights.averageConfidence.toFixed(1) : '0.0'}%</div>
                 <div className="text-sm text-slate-400">Analysis confidence</div>
               </CardContent>
             </Card>
@@ -350,18 +350,22 @@ export default function DiscoveriesAIPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {insights.topPatterns.map((pattern, index) => (
+                    {insights.topPatterns?.length > 0 ? insights.topPatterns.map((pattern, index) => (
                       <div key={index} className="space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="text-sm text-slate-300 capitalize">{pattern.type.replace('_', ' ')}</span>
+                          <span className="text-sm text-slate-300 capitalize">{pattern.type?.replace('_', ' ') || 'Unknown Pattern'}</span>
                           <div className="flex items-center gap-2">
-                            <Badge className="bg-purple-600">{pattern.frequency}</Badge>
-                            <span className="text-xs text-slate-400">{pattern.confidence.toFixed(1)}%</span>
+                            <Badge className="bg-purple-600">{pattern.frequency || 0}</Badge>
+                            <span className="text-xs text-slate-400">{pattern.confidence ? pattern.confidence.toFixed(1) : '0.0'}%</span>
                           </div>
                         </div>
-                        <Progress value={pattern.confidence} className="h-2" />
+                        <Progress value={pattern.confidence || 0} className="h-2" />
                       </div>
-                    ))}
+                    )) : (
+                      <div className="text-center text-slate-400 py-4">
+                        <span className="text-sm">No patterns detected yet</span>
+                      </div>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -535,9 +539,9 @@ export default function DiscoveriesAIPage() {
 
                       <div>
                         <span className="text-sm text-slate-300 block mb-2">Breakthrough Probability</span>
-                        <Progress value={discoveryAnalysis.ai_insights.breakthrough_probability} className="h-3" />
+                        <Progress value={discoveryAnalysis.ai_insights?.breakthrough_probability || 0} className="h-3" />
                         <span className="text-xs text-slate-400 mt-1 block">
-                          {discoveryAnalysis.ai_insights.breakthrough_probability.toFixed(1)}%
+                          {discoveryAnalysis.ai_insights?.breakthrough_probability ? discoveryAnalysis.ai_insights.breakthrough_probability.toFixed(1) : '0.0'}%
                         </span>
                       </div>
 
@@ -546,30 +550,38 @@ export default function DiscoveriesAIPage() {
                       <div>
                         <span className="text-sm text-slate-300 block mb-2">Detected Patterns</span>
                         <div className="space-y-2">
-                          {discoveryAnalysis.patterns.slice(0, 3).map((pattern, index) => (
+                          {discoveryAnalysis.patterns?.length > 0 ? discoveryAnalysis.patterns.slice(0, 3).map((pattern, index) => (
                             <div key={index} className="text-xs text-slate-400 p-2 bg-slate-700 rounded">
-                              {pattern.description}
+                              {pattern.description || 'Pattern analysis pending'}
                             </div>
-                          ))}
+                          )) : (
+                            <div className="text-xs text-slate-500 p-2 bg-slate-700 rounded">
+                              No patterns identified yet
+                            </div>
+                          )}
                         </div>
                       </div>
 
                       <div>
                         <span className="text-sm text-slate-300 block mb-2">Applications</span>
                         <div className="space-y-2">
-                          {discoveryAnalysis.applications.slice(0, 2).map((app, index) => (
+                          {discoveryAnalysis.applications?.length > 0 ? discoveryAnalysis.applications.slice(0, 2).map((app, index) => (
                             <div key={index} className="text-xs">
                               <div className="flex items-center gap-2">
                                 <Badge className={`${
                                   app.potential === 'high' ? 'bg-green-600' :
                                   app.potential === 'medium' ? 'bg-yellow-600' : 'bg-gray-600'
                                 }`}>
-                                  {app.potential}
+                                  {app.potential || 'unknown'}
                                 </Badge>
-                                <span className="text-slate-300 capitalize">{app.field.replace('_', ' ')}</span>
+                                <span className="text-slate-300 capitalize">{app.field?.replace('_', ' ') || 'General research'}</span>
                               </div>
                             </div>
-                          ))}
+                          )) : (
+                            <div className="text-xs text-slate-500">
+                              Applications analysis pending
+                            </div>
+                          )}
                         </div>
                       </div>
 
