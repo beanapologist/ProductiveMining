@@ -279,7 +279,7 @@ export default function Dashboard() {
 
       {/* Quick Links */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Link href="/pos-validators" className="w-full">
+        <Link href="/validators" className="w-full">
           <Card className="bg-gradient-to-br from-indigo-600/20 to-purple-600/20 border-indigo-500/30 hover:bg-indigo-600/30 transition-colors cursor-pointer">
             <CardContent className="p-6 text-center">
               <Shield className="h-8 w-8 text-indigo-400 mx-auto mb-3" />
@@ -289,7 +289,7 @@ export default function Dashboard() {
           </Card>
         </Link>
 
-        <Link href="/security-audit" className="w-full">
+        <Link href="/security" className="w-full">
           <Card className="bg-gradient-to-br from-red-600/20 to-pink-600/20 border-red-500/30 hover:bg-red-600/30 transition-colors cursor-pointer">
             <CardContent className="p-6 text-center">
               <Shield className="h-8 w-8 text-red-400 mx-auto mb-3" />
@@ -299,7 +299,7 @@ export default function Dashboard() {
           </Card>
         </Link>
 
-        <Link href="/research-vault" className="w-full">
+        <Link href="/wallet" className="w-full">
           <Card className="bg-gradient-to-br from-yellow-600/20 to-orange-600/20 border-yellow-500/30 hover:bg-yellow-600/30 transition-colors cursor-pointer">
             <CardContent className="p-6 text-center">
               <Gem className="h-8 w-8 text-yellow-400 mx-auto mb-3" />
