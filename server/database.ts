@@ -89,7 +89,12 @@ export class DatabaseLibrary {
    * Get all validations
    */
   async getAllValidations(): Promise<DiscoveryValidation[]> {
-    return await db.select().from(discoveryValidations).orderBy(desc(discoveryValidations.timestamp));
+    try {
+      return await db.select().from(discoveryValidations).orderBy(desc(discoveryValidations.timestamp));
+    } catch (error) {
+      console.log('Discovery validations table not found, returning empty array');
+      return [];
+    }
   }
 
   /**
@@ -106,7 +111,12 @@ export class DatabaseLibrary {
    * Get all stakers
    */
   async getAllStakers(): Promise<Staker[]> {
-    return await db.select().from(stakers).orderBy(desc(stakers.validationReputation));
+    try {
+      return await db.select().from(stakers).orderBy(desc(stakers.validationReputation));
+    } catch (error) {
+      console.log('Stakers table not found, returning empty array');
+      return [];
+    }
   }
 
   /**
@@ -131,7 +141,12 @@ export class DatabaseLibrary {
    * Get all immutable records
    */
   async getAllImmutableRecords(): Promise<ImmutableRecord[]> {
-    return await db.select().from(immutableRecordsPool).orderBy(desc(immutableRecordsPool.immutableSince));
+    try {
+      return await db.select().from(immutableRecordsPool).orderBy(desc(immutableRecordsPool.immutableSince));
+    } catch (error) {
+      console.log('Immutable records pool table not found, returning empty array');
+      return [];
+    }
   }
 
   /**
