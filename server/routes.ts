@@ -595,7 +595,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Spawn multiple high-difficulty miners automatically
   app.post('/api/mining/spawn-network', async (req, res) => {
     try {
-      const { minerCount = 10, difficulty = 110 } = req.body;
+      const { minerCount = 10, difficulty = 180 } = req.body;
       const spawnedMiners = [];
       
       const workTypes = [
@@ -1628,7 +1628,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Start new mining operation with real mathematical computation
   app.post("/api/mining/start-real", async (req, res) => {
     try {
-      const { workType = 'riemann_zero', difficulty = 100 } = req.body;
+      const { workType = 'riemann_zero', difficulty = 150 } = req.body;
       const minerId = `miner_${Date.now()}`;
       
       // Create mining operation
@@ -1679,13 +1679,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
               result = await computeRealRiemannZero(difficulty);
           }
 
-          // Create mathematical work from computation
+          // Create mathematical work from computation (cap computational cost to safe integer range)
+          const safeComputationalCost = Math.min(2147483647, Math.max(1, Math.round(result.computationalCost)));
           const work = await storage.createMathematicalWork({
             workType,
             difficulty,
             result: result.computationResult,
             verificationData: result.verificationData,
-            computationalCost: Math.round(result.computationalCost),
+            computationalCost: safeComputationalCost,
             energyEfficiency: result.energyEfficiency,
             scientificValue: result.scientificValue,
             workerId: minerId,

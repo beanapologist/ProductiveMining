@@ -28,7 +28,7 @@ export default function MiningPage() {
   const { toast } = useToast();
   
   const [selectedWorkType, setSelectedWorkType] = useState("riemann_zero");
-  const [difficulty, setDifficulty] = useState([100]);
+  const [difficulty, setDifficulty] = useState([150]);
 
   const { data: initialOperations = [] } = useQuery({
     queryKey: ["/api/mining/operations"],

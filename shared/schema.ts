@@ -8,7 +8,7 @@ export const mathematicalWork = pgTable("mathematical_work", {
   difficulty: integer("difficulty").notNull(),
   result: jsonb("result").notNull(),
   verificationData: jsonb("verification_data").notNull(),
-  computationalCost: integer("computational_cost").notNull(),
+  computationalCost: bigint("computational_cost", { mode: "number" }).notNull(),
   energyEfficiency: real("energy_efficiency").notNull(),
   scientificValue: real("scientific_value").notNull(),
   timestamp: timestamp("timestamp").notNull().defaultNow(),
