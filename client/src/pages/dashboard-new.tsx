@@ -4,6 +4,7 @@ import { Link } from "wouter";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { PerformanceSparklineGrid, CompactSparklineRow } from "@/components/performance-sparklines";
 import { 
   BarChart3, 
   Brain, 
@@ -211,6 +212,9 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Real-Time Performance Sparklines */}
+      <PerformanceSparklineGrid className="mb-6" />
 
       {/* Active Formula Discovery Dashboard */}
       <Card className="bg-slate-800 border-slate-700">

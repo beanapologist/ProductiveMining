@@ -130,7 +130,7 @@ export type InsertImmutableRecord = z.infer<typeof insertImmutableRecordSchema>;
 
 // WebSocket message types
 export interface WebSocketMessage {
-  type: 'metrics_update' | 'mining_progress' | 'block_mined' | 'discovery_made' | 'initial_data' | 'integrity_update' | 'security_alert' | 'mitigation_deployed';
+  type: 'metrics_update' | 'mining_progress' | 'block_mined' | 'discovery_made' | 'initial_data' | 'integrity_update' | 'security_alert' | 'mitigation_deployed' | 'complexity_scaling' | 'enhancement_cycle';
   data: any;
 }
 
