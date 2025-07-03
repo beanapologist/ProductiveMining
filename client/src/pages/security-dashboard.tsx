@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Shield, Lock, Key, Zap, AlertTriangle, CheckCircle, Database, Search } from 'lucide-react';
+import { Shield, Lock, Key, Zap, AlertTriangle, CheckCircle, Database, Search, FileText, ExternalLink, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface SecurityAnalysis {
@@ -27,6 +27,27 @@ interface SecurityAnalysis {
     securityLevel: string;
   };
   timestamp: string;
+}
+
+interface ImmutableRecord {
+  id: number;
+  recordType: string;
+  activityHash: string;
+  validationId?: number;
+  stakerId: number;
+  workId?: number;
+  blockId?: number;
+  activityData: any;
+  previousRecordHash?: string;
+  merkleRoot: string;
+  digitalSignature: string;
+  consensusParticipants?: string[];
+  reputationImpact: number;
+  stakeImpact: number;
+  isVerified: boolean;
+  verificationProof?: any;
+  immutableSince: string;
+  lastVerificationCheck?: string;
 }
 
 interface IntegrityResults {
@@ -57,6 +78,10 @@ export default function SecurityDashboard() {
 
   const { data: discoveries } = useQuery({
     queryKey: ['/api/discoveries'],
+  });
+
+  const { data: immutableRecords = [] } = useQuery<ImmutableRecord[]>({
+    queryKey: ['/api/immutable-records'],
     refetchInterval: 30000,
   });
 
@@ -252,6 +277,82 @@ export default function SecurityDashboard() {
             </CardContent>
           </Card>
         )}
+        {/* Immutable Records Security */}
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-white flex items-center">
+                  <FileText className="mr-2 h-5 w-5 text-purple-400" />
+                  Immutable Records Security
+                </CardTitle>
+                <CardDescription className="text-gray-400">
+                  Cryptographic validation audit trail
+                </CardDescription>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-purple-400 border-purple-400 hover:bg-purple-400/10"
+                onClick={() => window.open('/validators', '_blank')}
+              >
+                <ExternalLink className="h-3 w-3 mr-1" />
+                View Records
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-400">{immutableRecords.length}</div>
+                <div className="text-xs text-gray-400">Total Records</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-400">
+                  {immutableRecords.filter(r => r.isVerified).length}
+                </div>
+                <div className="text-xs text-gray-400">Verified</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-400">
+                  {immutableRecords.filter(r => r.recordType === 'validation_activity').length}
+                </div>
+                <div className="text-xs text-gray-400">Validations</div>
+              </div>
+            </div>
+            
+            {immutableRecords.length > 0 && (
+              <div className="space-y-2">
+                <div className="text-sm text-gray-400 font-medium">Recent Security Records:</div>
+                {immutableRecords.slice(0, 3).map((record) => (
+                  <div key={record.id} className="p-3 bg-slate-900/50 rounded border border-slate-700">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Badge variant="outline" className="text-purple-400 border-purple-400">
+                          #{record.id}
+                        </Badge>
+                        <span className="text-sm text-gray-300">{record.recordType}</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        {record.isVerified ? (
+                          <CheckCircle className="h-3 w-3 text-green-400" />
+                        ) : (
+                          <AlertTriangle className="h-3 w-3 text-yellow-400" />
+                        )}
+                        <span className="text-xs text-gray-400">
+                          {record.isVerified ? 'Verified' : 'Pending'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1 font-mono">
+                      Hash: {record.activityHash.substring(0, 16)}...
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* Data Integrity Section */}

@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StakingValidations from "@/components/staking-validations";
 import { useState } from "react";
-import { Brain, Search, Trophy, Clock, Zap, Target, Award, TrendingUp, Hash, Users, CheckCircle, Shield } from "lucide-react";
+import { Brain, Search, Trophy, Clock, Zap, Target, Award, TrendingUp, Hash, Users, CheckCircle, Shield, Database, FileText, ExternalLink } from "lucide-react";
 
 interface MathematicalWork {
   id: number;
@@ -25,6 +25,27 @@ interface MathematicalWork {
   timestamp: Date | string;
 }
 
+interface ImmutableRecord {
+  id: number;
+  recordType: string;
+  activityHash: string;
+  validationId?: number;
+  stakerId: number;
+  workId?: number;
+  blockId?: number;
+  activityData: any;
+  previousRecordHash?: string;
+  merkleRoot: string;
+  digitalSignature: string;
+  consensusParticipants?: string[];
+  reputationImpact: number;
+  stakeImpact: number;
+  isVerified: boolean;
+  verificationProof?: any;
+  immutableSince: string;
+  lastVerificationCheck?: string;
+}
+
 export default function DiscoveriesPage() {
   const { discoveries } = useWebSocket();
   const [searchQuery, setSearchQuery] = useState("");
@@ -36,7 +57,21 @@ export default function DiscoveriesPage() {
     enabled: !discoveries
   });
 
+  const { data: immutableRecords = [] } = useQuery<ImmutableRecord[]>({
+    queryKey: ['/api/immutable-records'],
+  });
+
   const currentDiscoveries = discoveries && discoveries.length > 0 ? discoveries : (initialDiscoveries as MathematicalWork[] || []);
+
+  // Function to get immutable records related to a specific discovery
+  const getDiscoveryRecords = (workId: number): ImmutableRecord[] => {
+    return immutableRecords.filter(record => record.workId === workId);
+  };
+
+  // Function to get total validation records for a discovery  
+  const getValidationCount = (workId: number): number => {
+    return getDiscoveryRecords(workId).length;
+  };
 
   const workTypes = [
     { value: "all", label: "All Discoveries" },
@@ -253,6 +288,10 @@ export default function DiscoveriesPage() {
                         <div className="flex items-center justify-between text-sm">
                           <div className="flex items-center space-x-4">
                             <div className="flex items-center space-x-1">
+                              <Database className="h-3 w-3 text-blue-400" />
+                              <span className="text-blue-400">{getValidationCount(discovery.id)} Records</span>
+                            </div>
+                            <div className="flex items-center space-x-1">
                               <Zap className="h-3 w-3 text-yellow-400" />
                               <span className="text-slate-400">
                                 {discovery.energyEfficiency}x efficient
@@ -295,7 +334,7 @@ export default function DiscoveriesPage() {
                   </div>
                 ) : (
                   <Tabs defaultValue="details" className="space-y-4">
-                    <TabsList className="grid w-full grid-cols-2 bg-slate-800/50">
+                    <TabsList className="grid w-full grid-cols-3 bg-slate-800/50">
                       <TabsTrigger value="details" className="flex items-center space-x-2">
                         <Trophy className="h-4 w-4" />
                         <span>Details</span>
@@ -303,6 +342,10 @@ export default function DiscoveriesPage() {
                       <TabsTrigger value="validators" className="flex items-center space-x-2">
                         <Shield className="h-4 w-4" />
                         <span>Validators</span>
+                      </TabsTrigger>
+                      <TabsTrigger value="records" className="flex items-center space-x-2">
+                        <Database className="h-4 w-4" />
+                        <span>Records</span>
                       </TabsTrigger>
                     </TabsList>
 
@@ -423,6 +466,92 @@ export default function DiscoveriesPage() {
                         workId={selectedDiscovery.id} 
                         workTitle={formatWorkType(selectedDiscovery.workType)}
                       />
+                    </TabsContent>
+
+                    <TabsContent value="records" className="space-y-4">
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-white font-semibold flex items-center">
+                            <Database className="h-4 w-4 mr-2" />
+                            Immutable Validation Records
+                          </h4>
+                          <div className="flex items-center space-x-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="text-purple-400 border-purple-400 hover:bg-purple-400/10"
+                              onClick={() => window.open('/validators#records', '_blank')}
+                            >
+                              <ExternalLink className="h-3 w-3 mr-1" />
+                              View All Records
+                            </Button>
+                          </div>
+                        </div>
+
+                        {getDiscoveryRecords(selectedDiscovery.id).length > 0 ? (
+                          <div className="space-y-3">
+                            {getDiscoveryRecords(selectedDiscovery.id).map((record) => (
+                              <Card key={record.id} className="bg-slate-800/30 border-slate-700">
+                                <CardContent className="p-4">
+                                  <div className="flex items-start justify-between">
+                                    <div className="space-y-2">
+                                      <div className="flex items-center gap-2">
+                                        <FileText className="w-4 h-4 text-blue-400" />
+                                        <span className="font-medium text-white">Record #{record.id}</span>
+                                        <Badge variant="outline" className="bg-blue-50/10 border-blue-400/30 text-blue-400">
+                                          {record.recordType}
+                                        </Badge>
+                                      </div>
+                                      <div className="grid grid-cols-2 gap-4 text-sm text-slate-400">
+                                        <div>
+                                          <span className="font-medium">Staker ID:</span> {record.stakerId}
+                                        </div>
+                                        <div>
+                                          <span className="font-medium">Validation ID:</span> {record.validationId || 'N/A'}
+                                        </div>
+                                        <div>
+                                          <span className="font-medium">Reputation Impact:</span> {record.reputationImpact.toFixed(4)}
+                                        </div>
+                                        <div>
+                                          <span className="font-medium">Status:</span> 
+                                          <span className={`ml-1 ${record.isVerified ? 'text-green-400' : 'text-yellow-400'}`}>
+                                            {record.isVerified ? 'Verified' : 'Pending'}
+                                          </span>
+                                        </div>
+                                      </div>
+                                      <div className="text-sm text-slate-500">
+                                        <span className="font-medium">Activity Hash:</span> 
+                                        <code className="ml-2 bg-slate-900 px-2 py-1 rounded text-xs">
+                                          {record.activityHash.substring(0, 20)}...
+                                        </code>
+                                      </div>
+                                      <div className="text-sm text-slate-500">
+                                        <span className="font-medium">Digital Signature:</span>
+                                        <code className="ml-2 bg-slate-900 px-2 py-1 rounded text-xs">
+                                          {record.digitalSignature.substring(0, 24)}...
+                                        </code>
+                                      </div>
+                                    </div>
+                                    <div className="text-right text-sm text-slate-500">
+                                      <div className="flex items-center gap-1">
+                                        <CheckCircle className="w-3 h-3" />
+                                        {record.isVerified ? 'Verified' : 'Pending'}
+                                      </div>
+                                      <div>{new Date(record.immutableSince).toLocaleDateString()}</div>
+                                    </div>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center py-8 text-slate-400">
+                            <Database className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                            <p>No validation records yet</p>
+                            <p className="text-sm">Records will appear when this discovery is validated</p>
+                          </div>
+                        )}
+                      </div>
                     </TabsContent>
                   </Tabs>
                 )}
