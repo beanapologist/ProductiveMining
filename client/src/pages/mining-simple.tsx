@@ -24,7 +24,7 @@ export default function MiningPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [selectedWorkType, setSelectedWorkType] = useState('riemann_zero');
-  const [difficulty, setDifficulty] = useState([10]);
+  const [difficulty, setDifficulty] = useState([100]);
 
   const { data: currentOperations = [], isLoading } = useQuery<MiningOperation[]>({
     queryKey: ['/api/mining/operations'],
@@ -67,6 +67,11 @@ export default function MiningPage() {
     { value: 'prime_pattern', label: 'Prime Patterns', description: 'Discover new prime constellations' },
     { value: 'yang_mills', label: 'Yang-Mills Theory', description: 'Quantum field theory calculations' },
     { value: 'navier_stokes', label: 'Navier-Stokes', description: 'Fluid dynamics solutions' },
+    { value: 'goldbach_verification', label: 'Goldbach Conjecture', description: 'Verify even number sums' },
+    { value: 'birch_swinnerton_dyer', label: 'Birch-Swinnerton-Dyer', description: 'Elliptic curve analysis' },
+    { value: 'poincare_conjecture', label: 'Poincaré Conjecture', description: 'Topology problems' },
+    { value: 'elliptic_curve_crypto', label: 'Elliptic Curve Crypto', description: 'Cryptographic security' },
+    { value: 'lattice_crypto', label: 'Lattice Cryptography', description: 'Post-quantum encryption' },
   ];
 
   const activeOperations = currentOperations.filter((op: MiningOperation) => op.status === 'active');
@@ -226,9 +231,9 @@ export default function MiningPage() {
               <Slider
                 value={difficulty}
                 onValueChange={setDifficulty}
-                max={20}
-                min={1}
-                step={1}
+                max={150}
+                min={50}
+                step={5}
                 className="w-full"
               />
             </div>

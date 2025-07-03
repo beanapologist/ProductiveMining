@@ -594,7 +594,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Spawn multiple high-difficulty miners automatically
   app.post('/api/mining/spawn-network', async (req, res) => {
     try {
-      const { minerCount = 10, difficulty = 30 } = req.body;
+      const { minerCount = 10, difficulty = 110 } = req.body;
       const spawnedMiners = [];
       
       const workTypes = [
@@ -1475,7 +1475,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Start new mining operation with real mathematical computation
   app.post("/api/mining/start-real", async (req, res) => {
     try {
-      const { workType = 'riemann_zero', difficulty = 50 } = req.body;
+      const { workType = 'riemann_zero', difficulty = 100 } = req.body;
       const minerId = `miner_${Date.now()}`;
       
       // Create mining operation
