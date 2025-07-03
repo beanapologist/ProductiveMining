@@ -48,7 +48,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     await storage.createNetworkMetrics({
       totalMiners: 1,
       blocksPerHour: 0,
-      energyEfficiency: 100,
+      energyEfficiency: -555.2,
       totalScientificValue: 0,
       co2Saved: 0,
       networkHealth: 1.0
@@ -3453,7 +3453,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const updatedMetrics = await storage.createNetworkMetrics({
           totalMiners: newTotalMiners, // Ensure positive, add some growth
           blocksPerHour: newBlocksPerHour, // Real blocks per hour
-          energyEfficiency: Math.min(-500, currentMetrics.energyEfficiency + Math.random() * 10 - 5), // Keep QDT efficiency negative but stable
+          energyEfficiency: -555.2 + (Math.random() * 4 - 2), // Target -555.2% with small variation
           totalScientificValue: Math.max(0, totalScientificValue),
           co2Saved: Math.max(0, currentMetrics.co2Saved + Math.random() * 10),
           networkHealth: Math.min(Math.max(currentMetrics.networkHealth + (Math.random() * 0.004 - 0.002), 0.95), 1.0)
