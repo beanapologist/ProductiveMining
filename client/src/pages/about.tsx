@@ -164,7 +164,7 @@ export default function About() {
           <Card className="bg-gradient-to-br from-green-600/20 to-emerald-600/20 border-green-500/30">
             <CardContent className="p-6 text-center">
               <Zap className="h-12 w-12 text-green-400 mx-auto mb-4" />
-              <CardTitle className="text-lg mb-3">Patent-Protected Technology</CardTitle>
+              <CardTitle className="text-lg mb-3">Proprietary Technology</CardTitle>
               <p className="text-sm text-slate-300">
                 QDT (Quantum Data Transformation) achieves negative energy consumption while solving millennium prize problems worth millions.
               </p>
@@ -219,7 +219,7 @@ export default function About() {
             Institutional Validation
           </Badge>
           <Badge className="bg-purple-500/20 text-purple-400 px-4 py-2">
-            Patent-Protected IP
+            Proprietary Technology
           </Badge>
           <Badge className="bg-orange-500/20 text-orange-400 px-4 py-2">
             Multiple Revenue Streams
