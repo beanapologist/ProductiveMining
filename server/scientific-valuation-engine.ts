@@ -183,13 +183,23 @@ export class ScientificValuationEngine {
    * Calculate total scientific value for multiple discoveries
    * Applies diminishing returns to prevent inflation
    */
-  public calculateAggregateValue(discoveries: Array<{ scientificValue: number }>): {
+  public calculateAggregateValue(discoveries: Array<{ scientificValue: number }> | undefined): {
     totalValue: number;
     averageValue: number;
     adjustedTotal: number;
     diminishingFactor: number;
   } {
-    const rawTotal = discoveries.reduce((sum, d) => sum + d.scientificValue, 0);
+    // Handle undefined or empty arrays
+    if (!discoveries || !Array.isArray(discoveries) || discoveries.length === 0) {
+      return {
+        totalValue: 0,
+        averageValue: 0,
+        adjustedTotal: 0,
+        diminishingFactor: 1
+      };
+    }
+
+    const rawTotal = discoveries.reduce((sum, d) => sum + (d?.scientificValue || 0), 0);
     const count = discoveries.length;
     const averageValue = count > 0 ? rawTotal / count : 0;
 

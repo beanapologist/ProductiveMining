@@ -4404,18 +4404,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get('/api/data-management/valuation-summary', async (req, res) => {
     try {
       const { scientificValuationEngine } = await import('./scientific-valuation-engine');
-      const allDiscoveries = await storage.getMathematicalWork(1000);
       
-      const aggregateValue = scientificValuationEngine.calculateAggregateValue(allDiscoveries);
+      // Get current discoveries from database
+      const { db } = await import('./db');
+      const { mathematicalWork } = await import('@shared/schema');
+      const allDiscoveries = await db.select().from(mathematicalWork).limit(1000);
       
-      // Get sample valuations by work type
-      const workTypes = ['riemann_zero', 'prime_pattern', 'yang_mills', 'navier_stokes'];
+      console.log('Found discoveries:', allDiscoveries?.length || 0);
+      
+      // Calculate aggregate value with proper null handling
+      const discoveryArray = Array.isArray(allDiscoveries) ? allDiscoveries : [];
+      const aggregateValue = scientificValuationEngine.calculateAggregateValue(discoveryArray);
+      
+      // Get sample valuations by work type with corrected parameters
+      const workTypes = ['riemann_zero', 'prime_pattern', 'yang_mills', 'navier_stokes', 'goldbach_verification', 'birch_swinnerton_dyer', 'elliptic_curve_crypto', 'lattice_crypto', 'poincare_conjecture'];
       const sampleValuations = workTypes.map(workType => {
         const valuation = scientificValuationEngine.calculateScientificValue(
           workType, 
-          150, 
-          600000, 
-          1.2
+          30, // realistic difficulty
+          0.5, // realistic computation time in seconds
+          0.08 // realistic energy consumption in kWh
         );
         return { 
           workType, 
@@ -4428,18 +4436,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       res.json({
-        totalDiscoveries: allDiscoveries.length,
+        totalDiscoveries: allDiscoveries?.length || 0,
         rawTotal: aggregateValue.totalValue,
         adjustedTotal: aggregateValue.adjustedTotal,
         averageValue: aggregateValue.averageValue,
         diminishingFactor: aggregateValue.diminishingFactor,
         sampleValuations,
         valuationExplanation: {
-          baseValues: "Research grant equivalents ($1.2K-$3.5K)",
-          computationalCosts: "Cloud computing + energy costs",
-          researchImpact: "Based on theoretical and practical significance",
-          maxSingleDiscovery: "$50K (Millennium Prize level)",
-          minSingleDiscovery: "$100 (Basic computation)"
+          baseValues: "Research grant equivalents ($1.2K-$3.5K) - corrected from previous inflation",
+          computationalCosts: "Small cloud computing + energy costs (0.05-0.15 kWh)",
+          researchImpact: "Based on theoretical and practical significance with realistic multipliers",
+          maxSingleDiscovery: "$3.5K (realistic maximum)",
+          minSingleDiscovery: "$1.2K (realistic minimum)"
         }
       });
     } catch (error) {

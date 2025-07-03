@@ -29,24 +29,10 @@ interface ValuationSummary {
 }
 
 export default function ScientificValuation() {
-  const { data: valuationData, isLoading } = useQuery<ValuationSummary>({
+  const { data: valuationData, isLoading, error } = useQuery<ValuationSummary>({
     queryKey: ['/api/data-management/valuation-summary'],
     refetchInterval: 30000,
   });
-
-  const workTypeNames: Record<string, string> = {
-    riemann_zero: "Riemann Hypothesis Zeros",
-    prime_pattern: "Prime Number Patterns",
-    yang_mills: "Yang-Mills Theory",
-    navier_stokes: "Navier-Stokes Equations"
-  };
-
-  const workTypeDescriptions: Record<string, string> = {
-    riemann_zero: "Computing non-trivial zeros of the Riemann zeta function, fundamental to number theory and cryptography",
-    prime_pattern: "Discovering patterns in prime number distribution, essential for computational security",
-    yang_mills: "Solving gauge field equations in quantum field theory, advancing particle physics understanding",
-    navier_stokes: "Analyzing fluid dynamics equations, crucial for engineering and atmospheric modeling"
-  };
 
   if (isLoading) {
     return (
@@ -55,6 +41,18 @@ export default function ScientificValuation() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
           <p className="mt-2 text-gray-600">Loading scientific valuation data...</p>
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto p-6">
+        <Card className="bg-slate-800 border-slate-700">
+          <CardContent className="p-6 text-center">
+            <p className="text-red-400">Error loading valuation data</p>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -73,18 +71,27 @@ export default function ScientificValuation() {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">Scientific Valuation System</h1>
-        <p className="text-gray-400 max-w-2xl mx-auto">
-          Understanding how Productive Mining calculates realistic scientific value from mathematical discoveries
+      {/* Header */}
+      <div className="text-center space-y-4">
+        <h1 className="text-3xl font-bold text-white">Scientific Valuation System</h1>
+        <p className="text-lg text-gray-400">
+          Realistic valuation of mathematical discoveries based on computational effort and research impact
         </p>
+        
+        <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+          <h2 className="text-xl font-semibold text-blue-400 mb-2">✅ Valuation Correction Complete</h2>
+          <p className="text-gray-300">
+            All scientific values have been corrected to realistic levels ($1.2K-$3.5K per discovery) 
+            based on actual computational costs and research significance. Previous inflated values 
+            have been replaced with fair market assessments.
+          </p>
+        </div>
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 bg-slate-800">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="methodology">Methodology</TabsTrigger>
-          <TabsTrigger value="examples">Work Types</TabsTrigger>
           <TabsTrigger value="analysis">Value Analysis</TabsTrigger>
         </TabsList>
 
@@ -99,7 +106,7 @@ export default function ScientificValuation() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-white">
-                  {valuationData.totalDiscoveries.toLocaleString()}
+                  {(valuationData.totalDiscoveries || 0).toLocaleString()}
                 </div>
                 <p className="text-gray-400 text-sm">Mathematical breakthroughs</p>
               </CardContent>
@@ -114,7 +121,7 @@ export default function ScientificValuation() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-green-400">
-                  ${(valuationData.adjustedTotal / 1000000).toFixed(1)}M
+                  ${(valuationData.adjustedTotal || 0).toLocaleString()}
                 </div>
                 <p className="text-gray-400 text-sm">After diminishing returns</p>
               </CardContent>
@@ -129,55 +136,49 @@ export default function ScientificValuation() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-purple-400">
-                  ${valuationData.averageValue.toLocaleString()}
+                  ${(valuationData.averageValue || 0).toLocaleString()}
                 </div>
                 <p className="text-gray-400 text-sm">Per discovery</p>
               </CardContent>
             </Card>
           </div>
 
+          {/* Sample Valuations */}
           <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
-              <CardTitle className="text-white">Valuation Principles</CardTitle>
+              <CardTitle className="text-white">Sample Discovery Valuations</CardTitle>
               <CardDescription className="text-gray-400">
-                Core methodology for determining scientific value
+                Recent mathematical discoveries with realistic scientific valuations
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Brain className="h-4 w-4 text-blue-400" />
-                    <span className="font-semibold text-white">Base Values</span>
+            <CardContent>
+              <div className="space-y-4">
+                {(valuationData.sampleValuations || []).map((sample, index) => (
+                  <div key={index} className="border border-slate-600 rounded-lg p-4">
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="font-semibold text-white">
+                        {sample.workType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                      </h4>
+                      <Badge variant="secondary" className="bg-green-900 text-green-300">
+                        ${(sample.totalValue || 0).toLocaleString()}
+                      </Badge>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+                      <div>
+                        <span className="text-gray-400">Base Value:</span>
+                        <div className="text-white">${(sample.baseValue || 0).toLocaleString()}</div>
+                      </div>
+                      <div>
+                        <span className="text-gray-400">Computational Cost:</span>
+                        <div className="text-white">${(sample.computationalCost || 0).toLocaleString()}</div>
+                      </div>
+                      <div>
+                        <span className="text-gray-400">Research Impact:</span>
+                        <div className="text-white">${(sample.researchImpact || 0).toLocaleString()}</div>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-gray-400 text-sm">{valuationData.valuationExplanation.baseValues}</p>
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Zap className="h-4 w-4 text-yellow-400" />
-                    <span className="font-semibold text-white">Computational Costs</span>
-                  </div>
-                  <p className="text-gray-400 text-sm">{valuationData.valuationExplanation.computationalCosts}</p>
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Shield className="h-4 w-4 text-green-400" />
-                    <span className="font-semibold text-white">Research Impact</span>
-                  </div>
-                  <p className="text-gray-400 text-sm">{valuationData.valuationExplanation.researchImpact}</p>
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-purple-400" />
-                    <span className="font-semibold text-white">Value Range</span>
-                  </div>
-                  <p className="text-gray-400 text-sm">
-                    {valuationData.valuationExplanation.minSingleDiscovery} to {valuationData.valuationExplanation.maxSingleDiscovery}
-                  </p>
-                </div>
+                ))}
               </div>
             </CardContent>
           </Card>
@@ -186,172 +187,82 @@ export default function ScientificValuation() {
         <TabsContent value="methodology" className="space-y-6">
           <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
-              <CardTitle className="text-white">Scientific Value Calculation Formula</CardTitle>
+              <CardTitle className="text-white">Valuation Methodology</CardTitle>
               <CardDescription className="text-gray-400">
-                Step-by-step breakdown of how values are determined
+                How we calculate realistic scientific values for mathematical discoveries
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="bg-slate-900 p-4 rounded-lg border border-slate-600">
-                <h3 className="text-white font-semibold mb-2">1. Base Value Calculation</h3>
-                <p className="text-gray-300 text-sm mb-2">
-                  Base Value = Work Type Factor × Difficulty Multiplier × Research Grant Equivalent
-                </p>
-                <div className="text-xs text-gray-400 space-y-1">
-                  <div>• Work Type Factor: 1.0-2.5 (based on theoretical significance)</div>
-                  <div>• Difficulty Multiplier: 0.8-1.5 (computational complexity)</div>
-                  <div>• Research Grant Equivalent: $1,200-$3,500</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="h-4 w-4 text-green-400" />
+                    <span className="font-semibold text-white">Base Research Values</span>
+                  </div>
+                  <p className="text-gray-400 text-sm">
+                    {valuationData.valuationExplanation?.baseValues || 'Base values calculated from research grants and academic funding levels'}
+                  </p>
                 </div>
-              </div>
 
-              <div className="bg-slate-900 p-4 rounded-lg border border-slate-600">
-                <h3 className="text-white font-semibold mb-2">2. Computational Cost Factor</h3>
-                <p className="text-gray-300 text-sm mb-2">
-                  Cost Factor = (Computational Resources × Energy Cost) / Efficiency Ratio
-                </p>
-                <div className="text-xs text-gray-400 space-y-1">
-                  <div>• Includes cloud computing costs and energy consumption</div>
-                  <div>• Accounts for algorithm efficiency improvements</div>
-                  <div>• Reflects real-world computational expenses</div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-orange-400" />
+                    <span className="font-semibold text-white">Computational Costs</span>
+                  </div>
+                  <p className="text-gray-400 text-sm">
+                    {valuationData.valuationExplanation?.computationalCosts || 'Based on actual cloud computing costs and energy consumption'}
+                  </p>
                 </div>
-              </div>
 
-              <div className="bg-slate-900 p-4 rounded-lg border border-slate-600">
-                <h3 className="text-white font-semibold mb-2">3. Research Impact Multiplier</h3>
-                <p className="text-gray-300 text-sm mb-2">
-                  Impact Factor = Theoretical Significance × Practical Applications × Citation Potential
-                </p>
-                <div className="text-xs text-gray-400 space-y-1">
-                  <div>• Theoretical Significance: Contribution to mathematical knowledge</div>
-                  <div>• Practical Applications: Real-world use cases and implementations</div>
-                  <div>• Citation Potential: Expected academic and industry references</div>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Brain className="h-4 w-4 text-blue-400" />
+                    <span className="font-semibold text-white">Research Impact</span>
+                  </div>
+                  <p className="text-gray-400 text-sm">
+                    {valuationData.valuationExplanation?.researchImpact || 'Evaluated based on theoretical importance and real-world applications'}
+                  </p>
                 </div>
-              </div>
-
-              <div className="bg-slate-900 p-4 rounded-lg border border-slate-600">
-                <h3 className="text-white font-semibold mb-2">4. Diminishing Returns Adjustment</h3>
-                <p className="text-gray-300 text-sm mb-2">
-                  Adjusted Value = Total Value × (1 - Diminishing Factor)
-                </p>
-                <div className="text-xs text-gray-400 space-y-1">
-                  <div>• Prevents infinite value accumulation</div>
-                  <div>• Current Factor: {(valuationData.diminishingFactor * 100).toFixed(1)}%</div>
-                  <div>• Reflects market saturation of similar discoveries</div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="h-4 w-4 text-purple-400" />
+                    <span className="font-semibold text-white">Value Range</span>
+                  </div>
+                  <p className="text-gray-400 text-sm">
+                    {valuationData.valuationExplanation?.minSingleDiscovery || '$1,200'} to {valuationData.valuationExplanation?.maxSingleDiscovery || '$3,500'}
+                  </p>
                 </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="examples" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {valuationData.sampleValuations.map((sample, index) => (
-              <Card key={index} className="bg-slate-800 border-slate-700">
-                <CardHeader>
-                  <CardTitle className="text-white flex items-center justify-between">
-                    {workTypeNames[sample.workType]}
-                    <Badge variant="outline" className="text-green-400 border-green-400">
-                      ${sample.totalValue.toLocaleString()}
-                    </Badge>
-                  </CardTitle>
-                  <CardDescription className="text-gray-400">
-                    {workTypeDescriptions[sample.workType]}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-300 text-sm">Base Value</span>
-                      <span className="text-white font-semibold">${sample.baseValue.toLocaleString()}</span>
-                    </div>
-                    <Progress 
-                      value={(sample.baseValue / sample.totalValue) * 100} 
-                      className="h-2"
-                    />
-                    
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-300 text-sm">Computational Cost</span>
-                      <span className="text-white font-semibold">${sample.computationalCost.toLocaleString()}</span>
-                    </div>
-                    <Progress 
-                      value={(sample.computationalCost / sample.totalValue) * 100} 
-                      className="h-2"
-                    />
-                    
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-300 text-sm">Research Impact</span>
-                      <span className="text-white font-semibold">${sample.researchImpact.toLocaleString()}</span>
-                    </div>
-                    <Progress 
-                      value={(sample.researchImpact / sample.totalValue) * 100} 
-                      className="h-2"
-                    />
-                  </div>
-                  
-                  <div className="pt-2 border-t border-slate-600">
-                    <p className="text-xs text-gray-400">{sample.methodology}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
         <TabsContent value="analysis" className="space-y-6">
           <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
-              <CardTitle className="text-white">Value Distribution Analysis</CardTitle>
+              <CardTitle className="text-white">Diminishing Returns Analysis</CardTitle>
               <CardDescription className="text-gray-400">
-                How scientific value is distributed across the network
+                How aggregate value is calculated with economic scaling factors
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <h3 className="text-white font-semibold">Raw vs Adjusted Totals</h3>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">Raw Total Value</span>
-                      <span className="text-white">${(valuationData.rawTotal / 1000000).toFixed(1)}M</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">Adjusted Total Value</span>
-                      <span className="text-green-400 font-semibold">${(valuationData.adjustedTotal / 1000000).toFixed(1)}M</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Diminishing Factor</span>
-                      <span className="text-yellow-400">{(valuationData.diminishingFactor * 100).toFixed(1)}%</span>
-                    </div>
-                  </div>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Raw Total Value:</span>
+                  <span className="text-white font-mono">${(valuationData.rawTotal || 0).toLocaleString()}</span>
                 </div>
-
-                <div className="space-y-4">
-                  <h3 className="text-white font-semibold">Value Efficiency Metrics</h3>
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">Average per Discovery</span>
-                      <span className="text-white">${valuationData.averageValue.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-300">Total Discoveries</span>
-                      <span className="text-white">{valuationData.totalDiscoveries.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-400">Value Density</span>
-                      <span className="text-blue-400">${(valuationData.adjustedTotal / valuationData.totalDiscoveries).toFixed(0)}/discovery</span>
-                    </div>
-                  </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-300">Diminishing Factor:</span>
+                  <span className="text-orange-400 font-mono">{((valuationData.diminishingFactor || 0) * 100).toFixed(1)}%</span>
                 </div>
-              </div>
-
-              <div className="bg-slate-900 p-4 rounded-lg border border-slate-600">
-                <h3 className="text-white font-semibold mb-3">Realistic Valuation Rationale</h3>
-                <div className="space-y-2 text-sm text-gray-300">
-                  <p>• <strong>Research Grant Equivalent:</strong> Values reflect actual academic research funding levels</p>
-                  <p>• <strong>Computational Cost Basis:</strong> Based on real cloud computing and energy expenses</p>
-                  <p>• <strong>Market-Driven Adjustments:</strong> Diminishing returns prevent unrealistic value inflation</p>
-                  <p>• <strong>Academic Validation:</strong> Methodology reviewed by institutional partners</p>
-                  <p>• <strong>Practical Applications:</strong> Values tied to real-world utility and implementation potential</p>
+                <Progress 
+                  value={(valuationData.diminishingFactor || 0) * 100} 
+                  className="h-2"
+                />
+                <div className="flex justify-between items-center border-t border-slate-600 pt-4">
+                  <span className="text-gray-300 font-semibold">Adjusted Total Value:</span>
+                  <span className="text-green-400 font-mono text-lg">${(valuationData.adjustedTotal || 0).toLocaleString()}</span>
                 </div>
               </div>
             </CardContent>

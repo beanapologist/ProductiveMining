@@ -109,6 +109,7 @@ function Navigation() {
     { path: '/institutional', title: 'Academy', icon: GraduationCap },
     { path: '/security', title: 'Crypto Fortress', icon: Shield },
     { path: '/complexity', title: 'Complexity Engine', icon: TrendingUp },
+    { path: '/valuation', title: 'Value Calculator', icon: Coins },
     { path: '/blocks', title: 'Data Vault', icon: Database },
     { path: '/wallet', title: 'Research Vault', icon: Wallet },
     { path: '/data-management', title: 'Data Center', icon: HardDrive },
