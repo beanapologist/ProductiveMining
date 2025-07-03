@@ -51,7 +51,6 @@ class RealMathematicalEngines:
         result['difficulty'] = difficulty
         result['timestamp'] = datetime.now().isoformat()
         result['energyConsumed'] = computation_time * 0.08  # kWh estimate
-        result['realComputation'] = True  # Mark as real computation
         
         return result
     
@@ -117,8 +116,7 @@ class RealMathematicalEngines:
             'statement': 'Every even integer > 2 is sum of two primes',
             'counterexamplesFound': len(failures),
             'method': 'exhaustive_prime_search',
-            'primeSieveSize': max_even,
-            'independentVerification': True
+            'primeSieveSize': max_even
         }
         
         return {
@@ -180,8 +178,7 @@ class RealMathematicalEngines:
             'verified': True,
             'method': 'sieve_of_eratosthenes_with_gap_calculation',
             'totalGapsAnalyzed': len(gaps),
-            'gapDistributionComplete': len(gap_distribution) == len(unique_gaps),
-            'independentVerification': True
+            'gapDistributionComplete': len(gap_distribution) == len(unique_gaps)
         }
         
         return {
@@ -236,8 +233,7 @@ class RealMathematicalEngines:
             'verified': True,
             'goldenRatioTarget': golden_ratio,
             'convergenceConfirmed': convergence_rate < 0.001,
-            'sequenceValid': all(fib[i] == fib[i-1] + fib[i-2] for i in range(2, min(100, len(fib)))),
-            'independentVerification': True
+            'sequenceValid': all(fib[i] == fib[i-1] + fib[i-2] for i in range(2, min(100, len(fib))))
         }
         
         return {
@@ -299,8 +295,7 @@ class RealMathematicalEngines:
             'statement': 'All positive integers eventually reach 1',
             'counterexamplesFound': len(failures),
             'maxIterationsAllowed': 10000,
-            'method': 'direct_sequence_computation',
-            'independentVerification': True
+            'method': 'direct_sequence_computation'
         }
         
         return {
@@ -416,12 +411,3 @@ class RealMathematicalEngines:
             'energyBalance': round(energy_balance, 6),  
             'chaosOrder': round(abs(chaos_order), 6)
         }
-    
-    def get_available_real_computations(self) -> List[str]:
-        """Get list of available real mathematical computations"""
-        return [
-            'goldbach_verification',
-            'prime_gap_analysis',
-            'fibonacci_patterns',
-            'collatz_verification'
-        ]

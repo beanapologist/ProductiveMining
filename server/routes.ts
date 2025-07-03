@@ -12,6 +12,7 @@ import { threatDetectionEngine } from "./threat-detection-engine";
 import { quantumComplexityEngine } from "./quantum-complexity-engine";
 import { recursiveEnhancementEngine } from "./recursive-enhancement-engine";
 import { adaptiveSecurityEngine } from "./adaptive-security-engine";
+import { hybridMathematicalSystem } from "./hybrid-mathematical-system";
 
 // Blockchain utility functions
 function generateSimpleHash(input: string): string {
@@ -4651,6 +4652,174 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(valuation);
     } catch (error) {
       res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Hybrid Mathematical System API endpoints
+  app.get('/api/hybrid-system/capabilities', (req, res) => {
+    try {
+      const capabilities = hybridMathematicalSystem.getSystemCapabilities();
+      res.json(capabilities);
+    } catch (error) {
+      console.error('❌ HYBRID SYSTEM: Error getting capabilities:', error);
+      res.status(500).json({ error: 'Failed to get system capabilities' });
+    }
+  });
+
+  app.get('/api/hybrid-system/work-types', (req, res) => {
+    try {
+      const workTypes = hybridMathematicalSystem.getAvailableWorkTypes();
+      res.json({ workTypes });
+    } catch (error) {
+      console.error('❌ HYBRID SYSTEM: Error getting work types:', error);
+      res.status(500).json({ error: 'Failed to get work types' });
+    }
+  });
+
+  app.post('/api/hybrid-system/compute', (req, res) => {
+    try {
+      const { workType, difficulty } = req.body;
+      
+      if (!workType || typeof difficulty !== 'number') {
+        return res.status(400).json({ error: 'workType and difficulty are required' });
+      }
+
+      console.log(`🔬 HYBRID COMPUTATION: ${workType} at difficulty ${difficulty}`);
+      
+      const result = hybridMathematicalSystem.computeMathematicalWork(workType, difficulty);
+      res.json(result);
+    } catch (error) {
+      console.error('❌ HYBRID SYSTEM: Computation error:', error);
+      res.status(500).json({ error: `Computation failed: ${error.message}` });
+    }
+  });
+
+  app.post('/api/hybrid-system/verify', (req, res) => {
+    try {
+      const { result } = req.body;
+      
+      if (!result) {
+        return res.status(400).json({ error: 'result is required for verification' });
+      }
+
+      const verification = hybridMathematicalSystem.verifyMathematicalResult(result);
+      res.json(verification);
+    } catch (error) {
+      console.error('❌ HYBRID SYSTEM: Verification error:', error);
+      res.status(500).json({ error: `Verification failed: ${error.message}` });
+    }
+  });
+
+  app.get('/api/hybrid-system/test', (req, res) => {
+    try {
+      console.log('🧪 HYBRID SYSTEM TEST: Running comprehensive tests...');
+      
+      const testResults = [];
+      const availableTypes = hybridMathematicalSystem.getAvailableWorkTypes();
+      
+      // Test real computation work types
+      const realTypes = ['goldbach_verification', 'prime_gap_analysis', 'fibonacci_patterns', 'collatz_verification'];
+      
+      for (const workType of realTypes) {
+        if (availableTypes.includes(workType)) {
+          try {
+            const result = hybridMathematicalSystem.computeMathematicalWork(workType, 25);
+            testResults.push({
+              workType,
+              mode: result.computationMode,
+              success: true,
+              scientificValue: result.scientificValue,
+              computationTime: result.computationTime,
+              realComputation: result.realComputation || false
+            });
+          } catch (error) {
+            testResults.push({
+              workType,
+              success: false,
+              error: error.message
+            });
+          }
+        }
+      }
+
+      // Test simulated computation
+      try {
+        const simulatedResult = hybridMathematicalSystem.computeMathematicalWork('riemann_zero', 75);
+        testResults.push({
+          workType: 'riemann_zero',
+          mode: simulatedResult.computationMode,
+          success: true,
+          scientificValue: simulatedResult.scientificValue,
+          computationTime: simulatedResult.computationTime,
+          realComputation: simulatedResult.realComputation || false
+        });
+      } catch (error) {
+        testResults.push({
+          workType: 'riemann_zero',
+          success: false,
+          error: error.message
+        });
+      }
+
+      res.json({
+        systemStatus: 'operational',
+        testResults,
+        totalTests: testResults.length,
+        successfulTests: testResults.filter(t => t.success).length,
+        capabilities: hybridMathematicalSystem.getSystemCapabilities(),
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('❌ HYBRID SYSTEM: Test error:', error);
+      res.status(500).json({ error: `Test failed: ${error.message}` });
+    }
+  });
+
+  app.get('/api/real-mathematics/test', (req, res) => {
+    try {
+      console.log('🔬 REAL MATHEMATICS TEST: Testing pure mathematical computation algorithms...');
+      
+      const testResults = [];
+      const realTypes = ['goldbach_verification', 'prime_gap_analysis', 'fibonacci_patterns', 'collatz_verification'];
+      
+      for (const workType of realTypes) {
+        try {
+          // Force real computation by using low difficulty
+          const result = hybridMathematicalSystem.computeMathematicalWork(workType, 30);
+          
+          testResults.push({
+            workType,
+            success: true,
+            mode: result.computationMode,
+            computationTime: result.computationTime,
+            energyConsumed: result.energyConsumed,
+            verified: result.verificationData?.verified || false,
+            realComputation: result.realComputation || false,
+            scientificValue: result.scientificValue,
+            resultKeys: Object.keys(result.computationResult || {}),
+            timestamp: result.timestamp
+          });
+        } catch (error) {
+          testResults.push({
+            workType,
+            success: false,
+            error: error.message
+          });
+        }
+      }
+
+      res.json({
+        systemStatus: 'operational',
+        realComputationTypes: realTypes,
+        testResults,
+        totalTests: testResults.length,
+        successfulTests: testResults.filter(t => t.success).length,
+        realComputationCount: testResults.filter(t => t.realComputation).length,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('❌ REAL MATHEMATICS: Test error:', error);
+      res.status(500).json({ error: `Real mathematics test failed: ${error.message}` });
     }
   });
 

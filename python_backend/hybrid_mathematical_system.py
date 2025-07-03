@@ -7,9 +7,9 @@ import logging
 import random
 from typing import Dict, Any, Optional
 from datetime import datetime
-from .mathematical_engines import MathematicalEngines
-from .real_mathematical_engines import RealMathematicalEngines
-from .scientific_valuation import ScientificValuationEngine
+from mathematical_engines import MathematicalEngines
+from real_mathematical_engines import RealMathematicalEngines
+from scientific_valuation import ScientificValuationEngine
 
 logger = logging.getLogger(__name__)
 
