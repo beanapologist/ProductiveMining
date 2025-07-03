@@ -753,11 +753,94 @@ export async function registerRoutes(app: Express): Promise<Server> {
             console.error('Block creation failed:', blockError);
           }
 
-          // Broadcast discovery completion
+          // Automatically trigger PoS validation for new discovery
+          try {
+            console.log(`🔄 AUTO-VALIDATION: Triggering PoS consensus for discovery ${work.id} (${work.workType})`);
+            
+            const activeStakers = await storage.getActiveStakers();
+            let validationsCreated = 0;
+            let recordsCreated = 0;
+            
+            // Create validation activities for each staker
+            for (const staker of activeStakers) {
+              try {
+                const validationDecision = determineValidationDecision(work, staker);
+                
+                const validation = await storage.createDiscoveryValidation({
+                  workId: work.id,
+                  stakerId: staker.id,
+                  validationType: 'pos_consensus',
+                  stakeAmount: staker.stakeAmount,
+                  status: validationDecision.status,
+                  validationData: {
+                    algorithm: work.workType,
+                    complexity: result.computationalCost,
+                    expectedValue: work.scientificValue,
+                    validatorReputation: staker.validationReputation,
+                    decisionReason: validationDecision.reason,
+                    autoValidated: true,
+                    discoveryTimestamp: new Date().toISOString()
+                  }
+                });
+                
+                validationsCreated++;
+                
+                // Create immutable record
+                await immutableRecordsEngine.recordValidationActivity(validation, work, staker);
+                recordsCreated++;
+                
+              } catch (validationError) {
+                console.error(`❌ Auto-validation failed for staker ${staker.stakerId}:`, validationError);
+              }
+            }
+            
+            console.log(`✅ AUTO-VALIDATION COMPLETE: ${validationsCreated} validations, ${recordsCreated} records for discovery ${work.id}`);
+            
+            // Check if consensus is reached and create consensus record
+            if (validationsCreated >= activeStakers.length) {
+              try {
+                const validations = await storage.getValidationsForWork(work.id);
+                const approvedCount = validations.filter(v => v.status === 'approved').length;
+                const rejectedCount = validations.filter(v => v.status === 'rejected').length;
+                const pendingCount = validations.filter(v => v.status === 'pending').length;
+                
+                const consensusStatus = approvedCount > validations.length / 2 ? 'approved' :
+                                      rejectedCount > validations.length / 2 ? 'rejected' : 'pending_consensus';
+                
+                const approvalRate = Math.round((approvedCount * 100) / validations.length * 10) / 10;
+                
+                // Create consensus decision record only for approved/rejected (not pending)
+                if (consensusStatus !== 'pending_consensus') {
+                  const validators = await storage.getActiveStakers();
+                  await immutableRecordsEngine.recordConsensusDecision(
+                    work.id,
+                    validators,
+                    consensusStatus as 'approved' | 'rejected',
+                    validations
+                  );
+                }
+                
+                console.log(`🎯 CONSENSUS REACHED: Discovery ${work.id} ${consensusStatus} (${approvalRate}% approval)`);
+              } catch (consensusError) {
+                console.error('❌ Consensus recording failed:', consensusError);
+              }
+            }
+            
+          } catch (posError) {
+            console.error('❌ Auto PoS validation failed:', posError);
+          }
+
+          // Broadcast discovery completion with validation status
           broadcast({
             type: 'discovery_made',
-            data: { discovery: work, scientificValue: result.scientificValue }
+            data: { 
+              discovery: work, 
+              scientificValue: result.scientificValue,
+              posValidationTriggered: true
+            }
           });
+
+          // Note: Validation updates are logged in console for real-time monitoring
 
         } catch (error) {
           console.error('Mining computation failed:', error);
@@ -1528,6 +1611,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       scientificValue,
       proofHash: verificationHash
     };
+  }
+
+  function simpleHash(input: string): number {
+    let hash = 0;
+    for (let i = 0; i < input.length; i++) {
+      const char = input.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    return Math.abs(hash);
   }
 
   function sieveOfEratosthenes(limit: number): number[] {
