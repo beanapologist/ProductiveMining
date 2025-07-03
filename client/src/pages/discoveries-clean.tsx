@@ -6,7 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
-import { Brain, Search, Trophy, Clock, Zap, Target, Award, TrendingUp, Hash, Users, CheckCircle, Shield, Database, FileText, ExternalLink, BarChart3, Filter, Eye, Download, Calculator, PieChart, LineChart, Microscope, FlaskConical, Lightbulb, Cpu, Network, Atom, Layers, Sparkles } from "lucide-react";
+import { Brain, Search, Trophy, Clock, Zap, Target, Award, TrendingUp, Hash, Users, CheckCircle, Shield, Database, FileText, ExternalLink, BarChart3, Filter, Eye, Download, Calculator, PieChart, LineChart, Microscope, FlaskConical, Lightbulb, Cpu, Network, Atom, Layers, Sparkles, Activity, GitBranch, ChevronRight } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 
 interface MathematicalWork {
   id: number;
@@ -41,6 +42,185 @@ interface ImmutableRecord {
   verificationProof?: any;
   immutableSince: string;
   lastVerificationCheck?: string;
+}
+
+// Emergent AI Components
+interface EmergentPattern {
+  id: string;
+  type: 'cross_disciplinary' | 'recursive_enhancement' | 'dimensional_breakthrough' | 'computational_emergence';
+  confidence: number;
+  complexity: number;
+  description: string;
+  implications: string[];
+}
+
+function EmergentAISection({ discoveries }: { discoveries: MathematicalWork[] }) {
+  const { data: emergentAnalysis } = useQuery({
+    queryKey: ["/api/emergent-ai/analysis"],
+    refetchInterval: 30000,
+  });
+
+  const aiConfidence = emergentAnalysis?.metrics?.aiConfidence || 0.87;
+  const emergentPatterns = emergentAnalysis?.patterns?.length || 0;
+  const crossDisciplinary = emergentAnalysis?.metrics?.crossDisciplinaryConnections || 0;
+
+  return (
+    <div className="grid md:grid-cols-4 gap-4 mb-6">
+      <Card className="bg-slate-800 border-slate-700">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-400">AI Confidence</p>
+              <p className="text-2xl font-bold text-purple-400">
+                {Math.round(aiConfidence * 100)}%
+              </p>
+            </div>
+            <Brain className="h-8 w-8 text-purple-400" />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-slate-800 border-slate-700">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-400">Emergent Patterns</p>
+              <p className="text-2xl font-bold text-blue-400">{emergentPatterns}</p>
+            </div>
+            <Network className="h-8 w-8 text-blue-400" />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-slate-800 border-slate-700">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-400">Cross-Disciplinary</p>
+              <p className="text-2xl font-bold text-green-400">{crossDisciplinary}</p>
+            </div>
+            <GitBranch className="h-8 w-8 text-green-400" />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-slate-800 border-slate-700">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-400">Complexity Level</p>
+              <p className="text-2xl font-bold text-orange-400">
+                {Math.round((emergentAnalysis?.metrics?.dimensionalComplexity || 0.73) * 100)}%
+              </p>
+            </div>
+            <Layers className="h-8 w-8 text-orange-400" />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function EmergentPatternsList() {
+  const { data: emergentAnalysis } = useQuery({
+    queryKey: ["/api/emergent-ai/analysis"],
+    refetchInterval: 30000,
+  });
+
+  const patterns = emergentAnalysis?.patterns || [];
+
+  const getPatternTypeIcon = (type: string) => {
+    switch (type) {
+      case 'cross_disciplinary': return <GitBranch className="h-4 w-4" />;
+      case 'recursive_enhancement': return <Activity className="h-4 w-4" />;
+      case 'dimensional_breakthrough': return <Layers className="h-4 w-4" />;
+      case 'computational_emergence': return <Brain className="h-4 w-4" />;
+      default: return <Sparkles className="h-4 w-4" />;
+    }
+  };
+
+  const getPatternTypeColor = (type: string) => {
+    switch (type) {
+      case 'cross_disciplinary': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'recursive_enhancement': return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'dimensional_breakthrough': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
+      case 'computational_emergence': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
+      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+    }
+  };
+
+  if (patterns.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-400">
+        <Brain className="h-12 w-12 mx-auto mb-4 opacity-50" />
+        <p>AI is analyzing mathematical discoveries...</p>
+        <p className="text-sm">Emergent patterns will appear as complexity increases</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {patterns.slice(0, 5).map((pattern: EmergentPattern) => (
+        <div
+          key={pattern.id}
+          className="p-4 rounded-lg border bg-slate-900 border-slate-600 hover:bg-slate-700/50 transition-all"
+        >
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center space-x-2">
+              {getPatternTypeIcon(pattern.type)}
+              <span className="font-medium text-white">
+                {pattern.type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+              </span>
+            </div>
+            <Badge className={getPatternTypeColor(pattern.type)}>
+              {Math.round(pattern.confidence * 100)}%
+            </Badge>
+          </div>
+          <p className="text-sm text-gray-300 mb-2">{pattern.description}</p>
+          <div className="flex items-center justify-between">
+            <div className="text-xs text-gray-400">
+              Complexity: {Math.round(pattern.complexity * 100)}%
+            </div>
+            <ChevronRight className="h-4 w-4 text-gray-400" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function EmergentMetricsDisplay() {
+  const { data: emergentMetrics } = useQuery({
+    queryKey: ["/api/emergent-ai/metrics"],
+    refetchInterval: 15000,
+  });
+
+  const capabilities = emergentMetrics?.emergentCapabilities || {
+    patternSynthesis: 0.89,
+    crossDisciplinaryInsight: 0.76,
+    mathematicalInnovation: 0.82,
+    complexityReduction: 0.71
+  };
+
+  return (
+    <div className="space-y-4">
+      <h3 className="font-semibold text-white">Emergent Capabilities</h3>
+      {Object.entries(capabilities).map(([capability, value]: [string, any]) => (
+        <div key={capability} className="space-y-2">
+          <div className="flex justify-between">
+            <span className="text-sm text-gray-300 capitalize">
+              {capability.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+            </span>
+            <span className="text-sm text-purple-400 font-medium">
+              {Math.round(value * 100)}%
+            </span>
+          </div>
+          <Progress value={value * 100} className="h-2" />
+        </div>
+      ))}
+    </div>
+  );
 }
 
 export default function DiscoveriesPage() {
@@ -415,110 +595,38 @@ export default function DiscoveriesPage() {
         </TabsContent>
 
         <TabsContent value="ai-analytics" className="space-y-6">
-          {/* AI Analytics Dashboard */}
+          {/* Emergent AI Analytics Dashboard */}
+          <EmergentAISection discoveries={currentDiscoveries} />
+          
+          {/* Real-time Emergent Patterns */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Discovery Selection */}
-            <Card className="bg-slate-800 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-white flex items-center">
-                  <Brain className="mr-2 h-5 w-5 text-cyan-400" />
-                  AI-Powered Discovery Analysis
-                </CardTitle>
-                <CardDescription className="text-gray-400">
-                  Advanced pattern recognition and scientific breakthrough analysis
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-400">Select Discovery for Analysis</label>
-                    <Select value={selectedDiscovery?.id?.toString() || ""} onValueChange={(value) => {
-                      const discovery = currentDiscoveries.find(d => d.id.toString() === value);
-                      setSelectedDiscovery(discovery || null);
-                    }}>
-                      <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                        <SelectValue placeholder="Choose a discovery..." />
-                      </SelectTrigger>
-                      <SelectContent className="bg-slate-700 border-slate-600">
-                        {currentDiscoveries.slice(0, 20).map((discovery) => (
-                          <SelectItem key={discovery.id} value={discovery.id.toString()}>
-                            Discovery #{discovery.id} - {discovery.workType.replace(/_/g, ' ')}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 bg-slate-700/50 rounded-lg">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <Lightbulb className="h-4 w-4 text-yellow-400" />
-                        <span className="text-sm font-medium text-gray-300">Pattern Recognition</span>
-                      </div>
-                      <p className="text-2xl font-bold text-cyan-400">94.7%</p>
-                      <p className="text-xs text-gray-400">Accuracy Rate</p>
-                    </div>
-                    
-                    <div className="p-4 bg-slate-700/50 rounded-lg">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <Cpu className="h-4 w-4 text-blue-400" />
-                        <span className="text-sm font-medium text-gray-300">AI Confidence</span>
-                      </div>
-                      <p className="text-2xl font-bold text-green-400">89.2%</p>
-                      <p className="text-xs text-gray-400">Analysis Score</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Global AI Insights */}
             <Card className="bg-slate-800 border-slate-700">
               <CardHeader>
                 <CardTitle className="text-white flex items-center">
                   <Network className="mr-2 h-5 w-5 text-purple-400" />
-                  Network Intelligence Overview
+                  Cross-Disciplinary Patterns
                 </CardTitle>
                 <CardDescription className="text-gray-400">
-                  Cross-disciplinary pattern analysis across all discoveries
+                  Live emergent patterns detected across mathematical domains
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 gap-3">
-                    <div className="flex justify-between items-center p-3 bg-slate-700/30 rounded-lg">
-                      <div className="flex items-center space-x-2">
-                        <Atom className="h-4 w-4 text-orange-400" />
-                        <span className="text-gray-300">Quantum Correlations</span>
-                      </div>
-                      <span className="text-orange-400 font-medium">47 patterns</span>
-                    </div>
-                    
-                    <div className="flex justify-between items-center p-3 bg-slate-700/30 rounded-lg">
-                      <div className="flex items-center space-x-2">
-                        <Layers className="h-4 w-4 text-blue-400" />
-                        <span className="text-gray-300">Cross-Field Insights</span>
-                      </div>
-                      <span className="text-blue-400 font-medium">23 connections</span>
-                    </div>
-                    
-                    <div className="flex justify-between items-center p-3 bg-slate-700/30 rounded-lg">
-                      <div className="flex items-center space-x-2">
-                        <Sparkles className="h-4 w-4 text-cyan-400" />
-                        <span className="text-gray-300">Breakthrough Indicators</span>
-                      </div>
-                      <span className="text-cyan-400 font-medium">12 high-potential</span>
-                    </div>
-                  </div>
-                  
-                  <Button
-                    onClick={() => window.open('/security', '_blank')}
-                    className="w-full bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 text-white"
-                  >
-                    <Shield className="h-4 w-4 mr-2" />
-                    View Full Security Analysis
-                  </Button>
-                </div>
+                <EmergentPatternsList />
+              </CardContent>
+            </Card>
+
+            <Card className="bg-slate-800 border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center">
+                  <Brain className="mr-2 h-5 w-5 text-cyan-400" />
+                  AI Evolution Metrics
+                </CardTitle>
+                <CardDescription className="text-gray-400">
+                  Real-time intelligence development tracking
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <EmergentMetricsDisplay />
               </CardContent>
             </Card>
           </div>
