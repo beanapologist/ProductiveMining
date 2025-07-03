@@ -206,49 +206,49 @@ export default function ValidatorsPage() {
 
         {/* Network Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
+          <Card className="bg-slate-800 border-slate-700">
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
-                <Users className="w-5 h-5 text-blue-600" />
+                <Users className="w-5 h-5 text-blue-400" />
                 <div>
-                  <p className="text-sm text-gray-600">Active Validators</p>
-                  <p className="text-xl font-bold">{activeValidators}</p>
+                  <p className="text-sm text-gray-400">Active Validators</p>
+                  <p className="text-xl font-bold text-white">{activeValidators}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-slate-800 border-slate-700">
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
-                <Shield className="w-5 h-5 text-green-600" />
+                <Shield className="w-5 h-5 text-green-400" />
                 <div>
-                  <p className="text-sm text-gray-600">Total Stake</p>
-                  <p className="text-xl font-bold">{totalStake.toLocaleString()}</p>
+                  <p className="text-sm text-gray-400">Total Stake</p>
+                  <p className="text-xl font-bold text-white">{totalStake.toLocaleString()}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-slate-800 border-slate-700">
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
-                <Clock className="w-5 h-5 text-yellow-600" />
+                <Clock className="w-5 h-5 text-yellow-400" />
                 <div>
-                  <p className="text-sm text-gray-600">Pending Validations</p>
-                  <p className="text-xl font-bold">{pendingValidations}</p>
+                  <p className="text-sm text-gray-400">Pending Validations</p>
+                  <p className="text-xl font-bold text-white">{pendingValidations}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-slate-800 border-slate-700">
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
-                <CheckCircle className="w-5 h-5 text-green-600" />
+                <CheckCircle className="w-5 h-5 text-green-400" />
                 <div>
-                  <p className="text-sm text-gray-600">Successful</p>
-                  <p className="text-xl font-bold">{successfulValidations}</p>
+                  <p className="text-sm text-gray-400">Successful</p>
+                  <p className="text-xl font-bold text-white">{successfulValidations}</p>
                 </div>
               </div>
             </CardContent>
