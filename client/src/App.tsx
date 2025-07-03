@@ -9,7 +9,7 @@ import { BarChart3, Pickaxe, Database, Brain, Info, Shield, Users, GraduationCap
 import Dashboard from "@/pages/dashboard-new";
 import BlockExplorer from "@/pages/block-explorer";
 import MiningPage from "@/pages/mining-simple";
-import DiscoveriesPage from "@/pages/discoveries-simple";
+import DiscoveriesPage from "@/pages/discoveries-ai";
 import SecurityDashboard from "@/pages/security-dashboard";
 import ValidatorsPage from "@/pages/validators";
 import { InstitutionalValidation } from "@/pages/institutional-validation";

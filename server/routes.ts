@@ -3072,6 +3072,73 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI Discovery Analysis Routes
   
   // Analyze a specific discovery
+  app.get('/api/discoveries/:id/analysis', async (req, res) => {
+    try {
+      const workId = parseInt(req.params.id);
+      const { discoveryAIEngine } = await import('./discovery-ai-engine');
+      const work = await storage.getMathematicalWork(workId);
+      
+      if (!work) {
+        return res.status(404).json({ error: 'Discovery not found' });
+      }
+
+      const analysis = await discoveryAIEngine.analyzeDiscovery(work);
+      res.json(analysis);
+    } catch (error) {
+      console.error('AI Analysis error:', error);
+      res.status(500).json({ error: 'Failed to analyze discovery' });
+    }
+  });
+
+  // Generate insights summary
+  app.get('/api/discoveries/insights/summary', async (req, res) => {
+    try {
+      const { discoveryAIEngine } = await import('./discovery-ai-engine');
+      const recentWork = await storage.getRecentMathematicalWork(50);
+      
+      const insights = await discoveryAIEngine.generateInsightsSummary(recentWork);
+      res.json(insights);
+    } catch (error) {
+      console.error('Insights generation error:', error);
+      res.status(500).json({ error: 'Failed to generate insights summary' });
+    }
+  });
+
+  // Perform cross-analysis
+  app.get('/api/discoveries/patterns/cross-analysis', async (req, res) => {
+    try {
+      const { discoveryAIEngine } = await import('./discovery-ai-engine');
+      const allWork = await storage.getRecentMathematicalWork(100);
+      
+      const patterns = await discoveryAIEngine.performCrossAnalysis(allWork);
+      res.json(patterns);
+    } catch (error) {
+      console.error('Cross-analysis error:', error);
+      res.status(500).json({ error: 'Failed to perform cross-analysis' });
+    }
+  });
+
+  // Generate AI review
+  app.post('/api/discoveries/:id/ai-review', async (req, res) => {
+    try {
+      const workId = parseInt(req.params.id);
+      const { priority = 'medium' } = req.body;
+      const { discoveryAIEngine } = await import('./discovery-ai-engine');
+      
+      const work = await storage.getMathematicalWork(workId);
+      if (!work) {
+        return res.status(404).json({ error: 'Discovery not found' });
+      }
+
+      const review = await discoveryAIEngine.generateAIReview(work, priority);
+      res.json(review);
+    } catch (error) {
+      console.error('AI Review error:', error);
+      res.status(500).json({ error: 'Failed to generate AI review' });
+    }
+  });
+
+  // Analyze a specific discovery (legacy endpoint)
   app.post('/api/ai/analyze/:workId', async (req, res) => {
     try {
       const workId = parseInt(req.params.workId);
@@ -3081,6 +3148,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ error: 'Discovery not found' });
       }
 
+      const { discoveryAIEngine } = await import('./discovery-ai-engine');
       const analysis = await discoveryAIEngine.analyzeDiscovery(work);
       res.json(analysis);
     } catch (error) {
