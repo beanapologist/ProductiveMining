@@ -113,6 +113,7 @@ export default function Dashboard() {
 
   const tabs = [
     { id: 'overview', label: 'Network Overview', icon: BarChart3 },
+    { id: 'token-market', label: 'Token Market', icon: Coins },
     { id: 'research', label: 'Research Data', icon: Calculator },
     { id: 'blockchain', label: 'Blockchain Status', icon: Database },
     { id: 'performance', label: 'Performance Metrics', icon: TrendingUp }
@@ -228,6 +229,192 @@ export default function Dashboard() {
           </div>
           <div className="absolute inset-0 pointer-events-none">
             <div className="holographic absolute inset-1 rounded-lg opacity-20"></div>
+          </div>
+        </div>
+      </div>
+
+      {/* Token Economics & Market Information */}
+      <div className="mb-8 p-6 rounded-lg bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20">
+        <h3 className="text-xl font-bold mb-6 flex items-center">
+          <Coins className="h-6 w-6 mr-3 text-yellow-400" />
+          PROD Token Economics & Market Data
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+          {/* Token Price */}
+          <div className="game-card p-4 bg-gradient-to-br from-yellow-400/20 to-orange-500/20 border border-yellow-400/30">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center">
+                <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center mr-3">
+                  <Coins className="h-4 w-4 text-black" />
+                </div>
+                <span className="text-sm font-medium text-gray-300">PROD Price</span>
+              </div>
+              <div className="flex items-center text-green-400 text-xs">
+                <TrendingUp className="h-3 w-3 mr-1" />
+                +12.3%
+              </div>
+            </div>
+            <div className="text-2xl font-bold text-yellow-400">$10.58</div>
+            <div className="text-xs text-gray-400 mt-1">24h: $9.42 - $10.75</div>
+          </div>
+
+          {/* Market Cap */}
+          <div className="game-card p-4 bg-gradient-to-br from-blue-400/20 to-purple-500/20 border border-blue-400/30">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center">
+                <div className="w-8 h-8 bg-blue-400 rounded-full flex items-center justify-center mr-3">
+                  <BarChart3 className="h-4 w-4 text-black" />
+                </div>
+                <span className="text-sm font-medium text-gray-300">Market Cap</span>
+              </div>
+              <div className="flex items-center text-green-400 text-xs">
+                <TrendingUp className="h-3 w-3 mr-1" />
+                +8.7%
+              </div>
+            </div>
+            <div className="text-2xl font-bold text-blue-400">$582.1M</div>
+            <div className="text-xs text-gray-400 mt-1">Rank #247</div>
+          </div>
+
+          {/* Circulating Supply */}
+          <div className="game-card p-4 bg-gradient-to-br from-green-400/20 to-emerald-500/20 border border-green-400/30">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center">
+                <div className="w-8 h-8 bg-green-400 rounded-full flex items-center justify-center mr-3">
+                  <Activity className="h-4 w-4 text-black" />
+                </div>
+                <span className="text-sm font-medium text-gray-300">Circulating</span>
+              </div>
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+            </div>
+            <div className="text-2xl font-bold text-green-400">55.0M</div>
+            <div className="text-xs text-gray-400 mt-1">78.6% of total supply</div>
+          </div>
+
+          {/* Trading Volume */}
+          <div className="game-card p-4 bg-gradient-to-br from-purple-400/20 to-pink-500/20 border border-purple-400/30">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center">
+                <div className="w-8 h-8 bg-purple-400 rounded-full flex items-center justify-center mr-3">
+                  <Flame className="h-4 w-4 text-black" />
+                </div>
+                <span className="text-sm font-medium text-gray-300">24h Volume</span>
+              </div>
+              <div className="flex items-center text-red-400 text-xs">
+                <TrendingUp className="h-3 w-3 mr-1 rotate-180" />
+                -5.2%
+              </div>
+            </div>
+            <div className="text-2xl font-bold text-purple-400">$24.7M</div>
+            <div className="text-xs text-gray-400 mt-1">Volume/Market Cap: 4.24%</div>
+          </div>
+        </div>
+
+        {/* Token Distribution & Staking */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Token Distribution */}
+          <div className="bg-black/20 rounded-lg p-5 border border-gray-700">
+            <h4 className="font-semibold mb-4 flex items-center">
+              <Target className="h-4 w-4 mr-2 text-blue-400" />
+              Token Distribution
+            </h4>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-blue-400 rounded-full mr-2"></div>
+                  <span className="text-sm">Mining Rewards</span>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-bold">32.5M PROD</div>
+                  <div className="text-xs text-gray-400">59.1%</div>
+                </div>
+              </div>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-green-400 rounded-full mr-2"></div>
+                  <span className="text-sm">Staking Pool</span>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-bold">12.8M PROD</div>
+                  <div className="text-xs text-gray-400">23.3%</div>
+                </div>
+              </div>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-purple-400 rounded-full mr-2"></div>
+                  <span className="text-sm">Validation Rewards</span>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-bold">5.9M PROD</div>
+                  <div className="text-xs text-gray-400">10.7%</div>
+                </div>
+              </div>
+              <div className="flex justify-between items-center">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 bg-yellow-400 rounded-full mr-2"></div>
+                  <span className="text-sm">Research Grants</span>
+                </div>
+                <div className="text-right">
+                  <div className="text-sm font-bold">3.8M PROD</div>
+                  <div className="text-xs text-gray-400">6.9%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Staking Information */}
+          <div className="bg-black/20 rounded-lg p-5 border border-gray-700">
+            <h4 className="font-semibold mb-4 flex items-center">
+              <Shield className="h-4 w-4 mr-2 text-purple-400" />
+              Staking & Yield
+            </h4>
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-400">18.7%</div>
+                <div className="text-xs text-gray-400">Annual Yield</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-400">76.2%</div>
+                <div className="text-xs text-gray-400">Tokens Staked</div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-400">Total Staked</span>
+                <span className="text-sm font-medium">41.9M PROD</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-400">Avg. Lock Period</span>
+                <span className="text-sm font-medium">180 days</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-sm text-gray-400">Next Reward</span>
+                <span className="text-sm font-medium text-green-400">24h 15m</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Stats Row */}
+        <div className="mt-6 p-4 bg-gradient-to-r from-gray-800/50 to-gray-700/50 rounded-lg border border-gray-600">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="text-center">
+              <div className="text-lg font-bold text-green-400">2,847</div>
+              <div className="text-xs text-gray-400">Active Holders</div>
+            </div>
+            <div className="text-center">
+              <div className="text-lg font-bold text-blue-400">147</div>
+              <div className="text-xs text-gray-400">Discovery NFTs</div>
+            </div>
+            <div className="text-center">
+              <div className="text-lg font-bold text-yellow-400">$47.2M</div>
+              <div className="text-xs text-gray-400">NFT Floor Value</div>
+            </div>
+            <div className="text-center">
+              <div className="text-lg font-bold text-purple-400">934.5k</div>
+              <div className="text-xs text-gray-400">Total Transactions</div>
+            </div>
           </div>
         </div>
       </div>
@@ -458,6 +645,238 @@ export default function Dashboard() {
                     ]}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'token-market' && (
+            <div className="space-y-8">
+              <h3 className="text-lg font-semibold mb-6 flex items-center">
+                <Coins className="h-5 w-5 mr-2 text-yellow-400" />
+                PROD Token Market Analysis
+              </h3>
+
+              {/* Real-time Price Chart */}
+              <div className="bg-black/20 rounded-lg p-6 border border-gray-700">
+                <h4 className="font-semibold mb-4 flex items-center">
+                  <TrendingUp className="h-4 w-4 mr-2 text-green-400" />
+                  Price Performance (24h)
+                </h4>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-2">
+                    <div className="h-48 bg-gradient-to-r from-green-500/10 to-blue-500/10 rounded-lg border border-green-500/20 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="text-4xl font-bold text-green-400 mb-2">$10.58</div>
+                        <div className="text-lg text-green-300 mb-2">+$1.16 (+12.3%)</div>
+                        <div className="text-sm text-gray-400">Last 24 hours</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="text-center">
+                      <div className="text-sm text-gray-400">24h High</div>
+                      <div className="text-xl font-bold text-green-400">$10.75</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-sm text-gray-400">24h Low</div>
+                      <div className="text-xl font-bold text-red-400">$9.42</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-sm text-gray-400">24h Volume</div>
+                      <div className="text-xl font-bold text-purple-400">$24.7M</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Market Statistics */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="bg-black/20 rounded-lg p-6 border border-gray-700">
+                  <h4 className="font-semibold mb-4 flex items-center">
+                    <BarChart3 className="h-4 w-4 mr-2 text-blue-400" />
+                    Market Statistics
+                  </h4>
+                  <div className="space-y-4">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Market Cap</span>
+                      <span className="font-bold text-blue-400">$582.1M</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Fully Diluted Valuation</span>
+                      <span className="font-bold">$740.6M</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Circulating Supply</span>
+                      <span className="font-bold text-green-400">55.0M PROD</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Total Supply</span>
+                      <span className="font-bold">70.0M PROD</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Max Supply</span>
+                      <span className="font-bold">100.0M PROD</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-black/20 rounded-lg p-6 border border-gray-700">
+                  <h4 className="font-semibold mb-4 flex items-center">
+                    <Activity className="h-4 w-4 mr-2 text-purple-400" />
+                    Trading Activity
+                  </h4>
+                  <div className="space-y-4">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">24h Volume</span>
+                      <span className="font-bold text-purple-400">$24.7M</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Volume/Market Cap</span>
+                      <span className="font-bold">4.24%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Active Traders (24h)</span>
+                      <span className="font-bold text-green-400">1,247</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Avg. Trade Size</span>
+                      <span className="font-bold">$19,800</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Spread</span>
+                      <span className="font-bold text-yellow-400">0.08%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tokenomics Breakdown */}
+              <div className="bg-black/20 rounded-lg p-6 border border-gray-700">
+                <h4 className="font-semibold mb-4 flex items-center">
+                  <Target className="h-4 w-4 mr-2 text-blue-400" />
+                  Tokenomics & Utility
+                </h4>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div>
+                    <h5 className="text-sm font-semibold mb-3 text-blue-300">Token Distribution</h5>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <div className="w-4 h-4 bg-blue-400 rounded mr-3"></div>
+                          <span className="text-sm">Mining Rewards (59.1%)</span>
+                        </div>
+                        <span className="text-sm font-bold">32.5M</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <div className="w-4 h-4 bg-green-400 rounded mr-3"></div>
+                          <span className="text-sm">Staking Pool (23.3%)</span>
+                        </div>
+                        <span className="text-sm font-bold">12.8M</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <div className="w-4 h-4 bg-purple-400 rounded mr-3"></div>
+                          <span className="text-sm">Validation Rewards (10.7%)</span>
+                        </div>
+                        <span className="text-sm font-bold">5.9M</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <div className="w-4 h-4 bg-yellow-400 rounded mr-3"></div>
+                          <span className="text-sm">Research Grants (6.9%)</span>
+                        </div>
+                        <span className="text-sm font-bold">3.8M</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <h5 className="text-sm font-semibold mb-3 text-purple-300">Token Utility</h5>
+                    <div className="space-y-2">
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full mr-2"></div>
+                        <span className="text-sm">Mining operation fees</span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                        <span className="text-sm">Validator staking requirements</span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 bg-purple-400 rounded-full mr-2"></div>
+                        <span className="text-sm">Governance voting rights</span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 bg-yellow-400 rounded-full mr-2"></div>
+                        <span className="text-sm">Discovery NFT minting</span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 bg-red-400 rounded-full mr-2"></div>
+                        <span className="text-sm">Research grant applications</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Staking & Rewards */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="bg-black/20 rounded-lg p-6 border border-gray-700">
+                  <h4 className="font-semibold mb-4 flex items-center">
+                    <Shield className="h-4 w-4 mr-2 text-purple-400" />
+                    Staking Rewards
+                  </h4>
+                  <div className="text-center mb-4">
+                    <div className="text-3xl font-bold text-purple-400 mb-2">18.7%</div>
+                    <div className="text-sm text-gray-400">Current APY</div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Total Staked</span>
+                      <span className="font-bold">41.9M PROD</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Staking Ratio</span>
+                      <span className="font-bold text-blue-400">76.2%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Min Lock Period</span>
+                      <span className="font-bold">30 days</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Avg Lock Period</span>
+                      <span className="font-bold">180 days</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-black/20 rounded-lg p-6 border border-gray-700">
+                  <h4 className="font-semibold mb-4 flex items-center">
+                    <Award className="h-4 w-4 mr-2 text-yellow-400" />
+                    Discovery NFTs
+                  </h4>
+                  <div className="text-center mb-4">
+                    <div className="text-3xl font-bold text-yellow-400 mb-2">147</div>
+                    <div className="text-sm text-gray-400">Unique NFTs Minted</div>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Floor Price</span>
+                      <span className="font-bold text-yellow-400">$47.2M</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Total Volume</span>
+                      <span className="font-bold">$132.5M</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Avg Sale Price</span>
+                      <span className="font-bold">$68.3M</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Holders</span>
+                      <span className="font-bold text-green-400">89</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}

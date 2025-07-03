@@ -155,6 +155,7 @@ Changelog:
 - July 03, 2025. Resolved JavaScript error in discoveries page (.replace() on undefined values) with proper safety checks
 - July 03, 2025. Fixed discovery statistics to show complete data (179+ discoveries) instead of limited WebSocket data
 - July 03, 2025. Enhanced frontend query with custom fetch function to properly load all discovery records with limit parameter
+- July 03, 2025. Enhanced dashboard with comprehensive token economics and market information including dedicated Token Market tab with price performance, market statistics, tokenomics breakdown, staking rewards, and Discovery NFT analytics
 ```
 
 ## User Preferences
