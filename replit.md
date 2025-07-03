@@ -161,6 +161,7 @@ Changelog:
 - July 03, 2025. Added comprehensive token API endpoints (/api/token/metrics, /api/token/staking, /api/token/nfts) providing real-time tokenomics data including $10.58 PROD price (+12.3%), $582M market cap, 76.2% staking ratio, 18.7% APY, and 1,247 discovery NFTs
 - July 03, 2025. Optimized dashboard performance with memoized calculations, improved loading states, stale time configuration for better UX, and enhanced query management reducing unnecessary API calls
 - July 03, 2025. Implemented wallet functionality with PROD token balance display, address copying feature, and streamlined navigation toolbar removing text labels for compact design
+- July 03, 2025. Consolidated token and wallet icons into single "Research Vault" page showing unified portfolio worth of $407.3K with comprehensive asset breakdown including liquid PROD tokens, staked tokens, and Discovery NFTs with tabbed interface for detailed portfolio management
 ```
 
 ## User Preferences

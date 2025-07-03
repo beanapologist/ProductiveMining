@@ -14,7 +14,7 @@ import SecurityDashboard from "@/pages/security-dashboard";
 import ValidatorsPage from "@/pages/validators";
 import { InstitutionalValidation } from "@/pages/institutional-validation";
 import DataManagement from "@/pages/data-management";
-import Token from "@/pages/token";
+import WalletPage from "@/pages/wallet";
 import About from "@/pages/about";
 import NotFound from "@/pages/not-found";
 
@@ -30,7 +30,7 @@ function Router() {
         <Route path="/institutional" component={InstitutionalValidation} />
         <Route path="/security" component={SecurityDashboard} />
         <Route path="/blocks" component={BlockExplorer} />
-        <Route path="/token" component={Token} />
+        <Route path="/wallet" component={WalletPage} />
         <Route path="/data-management" component={DataManagement} />
         <Route path="/about" component={About} />
         <Route component={NotFound} />
@@ -87,7 +87,7 @@ function Navigation() {
     { path: '/institutional', title: 'Academy', icon: GraduationCap },
     { path: '/security', title: 'Crypto Fortress', icon: Shield },
     { path: '/blocks', title: 'Data Vault', icon: Database },
-    { path: '/token', title: 'Token Vault', icon: Coins },
+    { path: '/wallet', title: 'Research Vault', icon: Wallet },
     { path: '/data-management', title: 'Data Center', icon: HardDrive },
     { path: '/about', title: 'Game Info', icon: Info }
   ];
