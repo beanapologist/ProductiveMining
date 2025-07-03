@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useState } from "react";
 import { BarChart3, Pickaxe, Database, Brain, Info, Shield, Users, GraduationCap, HardDrive, Coins, Wallet, Copy, Check } from "lucide-react";
-import Dashboard from "@/pages/dashboard";
+import Dashboard from "@/pages/dashboard-new";
 import BlockExplorer from "@/pages/block-explorer";
 import MiningPage from "@/pages/mining-simple";
 import DiscoveriesPage from "@/pages/discoveries-simple";
