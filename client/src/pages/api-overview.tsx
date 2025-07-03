@@ -48,6 +48,18 @@ interface RecursiveStatus {
   totalGenerations: number;
   avgPerformance: number;
   lastEnhancement: string;
+  quantumCoherence: number;
+  evolutionStatus: string;
+  protocolsActive: number;
+  algorithms: Array<{
+    type: string;
+    generation: number;
+    accuracy: number;
+    efficiency: number;
+    breakthroughRate: number;
+    adaptability: number;
+    improvements: number;
+  }>;
   protocolsActive: number;
 }
 
@@ -218,7 +230,15 @@ export default function APIOverview() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600 dark:text-gray-400">Performance:</span>
-                  <span className="font-medium">{(recursiveStatus.avgPerformance * 100).toFixed(1)}%</span>
+                  <span className="font-medium">{recursiveStatus.avgPerformance}%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Quantum Coherence:</span>
+                  <span className="font-medium">{recursiveStatus.quantumCoherence}%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">Status:</span>
+                  <Badge variant="outline" className="text-xs">{recursiveStatus.evolutionStatus}</Badge>
                 </div>
               </div>
             ) : (
@@ -249,10 +269,14 @@ export default function APIOverview() {
 
       {/* API Endpoints Documentation */}
       <Tabs defaultValue="core" className="w-full">
-        <TabsList className="grid grid-cols-4 w-full max-w-4xl mx-auto">
+        <TabsList className="grid grid-cols-5 w-full max-w-6xl mx-auto">
           <TabsTrigger value="core" className="flex items-center gap-2">
             <Server className="h-4 w-4" />
             Core APIs
+          </TabsTrigger>
+          <TabsTrigger value="recursive" className="flex items-center gap-2">
+            <Zap className="h-4 w-4" />
+            Self-Improving AI
           </TabsTrigger>
           <TabsTrigger value="advanced" className="flex items-center gap-2">
             <Brain className="h-4 w-4" />
@@ -267,6 +291,128 @@ export default function APIOverview() {
             Tokenomics
           </TabsTrigger>
         </TabsList>
+
+        <TabsContent value="recursive" className="space-y-4">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <Zap className="h-5 w-5 text-purple-500" />
+                Recursive Enhancement System
+              </CardTitle>
+              <p className="text-gray-400">Self-improving algorithms that evolve based on network performance</p>
+            </CardHeader>
+            <CardContent>
+              {recursiveStatus ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* System Status */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-white">System Status</h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-slate-700 p-3 rounded-lg">
+                        <div className="text-2xl font-bold text-purple-400">{recursiveStatus.currentGeneration}</div>
+                        <div className="text-sm text-gray-400">Current Generation</div>
+                      </div>
+                      <div className="bg-slate-700 p-3 rounded-lg">
+                        <div className="text-2xl font-bold text-blue-400">{recursiveStatus.quantumCoherence}%</div>
+                        <div className="text-sm text-gray-400">Quantum Coherence</div>
+                      </div>
+                      <div className="bg-slate-700 p-3 rounded-lg">
+                        <div className="text-2xl font-bold text-green-400">{recursiveStatus.avgPerformance}%</div>
+                        <div className="text-sm text-gray-400">Avg Performance</div>
+                      </div>
+                      <div className="bg-slate-700 p-3 rounded-lg">
+                        <div className="text-2xl font-bold text-cyan-400">{recursiveStatus.protocolsActive}</div>
+                        <div className="text-sm text-gray-400">Active Protocols</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+                      <span className="text-gray-300">Evolution Status:</span>
+                      <Badge variant="outline" className="bg-green-900 text-green-300 border-green-600">
+                        {recursiveStatus.evolutionStatus}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  {/* Algorithm Performance */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold text-white">Algorithm Performance</h3>
+                    <div className="space-y-3">
+                      {recursiveStatus.algorithms && recursiveStatus.algorithms.length > 0 ? (
+                        recursiveStatus.algorithms.map((algo, index) => (
+                          <div key={index} className="bg-slate-700 p-3 rounded-lg">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-medium text-white capitalize">
+                                {algo.type.replace(/_/g, ' ')}
+                              </span>
+                              <Badge variant="outline" className="text-xs">
+                                Gen {algo.generation}
+                              </Badge>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2 text-sm">
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Accuracy:</span>
+                                <span className="text-green-400">{algo.accuracy}%</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Efficiency:</span>
+                                <span className="text-blue-400">{algo.efficiency}%</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Breakthrough:</span>
+                                <span className="text-purple-400">{algo.breakthroughRate}%</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-gray-400">Adaptability:</span>
+                                <span className="text-cyan-400">{algo.adaptability}%</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="bg-slate-700 p-4 rounded-lg text-center">
+                          <p className="text-gray-400">No algorithm data available</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-gray-400">Loading recursive enhancement status...</p>
+                </div>
+              )}
+
+              <div className="mt-6 pt-4 border-t border-slate-600">
+                <h3 className="text-lg font-semibold text-white mb-4">Enhancement Controls</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <Button 
+                    onClick={() => fetch('/api/recursive-enhancement/enhance', { method: 'POST' })}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    <Zap className="h-4 w-4 mr-2" />
+                    Trigger Enhancement
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => window.open('/api/recursive-enhancement/status')}
+                    className="border-slate-600 text-slate-300 hover:bg-slate-600"
+                  >
+                    <Code className="h-4 w-4 mr-2" />
+                    View Status API
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => window.open('/api/recursive-enhancement/genealogy')}
+                    className="border-slate-600 text-slate-300 hover:bg-slate-600"
+                  >
+                    <Activity className="h-4 w-4 mr-2" />
+                    Algorithm Tree
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
         <TabsContent value="core" className="space-y-4">
           <Card className="bg-slate-800 border-slate-700">
