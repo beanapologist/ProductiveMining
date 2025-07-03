@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { Shield, Users, CheckCircle, Clock, AlertCircle, Play, FileText, Fingerprint, Database } from 'lucide-react';
+import { Shield, Users, CheckCircle, Clock, AlertCircle, Play, FileText, Fingerprint, Database, Award } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 
@@ -103,6 +103,32 @@ export default function ValidatorsPage() {
     },
   });
 
+  const processPendingValidations = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/pos/process-pending', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      if (!response.ok) throw new Error('Failed to process pending validations');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/validations'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/immutable-records'] });
+      toast({
+        title: "Validations Processed",
+        description: `Processed pending validations through PoS consensus`,
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Processing Failed",
+        description: "Could not process pending validations",
+        variant: "destructive",
+      });
+    },
+  });
+
   const totalStake = stakers.reduce((sum, staker) => sum + staker.stakeAmount, 0);
   const activeValidators = stakers.length;
   const pendingValidations = validations.filter(v => v.status === 'pending').length;
@@ -140,16 +166,23 @@ export default function ValidatorsPage() {
       {/* Header */}
       <div className="glass-card p-6">
         <div className="flex items-center space-x-3 mb-4">
-          <Shield className="w-8 h-8 text-blue-600" />
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">PoS Validator Network</h1>
-            <p className="text-gray-600">Mathematical Discovery Validation System</p>
+          <div className="metric-gem !w-12 !h-12 bg-gradient-to-br from-blue-500 to-purple-600">
+            <Shield className="w-6 h-6" />
           </div>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-100">🏛️ Guild Council</h1>
+            <p className="text-gray-300">Elite Validator Network • Level {Math.floor(activeValidators / 2) + 1} Guild</p>
+          </div>
+          {activeValidators >= 6 && (
+            <div className="achievement-badge ml-4">
+              🏆 Elite Council
+            </div>
+          )}
         </div>
 
-        {/* Initialize Button */}
-        {stakers.length === 0 && (
-          <div className="mb-4">
+        {/* Action Buttons */}
+        <div className="flex space-x-4 mb-4">
+          {stakers.length === 0 && (
             <Button 
               onClick={() => initializeValidators.mutate()}
               disabled={initializeValidators.isPending}
@@ -158,8 +191,24 @@ export default function ValidatorsPage() {
               <Play className="w-4 h-4" />
               <span>{initializeValidators.isPending ? 'Initializing...' : 'Initialize PoS Network'}</span>
             </Button>
-          </div>
-        )}
+          )}
+          
+          {pendingValidations > 0 && (
+            <Button 
+              onClick={() => processPendingValidations.mutate()}
+              disabled={processPendingValidations.isPending}
+              className="flex items-center space-x-2 bg-yellow-600 hover:bg-yellow-700"
+            >
+              <CheckCircle className="w-4 h-4" />
+              <span>
+                {processPendingValidations.isPending 
+                  ? 'Processing...' 
+                  : `Process ${pendingValidations} Pending Validations`
+                }
+              </span>
+            </Button>
+          )}
+        </div>
 
         {/* Network Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -192,7 +241,7 @@ export default function ValidatorsPage() {
               <div className="flex items-center space-x-2">
                 <Clock className="w-5 h-5 text-yellow-600" />
                 <div>
-                  <p className="text-sm text-gray-600">Pending</p>
+                  <p className="text-sm text-gray-600">Pending Validations</p>
                   <p className="text-xl font-bold">{pendingValidations}</p>
                 </div>
               </div>

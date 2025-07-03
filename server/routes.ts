@@ -1085,6 +1085,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Process pending validations through PoS consensus
+  app.post("/api/pos/process-pending", async (req, res) => {
+    try {
+      const { activatePoSValidation } = await import('./activate-pos-validation');
+      const result = await activatePoSValidation();
+      res.json({ message: "Pending validations processed", result });
+    } catch (error) {
+      console.error("Error processing pending validations:", error);
+      res.status(500).json({ error: "Failed to process pending validations" });
+    }
+  });
+
   // Immutable Records Pool endpoints
   app.get("/api/immutable-records", async (req, res) => {
     try {
