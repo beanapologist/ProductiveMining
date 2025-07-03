@@ -2056,15 +2056,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               result = await computeRealRiemannZero(difficulty);
           }
 
-          // Create mathematical work from computation using realistic scientific valuation
-          const { scientificValuationEngine } = await import('./scientific-valuation-engine');
-          const realisticValuation = scientificValuationEngine.calculateScientificValue(
-            workType, 
-            difficulty, 
-            result.computationalCost, 
-            result.energyEfficiency
-          );
-          
+          // Use scientific value already calculated by the computation function
           const safeComputationalCost = Math.min(2147483647, Math.max(1, Math.round(result.computationalCost)));
           const work = await storage.createMathematicalWork({
             workType,
@@ -2073,7 +2065,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             verificationData: result.verificationData,
             computationalCost: safeComputationalCost,
             energyEfficiency: result.energyEfficiency,
-            scientificValue: realisticValuation.totalValue,
+            scientificValue: result.scientificValue, // Use the value from computation function
             workerId: minerId,
             signature: result.proofHash
           });
@@ -2097,9 +2089,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
               previousHash,
               minerId,
               difficulty,
-              totalScientificValue: realisticValuation.totalValue,
+              totalScientificValue: result.scientificValue, // Use value from computation function
               energyConsumed: result.computationalCost / 1000000, // Convert to reasonable energy units
-              knowledgeCreated: realisticValuation.totalValue
+              knowledgeCreated: result.scientificValue // Use value from computation function
             };
             
             const merkleRoot = generateSimpleHash(`work_${work.id}_${work.workType}_${work.signature}`);
@@ -2264,15 +2256,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const computationTime = Date.now() - startTime;
     const precision = Math.sqrt(zetaReal * zetaReal + zetaImag * zetaImag);
     const verificationHash = generateSimpleHash(`${s.real}_${s.imaginary}_${zetaReal}_${zetaImag}_${maxTerms}`);
-    const computationalCost = maxTerms * 4;
+    
+    // Realistic computational cost for scientific valuation (target $1.2K-$3.5K range)
+    const computationalCost = Math.max(1, Math.min(50000, maxTerms / 100)); // Reduced by 400x
     
     // Use realistic scientific valuation engine
     const { scientificValuationEngine } = await import('./scientific-valuation-engine');
     const realisticValuation = scientificValuationEngine.calculateScientificValue(
       'riemann_zero', 
       difficulty, 
-      computationalCost, 
-      Math.round(computationalCost / computationTime * 1000)
+      computationTime / 1000, // Convert milliseconds to seconds
+      0.05 // Small energy consumption in kWh
     );
     const scientificValue = realisticValuation.totalValue;
     
@@ -2329,15 +2323,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     const computationTime = Date.now() - startTime;
     const verificationHash = generateSimpleHash(`primes_${start}_${end}_${primes.length}_${twinPairs.length}`);
-    const computationalCost = (end - start) * Math.log(Math.log(end));
+    
+    // Realistic computational cost for scientific valuation (target $1.2K-$3.5K range)
+    const computationalCost = Math.max(1, Math.min(50000, (end - start) / 5000)); // Reduced by ~250x
     
     // Use realistic scientific valuation engine
     const { scientificValuationEngine } = await import('./scientific-valuation-engine');
     const realisticValuation = scientificValuationEngine.calculateScientificValue(
       'prime_pattern', 
       difficulty, 
-      computationalCost, 
-      Math.round(computationalCost / computationTime * 1000)
+      computationTime / 1000, // Convert milliseconds to seconds
+      0.08 // Small energy consumption in kWh
     );
     const scientificValue = realisticValuation.totalValue;
     
@@ -2561,14 +2557,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     const computationTime = Date.now() - startTime;
     const verificationHash = generateSimpleHash(`goldbach_${numbers.join('_')}_${verifications.length}`);
-    const computationalCost = numbers.length * primes.length;
+    
+    // Realistic computational cost for scientific valuation (target $1.2K-$3.5K range)
+    const computationalCost = Math.max(1, Math.min(50000, verifications.length * 10)); // Reduced by 100x
+    
     // Use realistic scientific valuation engine
     const { scientificValuationEngine } = await import('./scientific-valuation-engine');
     const realisticValuation = scientificValuationEngine.calculateScientificValue(
       'goldbach_verification', 
       difficulty, 
-      verifications.length * 1000, 
-      verifications.length * 10
+      computationTime / 1000, // Convert milliseconds to seconds
+      0.1 // Small energy consumption in kWh
     );
     const scientificValue = realisticValuation.totalValue;
     
@@ -2618,14 +2617,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     const computationTime = Date.now() - startTime;
     const verificationHash = generateSimpleHash(`bsd_${a}_${b}_${p}_${conductorRank}`);
-    const computationalCost = p * Math.log(p) * difficulty;
+    
+    // Realistic computational cost for scientific valuation (target $1.2K-$3.5K range)
+    const computationalCost = Math.max(1, Math.min(50000, conductorRank * 50)); // Reduced significantly
+    
     // Use realistic scientific valuation engine
     const { scientificValuationEngine } = await import('./scientific-valuation-engine');
     const realisticValuation = scientificValuationEngine.calculateScientificValue(
       'birch_swinnerton_dyer', 
       difficulty, 
-      conductorRank * 100, 
-      conductorRank * 5
+      computationTime / 1000, // Convert milliseconds to seconds
+      0.09 // Small energy consumption in kWh
     );
     const scientificValue = realisticValuation.totalValue;
     
@@ -2700,14 +2702,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     const computationTime = Date.now() - startTime;
     const verificationHash = generateSimpleHash(`navier_stokes_${viscosity}_${gridSize}_${steps}_${maxVelocity.toFixed(6)}`);
-    const computationalCost = gridSize**3 * steps * difficulty;
+    
+    // Realistic computational cost for scientific valuation (target $1.2K-$3.5K range)
+    const computationalCost = Math.max(1, Math.min(50000, gridSize * steps / 10)); // Reduced by ~200x
+    
     // Use realistic scientific valuation engine
     const { scientificValuationEngine } = await import('./scientific-valuation-engine');
     const realisticValuation = scientificValuationEngine.calculateScientificValue(
       'navier_stokes', 
       difficulty, 
-      solution.magnitude * 100, 
-      solution.magnitude * 2
+      computationTime / 1000, // Convert milliseconds to seconds
+      0.12 // Small energy consumption in kWh
     );
     const scientificValue = realisticValuation.totalValue;
     
@@ -2771,8 +2776,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const realisticValuation = scientificValuationEngine.calculateScientificValue(
       'elliptic_curve_crypto', 
       difficulty, 
-      keyStrength * 10, 
-      keyStrength / 10
+      computationTime / 1000, // Convert milliseconds to seconds
+      0.06 // Small energy consumption in kWh
     );
     const scientificValue = realisticValuation.totalValue;
     
@@ -2852,8 +2857,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const realisticValuation = scientificValuationEngine.calculateScientificValue(
       'lattice_crypto', 
       difficulty, 
-      dimension * 50, 
-      dimension / 5
+      computationTime / 1000, // Convert milliseconds to seconds
+      0.07 // Small energy consumption in kWh
     );
     const scientificValue = realisticValuation.totalValue;
     
@@ -2938,15 +2943,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     
     const computationTime = Date.now() - startTime;
     const verificationHash = generateSimpleHash(`yang_mills_${couplingConstant}_${latticeSize}_${massGap.toFixed(6)}`);
-    const computationalCost = latticeSize**4 * difficulty * Math.log(1/latticeSpacing);
+    
+    // Realistic computational cost for scientific valuation (target $1.2K-$3.5K range)
+    const computationalCost = Math.max(1, Math.min(50000, latticeSize**2 * difficulty / 20)); // Reduced by ~1000x
     
     // Use realistic scientific valuation engine
     const { scientificValuationEngine } = await import('./scientific-valuation-engine');
     const realisticValuation = scientificValuationEngine.calculateScientificValue(
       'yang_mills', 
       difficulty, 
-      computationalCost, 
-      Math.round(computationalCost / computationTime * 1000)
+      computationTime / 1000, // Convert milliseconds to seconds
+      0.15 // Small energy consumption in kWh
     );
     const scientificValue = realisticValuation.totalValue;
     
@@ -3037,8 +3044,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const realisticValuation = scientificValuationEngine.calculateScientificValue(
       'poincare_conjecture', 
       difficulty, 
-      computationalCost, 
-      Math.round(computationalCost / computationTime * 1000)
+      computationTime / 1000, // Convert milliseconds to seconds
+      0.11 // Small energy consumption in kWh
     );
     const scientificValue = realisticValuation.totalValue;
     
