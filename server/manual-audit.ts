@@ -3,68 +3,45 @@
  * Creates immutable records for missing validation activities
  */
 
-import { storage } from './storage';
-import { immutableRecordsEngine } from './immutable-records-engine';
+import { activatePoSValidation } from './activate-pos-validation';
+import { posAuditEngine } from './pos-audit-engine';
 
 export async function runManualAudit() {
-  console.log('🔍 MANUAL AUDIT: Starting comprehensive validation audit...');
+  console.log('🔧 MANUAL PoS AUDIT: Starting comprehensive validation audit...');
   
   try {
-    // Get missing validation activities that need immutable records
-    const missingValidations = [
-      { id: 46, workId: 140, stakerId: 6 }, // approved - validator_3
-      { id: 47, workId: 140, stakerId: 5 }, // rejected - validator_2  
-      { id: 48, workId: 140, stakerId: 4 }  // rejected - validator_1
-    ];
-
-    let recordsCreated = 0;
-
-    for (const validationInfo of missingValidations) {
-      try {
-        // Get full validation data
-        const allValidations = await storage.getValidationsForWork(validationInfo.workId);
-        const validation = allValidations.find(v => v.id === validationInfo.id);
-        
-        if (!validation) {
-          console.log(`❌ AUDIT: Validation ${validationInfo.id} not found`);
-          continue;
-        }
-
-        // Get work and staker data
-        const work = await storage.getMathematicalWork(validation.workId);
-        const staker = await storage.getStaker(validation.stakerId);
-
-        if (work && staker) {
-          console.log(`🔧 AUDIT: Creating immutable record for validation ${validation.id} (${validation.status}) by ${staker.stakerId}`);
-          
-          // Create immutable record
-          await immutableRecordsEngine.recordValidationActivity(validation, work, staker);
-          recordsCreated++;
-          
-          console.log(`✅ AUDIT: Successfully created immutable record for validation ${validation.id}`);
-        } else {
-          console.log(`❌ AUDIT: Missing work or staker data for validation ${validation.id}`);
-        }
-      } catch (error) {
-        console.error(`❌ AUDIT: Failed to process validation ${validationInfo.id}:`, error);
-      }
-    }
-
-    // Check final state
-    const finalRecords = await storage.getRecentValidationRecords(50);
-    console.log(`\n📊 AUDIT COMPLETE:`);
-    console.log(`✅ Records created: ${recordsCreated}`);
-    console.log(`📝 Total immutable records: ${finalRecords.length}`);
-    console.log(`🎯 Validation records: ${finalRecords.filter(r => r.recordType === 'validation_activity').length}`);
+    // First, activate PoS validation for new discoveries
+    console.log('\n=== PHASE 1: Activating PoS Validation ===');
+    const activationResult = await activatePoSValidation();
+    
+    // Then, run comprehensive audit to ensure all records are created
+    console.log('\n=== PHASE 2: Comprehensive Audit ===');
+    const auditResult = await posAuditEngine.performComprehensiveAudit();
+    
+    console.log('\n🎯 MANUAL AUDIT COMPLETE:');
+    console.log(`🔄 Activation: ${activationResult.validationsCreated} validations, ${activationResult.recordsCreated} records`);
+    console.log(`📊 Audit: ${auditResult.recordsCreated} additional records created`);
+    console.log(`✅ Total validations: ${auditResult.totalValidations}`);
     
     return {
-      recordsCreated,
-      totalRecords: finalRecords.length,
-      validationRecords: finalRecords.filter(r => r.recordType === 'validation_activity').length
+      success: true,
+      activation: activationResult,
+      audit: auditResult
     };
     
   } catch (error) {
-    console.error('Manual audit failed:', error);
-    throw error;
+    console.error('❌ Manual audit failed:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    };
   }
+}
+
+// Self-executing for development
+if (require.main === module) {
+  runManualAudit().then(result => {
+    console.log('\n📋 Final Result:', result);
+    process.exit(result.success ? 0 : 1);
+  });
 }
