@@ -1362,7 +1362,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Start new mining operation with real mathematical computation
   app.post("/api/mining/start-real", async (req, res) => {
     try {
-      const { workType = 'riemann_zero', difficulty = 25 } = req.body;
+      const { workType = 'riemann_zero', difficulty = 50 } = req.body;
       const minerId = `miner_${Date.now()}`;
       
       // Create mining operation
