@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StakingValidations from "@/components/staking-validations";
 import { useState } from "react";
-import { Brain, Search, Trophy, Clock, Zap, Target, Award, TrendingUp, Hash, Users, CheckCircle, Shield, Database, FileText, ExternalLink, BarChart3, Calendar, Filter, Eye, ChevronDown, ChevronUp, Activity } from "lucide-react";
+import { Brain, Search, Trophy, Clock, Zap, Target, Award, TrendingUp, Hash, Users, CheckCircle, Shield, Database, FileText, ExternalLink, BarChart3, Calendar, Filter, Eye, ChevronDown, ChevronUp, Activity, Download } from "lucide-react";
 
 interface MathematicalWork {
   id: number;
@@ -193,6 +193,79 @@ export default function DiscoveriesPage() {
 
   const uniqueWorkers = new Set(currentDiscoveries.map((d: MathematicalWork) => d.workerId)).size;
 
+  // Download functions for database records
+  const downloadCSV = (data: any[], filename: string) => {
+    if (!data || data.length === 0) {
+      alert('No data available to download');
+      return;
+    }
+
+    const headers = Object.keys(data[0]);
+    const csvContent = [
+      headers.join(','),
+      ...data.map(row => 
+        headers.map(header => {
+          const value = row[header];
+          // Handle nested objects and arrays
+          if (typeof value === 'object' && value !== null) {
+            return `"${JSON.stringify(value).replace(/"/g, '""')}"`;
+          }
+          // Handle strings with commas
+          if (typeof value === 'string' && value.includes(',')) {
+            return `"${value.replace(/"/g, '""')}"`;
+          }
+          return value;
+        }).join(',')
+      )
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${filename}_${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+  };
+
+  const downloadJSON = (data: any[], filename: string) => {
+    if (!data || data.length === 0) {
+      alert('No data available to download');
+      return;
+    }
+
+    const jsonContent = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${filename}_${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+  };
+
+  const downloadAllRecords = (format: 'csv' | 'json') => {
+    const allData = {
+      discoveries: currentDiscoveries,
+      validations: validationsData,
+      immutableRecords: immutableRecords,
+      blocks: blocksData,
+      exportInfo: {
+        exportDate: new Date().toISOString(),
+        totalDiscoveries: currentDiscoveries.length,
+        totalValidations: validationStats.totalValidations,
+        totalRecords: immutableRecordsStats.totalRecords,
+        totalBlocks: (blocksData as any[])?.length || 0
+      }
+    };
+
+    if (format === 'csv') {
+      // Download separate CSV files for each data type
+      downloadCSV(currentDiscoveries, 'mathematical_discoveries');
+      downloadCSV(validationsData as any[], 'validations');
+      downloadCSV(immutableRecords, 'immutable_records');
+      downloadCSV(blocksData as any[], 'blocks');
+    } else {
+      downloadJSON([allData], 'complete_database_export');
+    }
+  };
+
   // Advanced database analytics
   const discoveryTypeStats = currentDiscoveries.reduce((acc: any, discovery) => {
     acc[discovery.workType] = (acc[discovery.workType] || 0) + 1;
@@ -230,13 +303,41 @@ export default function DiscoveriesPage() {
       <div className="container mx-auto px-4 py-6">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center">
-            <Brain className="h-10 w-10 mr-3 text-purple-400" />
-            Mathematical Discoveries
-          </h1>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex-1"></div>
+            <h1 className="text-4xl font-bold text-white flex items-center">
+              <Brain className="h-10 w-10 mr-3 text-purple-400" />
+              Mathematical Discoveries
+            </h1>
+            <div className="flex-1 flex justify-end">
+              <div className="flex gap-2">
+                <Button 
+                  onClick={() => downloadAllRecords('json')}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  size="sm"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  JSON
+                </Button>
+                <Button 
+                  onClick={() => downloadAllRecords('csv')}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                  size="sm"
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  CSV
+                </Button>
+              </div>
+            </div>
+          </div>
           <p className="text-xl text-slate-300">
             Explore groundbreaking mathematical breakthroughs and scientific achievements
           </p>
+          <div className="mt-4 text-center">
+            <p className="text-sm text-slate-400">
+              Download complete database records: Discoveries, Validations, Immutable Records, and Blocks
+            </p>
+          </div>
         </div>
 
         {/* Discovery Stats */}
@@ -534,6 +635,17 @@ export default function DiscoveriesPage() {
 
                   {/* Discovery Overview Analytics */}
                   <TabsContent value="discoveries" className="space-y-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-semibold text-white">Discovery Analytics</h3>
+                      <Button 
+                        onClick={() => downloadJSON(currentDiscoveries, 'mathematical_discoveries')}
+                        className="bg-purple-600 hover:bg-purple-700"
+                        size="sm"
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Export Discoveries
+                      </Button>
+                    </div>
                     <div className="space-y-4">
                       {/* Discovery Type Distribution */}
                       <div className="p-4 bg-slate-800/50 rounded-lg">
@@ -616,6 +728,17 @@ export default function DiscoveriesPage() {
 
                   {/* Validation Analytics */}
                   <TabsContent value="validations" className="space-y-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-semibold text-white">Validation Analytics</h3>
+                      <Button 
+                        onClick={() => downloadJSON(validationsData as any[], 'validation_records')}
+                        className="bg-blue-600 hover:bg-blue-700"
+                        size="sm"
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Export Validations
+                      </Button>
+                    </div>
                     <div className="space-y-4">
                       {/* Validation Status */}
                       <div className="p-4 bg-slate-800/50 rounded-lg">
@@ -673,6 +796,17 @@ export default function DiscoveriesPage() {
 
                   {/* Immutable Records Analytics */}
                   <TabsContent value="records" className="space-y-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-lg font-semibold text-white">Records Analytics</h3>
+                      <Button 
+                        onClick={() => downloadJSON(immutableRecords, 'immutable_records')}
+                        className="bg-green-600 hover:bg-green-700"
+                        size="sm"
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Export Records
+                      </Button>
+                    </div>
                     <div className="space-y-4">
                       {/* Records Overview */}
                       <div className="p-4 bg-slate-800/50 rounded-lg">
