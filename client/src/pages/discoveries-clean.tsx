@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
-import { Brain, Search, Trophy, Clock, Zap, Target, Award, TrendingUp, Hash, Users, CheckCircle, Shield, Database, FileText, ExternalLink, BarChart3, Filter, Eye, Download, Calculator, PieChart, LineChart, Microscope, FlaskConical, Lightbulb, Cpu, Network, Atom, Layers, Sparkles, Activity, GitBranch, ChevronRight } from "lucide-react";
+import { Brain, Search, Trophy, Clock, Zap, Target, Award, TrendingUp, Hash, Users, CheckCircle, Shield, Database, FileText, ExternalLink, BarChart3, Filter, Eye, Download, Calculator, PieChart, LineChart, Microscope, FlaskConical, Lightbulb, Cpu, Network, Atom, Layers, Sparkles, Activity, GitBranch, ChevronRight, Play } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 interface MathematicalWork {
