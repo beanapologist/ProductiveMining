@@ -164,8 +164,12 @@ export class ImmutableRecordsEngine {
    * Generate cryptographic hash for activity data
    */
   private generateActivityHash(activityData: any): string {
-    const hashInput = JSON.stringify(activityData, Object.keys(activityData).sort());
-    return cryptoEngine.generateSecurityHash([hashInput]).hash;
+    const timestamp = Date.now().toString();
+    const randomSalt = Math.random().toString(36).substring(2);
+    const hashInput = JSON.stringify(activityData, Object.keys(activityData).sort()) + timestamp + randomSalt;
+    
+    // Use simple hash to avoid crypto engine dependencies
+    return this.simpleHash(hashInput);
   }
 
   /**
