@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
+import { database } from "./database";
 import { insertMiningOperationSchema, type WebSocketMessage, type MiningProgressMessage, type BlockMinedMessage } from "@shared/schema";
 import { immutableRecordsEngine } from "./immutable-records-engine";
 import { posAuditEngine } from "./pos-audit-engine";
@@ -871,6 +872,170 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Manual cleanup error:', error);
       res.status(500).json({ error: "Cleanup failed" });
+    }
+  });
+
+  // Enhanced database analytics using database library
+  app.get("/api/database/analytics", async (req, res) => {
+    try {
+      const analytics = await database.getCompleteExportData();
+      
+      // Calculate comprehensive analytics
+      const discoveryStats = {
+        totalDiscoveries: analytics.discoveries.length,
+        totalScientificValue: analytics.discoveries.reduce((sum, d) => sum + d.scientificValue, 0),
+        averageDifficulty: analytics.discoveries.length > 0 
+          ? analytics.discoveries.reduce((sum, d) => sum + d.difficulty, 0) / analytics.discoveries.length 
+          : 0,
+        discoveryTypes: analytics.discoveries.reduce((acc: Record<string, number>, discovery) => {
+          acc[discovery.workType] = (acc[discovery.workType] || 0) + 1;
+          return acc;
+        }, {})
+      };
+
+      const validationStats = {
+        totalValidations: analytics.validations.length,
+        pendingValidations: analytics.validations.filter(v => v.status === 'pending').length,
+        approvedValidations: analytics.validations.filter(v => v.status === 'approved').length,
+        rejectedValidations: analytics.validations.filter(v => v.status === 'rejected').length,
+        approvalRate: analytics.validations.length > 0 
+          ? (analytics.validations.filter(v => v.status === 'approved').length / analytics.validations.length) * 100 
+          : 0
+      };
+
+      const recordStats = {
+        totalRecords: analytics.immutableRecords.length,
+        validationRecords: analytics.immutableRecords.filter(r => r.recordType === 'validation_activity').length,
+        consensusRecords: analytics.immutableRecords.filter(r => r.recordType === 'consensus_decision').length,
+        verifiedRecords: analytics.immutableRecords.filter(r => r.isVerified).length,
+        verificationRate: analytics.immutableRecords.length > 0 
+          ? (analytics.immutableRecords.filter(r => r.isVerified).length / analytics.immutableRecords.length) * 100 
+          : 0
+      };
+
+      res.json({
+        analytics: {
+          discoveries: discoveryStats,
+          validations: validationStats,
+          records: recordStats,
+          blocks: { totalBlocks: analytics.blocks.length },
+          stakers: { totalStakers: analytics.stakers.length },
+          overview: {
+            totalRecords: analytics.exportMetadata.totalRecords,
+            networkValue: discoveryStats.totalScientificValue,
+            averageDifficulty: discoveryStats.averageDifficulty,
+            dataIntegrity: analytics.exportMetadata.dataIntegrity,
+            lastUpdated: new Date().toISOString()
+          }
+        },
+        exportMetadata: analytics.exportMetadata
+      });
+    } catch (error) {
+      console.error('Database analytics error:', error);
+      res.status(500).json({ error: "Failed to generate database analytics" });
+    }
+  });
+
+  // Enhanced export endpoint using database library
+  app.get("/api/database/export", async (req, res) => {
+    try {
+      const { format = 'json' } = req.query;
+      const exportData = await database.getCompleteExportData();
+      
+      if (format === 'csv') {
+        // Enhanced CSV export with metadata
+        const csvSections = [];
+        
+        // Add metadata header
+        csvSections.push('# Productive Mining Platform - Complete Database Export');
+        csvSections.push(`# Export Date: ${exportData.exportMetadata.exportDate}`);
+        csvSections.push(`# Total Records: ${exportData.exportMetadata.totalRecords}`);
+        csvSections.push(`# Data Integrity: ${exportData.exportMetadata.dataIntegrity}`);
+        csvSections.push('');
+        
+        // Discoveries section
+        csvSections.push('# MATHEMATICAL DISCOVERIES');
+        if (exportData.discoveries.length > 0) {
+          const discoveryHeaders = Object.keys(exportData.discoveries[0]).join(',');
+          csvSections.push(discoveryHeaders);
+          exportData.discoveries.forEach(discovery => {
+            const values = Object.values(discovery).map(v => 
+              typeof v === 'string' ? `"${v.replace(/"/g, '""')}"` : v
+            ).join(',');
+            csvSections.push(values);
+          });
+        }
+        csvSections.push('');
+        
+        // Validations section
+        csvSections.push('# DISCOVERY VALIDATIONS');
+        if (exportData.validations.length > 0) {
+          const validationHeaders = Object.keys(exportData.validations[0]).join(',');
+          csvSections.push(validationHeaders);
+          exportData.validations.forEach(validation => {
+            const values = Object.values(validation).map(v => 
+              typeof v === 'string' ? `"${v.replace(/"/g, '""')}"` : v
+            ).join(',');
+            csvSections.push(values);
+          });
+        }
+        csvSections.push('');
+        
+        // Immutable Records section
+        csvSections.push('# IMMUTABLE RECORDS');
+        if (exportData.immutableRecords.length > 0) {
+          const recordHeaders = Object.keys(exportData.immutableRecords[0]).join(',');
+          csvSections.push(recordHeaders);
+          exportData.immutableRecords.forEach(record => {
+            const values = Object.values(record).map(v => 
+              typeof v === 'string' ? `"${v.replace(/"/g, '""')}"` : v
+            ).join(',');
+            csvSections.push(values);
+          });
+        }
+        csvSections.push('');
+        
+        // Blocks section
+        csvSections.push('# PRODUCTIVE BLOCKS');
+        if (exportData.blocks.length > 0) {
+          const blockHeaders = Object.keys(exportData.blocks[0]).join(',');
+          csvSections.push(blockHeaders);
+          exportData.blocks.forEach(block => {
+            const values = Object.values(block).map(v => 
+              typeof v === 'string' ? `"${v.replace(/"/g, '""')}"` : v
+            ).join(',');
+            csvSections.push(values);
+          });
+        }
+        csvSections.push('');
+        
+        // Stakers section
+        csvSections.push('# STAKERS');
+        if (exportData.stakers.length > 0) {
+          const stakerHeaders = Object.keys(exportData.stakers[0]).join(',');
+          csvSections.push(stakerHeaders);
+          exportData.stakers.forEach(staker => {
+            const values = Object.values(staker).map(v => 
+              typeof v === 'string' ? `"${v.replace(/"/g, '""')}"` : v
+            ).join(',');
+            csvSections.push(values);
+          });
+        }
+        
+        const csvContent = csvSections.join('\n');
+        
+        res.setHeader('Content-Type', 'text/csv');
+        res.setHeader('Content-Disposition', `attachment; filename="productive-mining-export-${new Date().toISOString().split('T')[0]}.csv"`);
+        res.send(csvContent);
+      } else {
+        // Enhanced JSON export
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Content-Disposition', `attachment; filename="productive-mining-export-${new Date().toISOString().split('T')[0]}.json"`);
+        res.json(exportData);
+      }
+    } catch (error) {
+      console.error('Database export error:', error);
+      res.status(500).json({ error: "Failed to export database" });
     }
   });
 
