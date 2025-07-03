@@ -22,6 +22,25 @@ interface ProductiveBlock {
   knowledgeCreated: number;
 }
 
+interface MathematicalWork {
+  id: number;
+  workType: string;
+  difficulty: number;
+  result: any;
+  verificationData: any;
+  computationalCost: number;
+  energyEfficiency: number;
+  scientificValue: number;
+  timestamp: string;
+  workerId: string;
+  signature: string;
+}
+
+interface BlockWorkData {
+  block: ProductiveBlock;
+  work: MathematicalWork[];
+}
+
 export default function BlockExplorerPage() {
   const { blocks } = useWebSocket();
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,12 +51,19 @@ export default function BlockExplorerPage() {
     enabled: !blocks
   });
 
-  const { data: blockWork } = useQuery({
+  const currentBlocks = blocks && blocks.length > 0 ? blocks : (initialBlocks as ProductiveBlock[] || []);
+
+  const { data: blockWork } = useQuery<BlockWorkData>({
     queryKey: ["/api/blocks", selectedBlock?.id, "work"],
     enabled: !!selectedBlock,
+    staleTime: 0, // Always refetch
   });
 
-  const currentBlocks = blocks && blocks.length > 0 ? blocks : (initialBlocks as ProductiveBlock[] || []);
+  // Automatically select the first block if none selected and blocks exist
+  if (!selectedBlock && currentBlocks.length > 0) {
+    // Use useEffect to avoid infinite re-renders
+    setTimeout(() => setSelectedBlock(currentBlocks[0]), 0);
+  }
 
   const filteredBlocks = currentBlocks.filter((block: ProductiveBlock) => {
     if (!searchQuery) return true;
