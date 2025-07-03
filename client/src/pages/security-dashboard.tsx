@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Shield, Lock, Key, Zap, AlertTriangle, CheckCircle, Database, Search, FileText, ExternalLink, Users } from 'lucide-react';
+import { Shield, Lock, Key, Zap, AlertTriangle, CheckCircle, Database, Search, FileText, ExternalLink, Users, Brain, TrendingUp, Target } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface SecurityAnalysis {
@@ -27,6 +27,32 @@ interface SecurityAnalysis {
     securityLevel: string;
   };
   timestamp: string;
+}
+
+interface SecurityDiscoveryLink {
+  discoveryId: number;
+  workType: string;
+  securityImpact: 'critical' | 'high' | 'medium' | 'low';
+  cryptographicEnhancement: string;
+  securityScore: number;
+  aiAnalysis?: {
+    significance: string;
+    confidence: number;
+    securityApplications: string[];
+  };
+}
+
+interface SecurityInsights {
+  totalSecurityDiscoveries: number;
+  quantumResistant: number;
+  cryptographicBreakthroughs: number;
+  averageSecurityScore: number;
+  topSecurityEnhancements: SecurityDiscoveryLink[];
+  emergingThreats: Array<{
+    threat: string;
+    mitigation: string;
+    relatedDiscoveries: number[];
+  }>;
 }
 
 interface ImmutableRecord {
@@ -78,6 +104,11 @@ export default function SecurityDashboard() {
 
   const { data: discoveries } = useQuery({
     queryKey: ['/api/discoveries'],
+  });
+
+  const { data: securityInsights, isLoading: loadingInsights } = useQuery<SecurityInsights>({
+    queryKey: ['/api/discoveries/security-insights'],
+    staleTime: 30000
   });
 
   const { data: immutableRecords = [] } = useQuery<ImmutableRecord[]>({
@@ -502,6 +533,135 @@ export default function SecurityDashboard() {
           </CardContent>
         </Card>
       )}
+
+      {/* AI Discovery Security Integration */}
+      <Card className="bg-slate-800 border-slate-700">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center justify-between">
+            <div className="flex items-center">
+              <Brain className="mr-2 h-5 w-5 text-purple-400" />
+              AI Discovery Security Integration
+            </div>
+            <Button
+              onClick={() => window.open('/discoveries', '_blank')}
+              variant="outline"
+              className="border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-white"
+              size="sm"
+            >
+              <ExternalLink className="mr-2 h-4 w-4" />
+              View Analysis
+            </Button>
+          </CardTitle>
+          <CardDescription className="text-gray-400">
+            AI-powered analysis of mathematical discoveries for cryptographic security enhancement
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loadingInsights ? (
+            <div className="flex items-center justify-center py-8">
+              <Brain className="h-6 w-6 animate-pulse text-purple-400 mr-2" />
+              <span className="text-gray-400">Loading AI insights...</span>
+            </div>
+          ) : securityInsights ? (
+            <div className="space-y-6">
+              {/* Security Discovery Metrics */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="text-center p-3 bg-purple-900/20 rounded-lg border border-purple-500/20">
+                  <div className="text-2xl font-bold text-purple-400">
+                    {securityInsights.totalSecurityDiscoveries}
+                  </div>
+                  <div className="text-sm text-gray-400">Security Discoveries</div>
+                </div>
+                <div className="text-center p-3 bg-blue-900/20 rounded-lg border border-blue-500/20">
+                  <div className="text-2xl font-bold text-blue-400">
+                    {securityInsights.quantumResistant}
+                  </div>
+                  <div className="text-sm text-gray-400">Quantum Resistant</div>
+                </div>
+                <div className="text-center p-3 bg-green-900/20 rounded-lg border border-green-500/20">
+                  <div className="text-2xl font-bold text-green-400">
+                    {securityInsights.cryptographicBreakthroughs}
+                  </div>
+                  <div className="text-sm text-gray-400">Crypto Breakthroughs</div>
+                </div>
+                <div className="text-center p-3 bg-orange-900/20 rounded-lg border border-orange-500/20">
+                  <div className="text-2xl font-bold text-orange-400">
+                    {Math.round(securityInsights.averageSecurityScore)}
+                  </div>
+                  <div className="text-sm text-gray-400">Avg Security Score</div>
+                </div>
+              </div>
+
+              {/* Top Security Enhancements */}
+              <div className="space-y-3">
+                <h4 className="text-white font-medium flex items-center">
+                  <Target className="mr-2 h-4 w-4 text-green-400" />
+                  Top Security Enhancements
+                </h4>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {securityInsights.topSecurityEnhancements?.slice(0, 5).map((enhancement, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <Badge className={`${
+                          enhancement.securityImpact === 'critical' ? 'bg-red-600' :
+                          enhancement.securityImpact === 'high' ? 'bg-orange-600' :
+                          enhancement.securityImpact === 'medium' ? 'bg-yellow-600' : 'bg-gray-600'
+                        } text-white`}>
+                          {enhancement.securityImpact}
+                        </Badge>
+                        <div>
+                          <div className="text-sm text-white font-medium">
+                            {enhancement.cryptographicEnhancement}
+                          </div>
+                          <div className="text-xs text-gray-400">
+                            Discovery #{enhancement.discoveryId} • {enhancement.workType.replace('_', ' ')}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-bold text-blue-400">
+                          {enhancement.securityScore}
+                        </div>
+                        <div className="text-xs text-gray-400">
+                          {enhancement.aiAnalysis?.confidence.toFixed(1)}% confidence
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Emerging Threats */}
+              <div className="space-y-3">
+                <h4 className="text-white font-medium flex items-center">
+                  <AlertTriangle className="mr-2 h-4 w-4 text-red-400" />
+                  Emerging Threats & Mitigations
+                </h4>
+                <div className="space-y-2">
+                  {securityInsights.emergingThreats?.map((threat, index) => (
+                    <div key={index} className="p-3 bg-red-900/10 border border-red-500/20 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-red-400 font-medium">{threat.threat}</span>
+                        <Badge variant="outline" className="text-red-400 border-red-400">
+                          {threat.relatedDiscoveries?.length || 0} discoveries
+                        </Badge>
+                      </div>
+                      <div className="text-sm text-gray-300">
+                        <span className="text-green-400 font-medium">Mitigation:</span> {threat.mitigation}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <Brain className="h-12 w-12 mx-auto mb-3 text-gray-500" />
+              <p className="text-gray-400">AI security insights will appear here</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Security Comparison */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

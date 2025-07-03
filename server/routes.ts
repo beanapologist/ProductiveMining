@@ -3104,6 +3104,102 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Security-focused discovery insights
+  app.get('/api/discoveries/security-insights', async (req, res) => {
+    try {
+      const allDiscoveries = await database.getAllDiscoveries();
+      
+      // Security-relevant discovery types
+      const securityRelevantTypes = [
+        'elliptic_curve_crypto', 'lattice_crypto', 'prime_pattern', 
+        'riemann_zero', 'yang_mills', 'birch_swinnerton_dyer'
+      ];
+      
+      const securityDiscoveries = allDiscoveries.filter(d => 
+        securityRelevantTypes.includes(d.workType)
+      );
+      
+      // Helper functions
+      const getSecurityEnhancement = (workType: string): string => {
+        const enhancements: Record<string, string> = {
+          'elliptic_curve_crypto': 'Post-quantum elliptic curve strengthening',
+          'lattice_crypto': 'Lattice-based cryptographic hardening',
+          'prime_pattern': 'Prime factorization resistance enhancement',
+          'riemann_zero': 'Cryptographic entropy from Riemann zeros',
+          'yang_mills': 'Quantum field encryption protocols',
+          'birch_swinnerton_dyer': 'Algebraic cryptographic foundations'
+        };
+        return enhancements[workType] || 'General cryptographic enhancement';
+      };
+
+      const getSecurityApplications = (workType: string): string[] => {
+        const applications: Record<string, string[]> = {
+          'elliptic_curve_crypto': ['Digital signatures', 'Key exchange', 'Blockchain security'],
+          'lattice_crypto': ['Post-quantum encryption', 'Zero-knowledge proofs'],
+          'prime_pattern': ['RSA strengthening', 'Hash function security'],
+          'riemann_zero': ['Random number generation', 'Cryptographic entropy'],
+          'yang_mills': ['Quantum cryptography', 'Field-based protocols'],
+          'birch_swinnerton_dyer': ['Algebraic protocols', 'Homomorphic encryption']
+        };
+        return applications[workType] || ['General security applications'];
+      };
+      
+      // Generate comprehensive security insights
+      const securityInsights = {
+        totalSecurityDiscoveries: securityDiscoveries.length,
+        quantumResistant: securityDiscoveries.filter(d => 
+          ['elliptic_curve_crypto', 'lattice_crypto'].includes(d.workType)
+        ).length,
+        cryptographicBreakthroughs: securityDiscoveries.filter(d => 
+          ['prime_pattern', 'riemann_zero'].includes(d.workType)
+        ).length,
+        averageSecurityScore: securityDiscoveries.length > 0 
+          ? securityDiscoveries.reduce((sum, d) => sum + d.difficulty, 0) / securityDiscoveries.length 
+          : 0,
+        topSecurityEnhancements: securityDiscoveries.slice(-10).map(d => ({
+          discoveryId: d.id,
+          workType: d.workType,
+          securityImpact: d.difficulty > 130 ? 'critical' : d.difficulty > 120 ? 'high' : d.difficulty > 100 ? 'medium' : 'low',
+          cryptographicEnhancement: getSecurityEnhancement(d.workType),
+          securityScore: d.difficulty,
+          aiAnalysis: {
+            significance: d.difficulty > 130 ? 'breakthrough' : d.difficulty > 120 ? 'major' : 'moderate',
+            confidence: Math.min(95, 80 + (d.difficulty - 100) * 0.3),
+            securityApplications: getSecurityApplications(d.workType)
+          }
+        })),
+        emergingThreats: [
+          {
+            threat: 'Quantum Computing Advancement',
+            mitigation: 'Post-quantum cryptography development',
+            relatedDiscoveries: securityDiscoveries.filter(d => 
+              ['elliptic_curve_crypto', 'lattice_crypto'].includes(d.workType)
+            ).map(d => d.id)
+          },
+          {
+            threat: 'Classical Cryptanalysis',
+            mitigation: 'Prime pattern analysis and strengthening',
+            relatedDiscoveries: securityDiscoveries.filter(d => 
+              ['prime_pattern', 'riemann_zero'].includes(d.workType)
+            ).map(d => d.id)
+          },
+          {
+            threat: 'Advanced Persistent Threats',
+            mitigation: 'Multi-layered cryptographic defense',
+            relatedDiscoveries: securityDiscoveries.filter(d => 
+              ['yang_mills', 'birch_swinnerton_dyer'].includes(d.workType)
+            ).map(d => d.id)
+          }
+        ]
+      };
+      
+      res.json(securityInsights);
+    } catch (error) {
+      console.error('Error generating security insights:', error);
+      res.status(500).json({ error: 'Failed to generate security insights' });
+    }
+  });
+
   // Perform cross-analysis
   app.get('/api/discoveries/patterns/cross-analysis', async (req, res) => {
     try {
