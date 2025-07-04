@@ -67,6 +67,7 @@ export default function Dashboard() {
 
   const { data: allBlocks = [] } = useQuery({
     queryKey: ['/api/blocks'],
+    queryFn: () => fetch('/api/blocks?limit=10000').then(res => res.json()),
     refetchInterval: 5000,
   });
 
