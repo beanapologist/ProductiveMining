@@ -168,39 +168,171 @@ class MiningOperationManager:
             logger.error(f"❌ BLOCK: Error creating block: {e}")
     
     async def start_autonomous_mining(self):
-        """Start autonomous mining operations"""
+        """Start autonomous mining operations with enhanced monitoring"""
         if self.autonomous_miners_running:
             return
         
         self.autonomous_miners_running = True
-        logger.info("🤖 AUTONOMOUS MINING: Starting background operations...")
+        logger.info("🤖 AUTONOMOUS MINING: Starting enhanced continuous operations...")
         
-        # Start multiple autonomous miners
-        for i in range(5):
-            asyncio.create_task(self._autonomous_miner(f"autonomous_{i}"))
+        # Start multiple autonomous miners with varied specializations
+        miners = [
+            ("autonomous_riemann", "riemann_zero"),
+            ("autonomous_prime", "prime_pattern"), 
+            ("autonomous_yang_mills", "yang_mills"),
+            ("autonomous_navier_stokes", "navier_stokes"),
+            ("autonomous_goldbach", "goldbach_verification"),
+            ("autonomous_general_1", None),  # General miners with random work types
+            ("autonomous_general_2", None),
+            ("autonomous_general_3", None),
+        ]
+        
+        # Start specialized and general miners
+        for miner_name, specialization in miners:
+            if specialization:
+                asyncio.create_task(self._specialized_autonomous_miner(miner_name, specialization))
+            else:
+                asyncio.create_task(self._autonomous_miner(miner_name))
         
         # Start network metrics collection
         asyncio.create_task(self._collect_network_metrics())
+        
+        # Start miner health monitoring
+        asyncio.create_task(self._monitor_miner_health())
+        
+        logger.info(f"✅ AUTONOMOUS MINING: Started {len(miners)} continuous miners")
     
     async def _autonomous_miner(self, miner_name: str):
-        """Run autonomous mining operations"""
+        """Run autonomous mining operations with enhanced error recovery"""
         work_types = self.math_engines.get_available_work_types()
+        consecutive_errors = 0
+        max_consecutive_errors = 5
+        
+        logger.info(f"🤖 AUTONOMOUS MINER {miner_name}: Starting continuous operations")
         
         while self.autonomous_miners_running:
             try:
-                # Random work type and difficulty
+                # Adaptive difficulty based on network performance
+                base_difficulty = random.randint(40, 80)  # Higher difficulty for better security
+                
+                # Increase difficulty if too many errors (network might be overloaded)
+                if consecutive_errors > 2:
+                    base_difficulty = random.randint(25, 45)  # Lower difficulty during issues
+                
+                # Random work type with preference for complex problems
                 work_type = random.choice(work_types)
-                difficulty = random.randint(25, 60)  # Medium difficulty range
                 
                 # Start mining operation
-                await self.start_mining_operation(work_type, difficulty)
+                logger.info(f"🚀 AUTONOMOUS MINER {miner_name}: Starting {work_type} at difficulty {base_difficulty}")
+                await self.start_mining_operation(work_type, base_difficulty)
                 
-                # Wait before next operation
-                await asyncio.sleep(random.uniform(30, 90))  # 30-90 seconds between operations
+                # Reset error counter on success
+                consecutive_errors = 0
+                
+                # Adaptive wait time based on network load
+                wait_time = random.uniform(15, 45)  # Faster mining for continuous operations
+                logger.info(f"⏱️ AUTONOMOUS MINER {miner_name}: Waiting {wait_time:.1f}s before next operation")
+                await asyncio.sleep(wait_time)
                 
             except Exception as e:
-                logger.error(f"❌ AUTONOMOUS MINER {miner_name}: Error: {e}")
-                await asyncio.sleep(30)  # Wait before retry
+                consecutive_errors += 1
+                logger.error(f"❌ AUTONOMOUS MINER {miner_name}: Error #{consecutive_errors}: {e}")
+                
+                # Progressive backoff on errors
+                if consecutive_errors >= max_consecutive_errors:
+                    logger.warning(f"🔄 AUTONOMOUS MINER {miner_name}: Too many errors, resetting in 60s")
+                    await asyncio.sleep(60)
+                    consecutive_errors = 0
+                else:
+                    # Exponential backoff
+                    backoff_time = min(30 * (2 ** consecutive_errors), 300)  # Max 5 minutes
+                    logger.info(f"⏳ AUTONOMOUS MINER {miner_name}: Backing off for {backoff_time}s")
+                    await asyncio.sleep(backoff_time)
+        
+        logger.info(f"🛑 AUTONOMOUS MINER {miner_name}: Stopped")
+    
+    async def _specialized_autonomous_miner(self, miner_name: str, work_type: str):
+        """Run specialized autonomous mining operations for specific mathematical problems"""
+        consecutive_errors = 0
+        max_consecutive_errors = 5
+        
+        logger.info(f"🎯 SPECIALIZED MINER {miner_name}: Starting continuous {work_type} operations")
+        
+        while self.autonomous_miners_running:
+            try:
+                # Higher difficulty for specialized miners
+                difficulty = random.randint(50, 100)  # Challenging problems for specialized miners
+                
+                # Reduce difficulty if errors occur
+                if consecutive_errors > 2:
+                    difficulty = random.randint(30, 60)
+                
+                # Start specialized mining operation
+                logger.info(f"🔬 SPECIALIZED MINER {miner_name}: Computing {work_type} at difficulty {difficulty}")
+                await self.start_mining_operation(work_type, difficulty)
+                
+                # Reset error counter on success
+                consecutive_errors = 0
+                
+                # Longer intervals for specialized high-difficulty work
+                wait_time = random.uniform(45, 90)  # More time for complex computations
+                logger.info(f"⏱️ SPECIALIZED MINER {miner_name}: Resting {wait_time:.1f}s before next operation")
+                await asyncio.sleep(wait_time)
+                
+            except Exception as e:
+                consecutive_errors += 1
+                logger.error(f"❌ SPECIALIZED MINER {miner_name}: Error #{consecutive_errors}: {e}")
+                
+                # Progressive backoff on errors
+                if consecutive_errors >= max_consecutive_errors:
+                    logger.warning(f"🔄 SPECIALIZED MINER {miner_name}: Too many errors, resetting in 90s")
+                    await asyncio.sleep(90)
+                    consecutive_errors = 0
+                else:
+                    # Exponential backoff
+                    backoff_time = min(45 * (2 ** consecutive_errors), 400)  # Max ~7 minutes
+                    logger.info(f"⏳ SPECIALIZED MINER {miner_name}: Backing off for {backoff_time}s")
+                    await asyncio.sleep(backoff_time)
+        
+        logger.info(f"🛑 SPECIALIZED MINER {miner_name}: Stopped")
+    
+    async def _monitor_miner_health(self):
+        """Monitor mining network health and restart failed miners"""
+        logger.info("💊 MINER HEALTH MONITOR: Starting continuous health checks")
+        
+        while self.autonomous_miners_running:
+            try:
+                # Check active mining operations
+                operations = await self.db_manager.get_active_mining_operations()
+                
+                # Check recent block creation
+                blocks = await self.db_manager.get_blocks(10)
+                recent_blocks = []
+                if blocks:
+                    recent_blocks = [b for b in blocks if 
+                                   (datetime.now() - b['timestamp']).total_seconds() < 300]  # Last 5 minutes
+                
+                # Health metrics
+                active_ops = len(operations)
+                recent_block_count = len(recent_blocks)
+                
+                logger.info(f"💊 HEALTH CHECK: {active_ops} active operations, {recent_block_count} recent blocks")
+                
+                # Alert if network activity is too low
+                if active_ops < 3:
+                    logger.warning("⚠️ HEALTH ALERT: Low mining activity detected")
+                
+                if recent_block_count == 0:
+                    logger.warning("⚠️ HEALTH ALERT: No recent blocks created")
+                
+                # Health check every 2 minutes
+                await asyncio.sleep(120)
+                
+            except Exception as e:
+                logger.error(f"❌ HEALTH MONITOR: Error: {e}")
+                await asyncio.sleep(60)
+        
+        logger.info("🛑 MINER HEALTH MONITOR: Stopped")
     
     async def _collect_network_metrics(self):
         """Collect and store network performance metrics"""

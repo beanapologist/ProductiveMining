@@ -59,6 +59,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Initialize Proof-of-Research consensus engine
   const { proofOfResearchEngine } = await import('./proof-of-research-engine');
+  const { continuousMiningEngine } = await import('./continuous-mining-engine');
+  
+  // Start continuous mining monitoring
+  setTimeout(() => {
+    continuousMiningEngine.startContinuousMonitoring();
+  }, 5000); // Start after 5 seconds to let system initialize
 
   // WebSocket server for real-time updates
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
