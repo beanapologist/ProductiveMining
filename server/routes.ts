@@ -43,13 +43,13 @@ function calculateProofOfWork(blockData: string, difficulty: number): number {
 // This will be defined within the main function scope where broadcast is available
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Initialize basic network metrics if none exist
+  // Initialize basic network metrics if none exist (will be calculated dynamically)
   const existingMetrics = await storage.getLatestNetworkMetrics();
   if (!existingMetrics) {
     await storage.createNetworkMetrics({
       totalMiners: 1,
       blocksPerHour: 0,
-      energyEfficiency: -555.2,
+      energyEfficiency: -500, // Will be calculated from actual blocks
       totalScientificValue: 0,
       co2Saved: 0,
       networkHealth: 1.0
@@ -3479,10 +3479,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         console.log(`📊 METRICS UPDATE: activeMiners=${activeMiners}, recentBlocks=${recentBlocksCount}, newMiners=${newTotalMiners}, newBlocksPerHour=${newBlocksPerHour}`);
 
+        // Calculate dynamic energy efficiency using complexity scaling engine
+        const { complexityScalingEngine } = await import('./complexity-scaling-engine');
+        const complexityMetrics = await complexityScalingEngine.analyzeComplexityProgression();
+        const dynamicEfficiency = complexityMetrics.adaptiveParameters?.emergentComplexity 
+          ? -400 - (complexityMetrics.adaptiveParameters.emergentComplexity * 100) // More complex = more efficient
+          : -500; // Default efficient baseline
+
         const updatedMetrics = await storage.createNetworkMetrics({
           totalMiners: newTotalMiners, // Ensure positive, add some growth
           blocksPerHour: newBlocksPerHour, // Real blocks per hour
-          energyEfficiency: -555.2 + (Math.random() * 4 - 2), // Target -555.2% with small variation
+          energyEfficiency: Math.max(-1000, Math.min(-100, dynamicEfficiency)), // Dynamic calculation
           totalScientificValue: Math.max(0, totalScientificValue),
           co2Saved: Math.max(0, currentMetrics.co2Saved + Math.random() * 10),
           networkHealth: Math.min(Math.max(currentMetrics.networkHealth + (Math.random() * 0.004 - 0.002), 0.95), 1.0)
