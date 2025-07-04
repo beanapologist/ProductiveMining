@@ -5,7 +5,6 @@ import path from "path";
 export default defineConfig({
   plugins: [react()],
   base: "/productive-mining-platform/",
-  root: "./client",
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./client/src"),
@@ -13,7 +12,12 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: "../dist",
+    rollupOptions: {
+      input: {
+        main: path.resolve(__dirname, "client/index.html"),
+      },
+    },
+    outDir: "./dist",
     emptyOutDir: true,
   },
   optimizeDeps: {
