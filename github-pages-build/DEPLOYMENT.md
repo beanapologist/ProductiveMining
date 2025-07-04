@@ -34,6 +34,8 @@ Update the `base` path:
 base: "/productive-mining-platform/"
 ```
 
+**Note**: The Vite configuration has been optimized for GitHub Pages deployment with simplified path resolution to avoid module resolution issues.
+
 ### 5. File Structure
 ```
 github-pages-build/
