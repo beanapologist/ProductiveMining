@@ -109,7 +109,8 @@ export class ContinuousMiningEngine {
 
     const spawned = [];
     for (let i = 0; i < count; i++) {
-      const workType = workTypes[i % workTypes.length];
+      // Randomly select work type instead of using modulo
+      const workType = workTypes[Math.floor(Math.random() * workTypes.length)];
       const minerId = `continuous_miner_${Date.now()}_${i}`;
       
       try {
@@ -215,8 +216,8 @@ export class ContinuousMiningEngine {
   }
 
   private async ensureWorkTypeVariety(operations: any[]) {
-    const workTypes = ['riemann_zero', 'prime_pattern', 'yang_mills', 'navier_stokes', 'goldbach_verification'];
-    const typeCounts = {};
+    const workTypes = ['riemann_zero', 'prime_pattern', 'yang_mills', 'navier_stokes', 'goldbach_verification', 'birch_swinnerton_dyer', 'elliptic_curve_crypto', 'lattice_crypto', 'poincare_conjecture'];
+    const typeCounts: Record<string, number> = {};
     
     operations.forEach(op => {
       typeCounts[op.operationType] = (typeCounts[op.operationType] || 0) + 1;
@@ -226,9 +227,27 @@ export class ContinuousMiningEngine {
     for (const workType of workTypes) {
       if (!typeCounts[workType] && operations.length < this.maxActiveMiners) {
         console.log(`🎯 WORK DIVERSITY: Adding ${workType} miner for variety`);
-        await this.spawnMiners(1, 100);
+        await this.spawnSpecificMiner(workType, 100);
         break; // Only add one per check
       }
+    }
+  }
+
+  private async spawnSpecificMiner(workType: string, difficulty: number) {
+    try {
+      const operation = await storage.createMiningOperation({
+        operationType: workType,
+        minerId: `continuous_miner_${Date.now()}`,
+        estimatedCompletion: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
+        difficulty,
+        currentResult: {},
+        status: 'active',
+        progress: 0
+      });
+
+      console.log(`⛏️ CONTINUOUS MINER: Starting ${workType} at difficulty ${difficulty}`);
+    } catch (error) {
+      console.error(`❌ SPAWN ERROR: Failed to spawn ${workType} miner:`, error);
     }
   }
 
