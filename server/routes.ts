@@ -12,6 +12,7 @@ import { threatDetectionEngine } from "./threat-detection-engine";
 import { quantumComplexityEngine } from "./quantum-complexity-engine";
 import { recursiveEnhancementEngine } from "./recursive-enhancement-engine";
 import { adaptiveSecurityEngine } from "./adaptive-security-engine";
+import { adaptiveLearningEngine } from "./adaptive-learning-engine";
 import { hybridMathematicalSystem } from "./hybrid-mathematical-system";
 
 // Blockchain utility functions
@@ -60,10 +61,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize Proof-of-Research consensus engine
   const { proofOfResearchEngine } = await import('./proof-of-research-engine');
   const { continuousMiningEngine } = await import('./continuous-mining-engine');
+  const { adaptiveLearningEngine } = await import('./adaptive-learning-engine');
   
-  // Start continuous mining monitoring
+  // Start continuous mining monitoring and adaptive learning
   setTimeout(() => {
     continuousMiningEngine.startContinuousMonitoring();
+    adaptiveLearningEngine.startAdaptiveLearning();
   }, 5000); // Start after 5 seconds to let system initialize
 
   // WebSocket server for real-time updates
@@ -4912,6 +4915,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('❌ REAL MATHEMATICS: Test error:', error);
       res.status(500).json({ error: `Real mathematics test failed: ${error.message}` });
+    }
+  });
+
+  // ============ ADAPTIVE LEARNING SYSTEM API ============
+  
+  app.get('/api/adaptive-learning/status', async (req, res) => {
+    try {
+      const status = await adaptiveLearningEngine.getLearningStatus();
+      res.json(status);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get adaptive learning status' });
+    }
+  });
+
+  app.get('/api/adaptive-learning/patterns', async (req, res) => {
+    try {
+      const patterns = await adaptiveLearningEngine.getLearningPatterns();
+      res.json(patterns);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get learning patterns' });
+    }
+  });
+
+  app.get('/api/adaptive-learning/dimensions', async (req, res) => {
+    try {
+      const dimensions = await adaptiveLearningEngine.getHigherDimensionalSpaces();
+      res.json(dimensions);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get higher dimensional spaces' });
+    }
+  });
+
+  app.get('/api/adaptive-learning/geometric-methods', async (req, res) => {
+    try {
+      const methods = await adaptiveLearningEngine.getGeometricMethods();
+      res.json(methods);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get geometric computational methods' });
+    }
+  });
+
+  app.get('/api/adaptive-learning/metrics', async (req, res) => {
+    try {
+      const metrics = await adaptiveLearningEngine.getAdaptiveLearningMetrics();
+      res.json(metrics);
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to get adaptive learning metrics' });
+    }
+  });
+
+  app.post('/api/adaptive-learning/start', async (req, res) => {
+    try {
+      await adaptiveLearningEngine.startAdaptiveLearning();
+      res.json({ success: true, message: 'Adaptive learning system started' });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to start adaptive learning' });
+    }
+  });
+
+  app.post('/api/adaptive-learning/stop', async (req, res) => {
+    try {
+      await adaptiveLearningEngine.stopAdaptiveLearning();
+      res.json({ success: true, message: 'Adaptive learning system stopped' });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to stop adaptive learning' });
     }
   });
 

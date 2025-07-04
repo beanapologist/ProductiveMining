@@ -5,7 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useState } from "react";
-import { BarChart3, Pickaxe, Database, Brain, Info, Shield, Users, GraduationCap, HardDrive, Coins, Wallet, Copy, Check, FileCode, TrendingUp, Play, Beaker } from "lucide-react";
+import { BarChart3, Pickaxe, Database, Brain, Info, Shield, Users, GraduationCap, HardDrive, Coins, Wallet, Copy, Check, FileCode, TrendingUp, Play, Beaker, Layers } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import Dashboard from "@/pages/dashboard-new";
@@ -20,6 +20,7 @@ import DataManagement from "@/pages/data-management";
 import ComplexityAnalysisPage from "@/pages/complexity-analysis";
 import APIOverview from "@/pages/api-overview";
 import ScientificValuation from "@/pages/scientific-valuation";
+import AdaptiveLearningPage from "@/pages/adaptive-learning";
 
 import WalletPage from "@/pages/wallet";
 import About from "@/pages/about";
@@ -39,6 +40,7 @@ function Router() {
         <Route path="/security" component={SecurityDashboard} />
         <Route path="/complexity" component={ComplexityAnalysisPage} />
         <Route path="/valuation" component={ScientificValuation} />
+        <Route path="/adaptive-learning" component={AdaptiveLearningPage} />
 
         <Route path="/blocks" component={BlockExplorer} />
         <Route path="/wallet" component={WalletPage} />
@@ -112,6 +114,7 @@ function Navigation() {
     { path: '/research', title: 'Research Lab', icon: Beaker },
     { path: '/security', title: 'Crypto Fortress', icon: Shield },
     { path: '/complexity', title: 'Complexity Engine', icon: TrendingUp },
+    { path: '/adaptive-learning', title: 'AI Learning Core', icon: Layers },
     { path: '/valuation', title: 'Value Calculator', icon: Coins },
     { path: '/blocks', title: 'Data Vault', icon: Database },
     { path: '/wallet', title: 'Research Vault', icon: Wallet },
