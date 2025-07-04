@@ -15,37 +15,44 @@ interface TokenMetrics {
   volume24h: number;
   circulatingSupply: number;
   totalSupply: number;
+  stakingRatio: number;
+  stakingRewards: number;
+  holders: number;
+  discoveryNFTs: number;
+  revenueGenerated: number;
+  treasuryBalance: number;
 }
 
 interface StakingData {
   totalStaked: number;
   activeStakers: number;
-  stakingRatio: number;
-  rewardsAPY: number;
-  myStaked: number;
-  pendingRewards: number;
   stakingPools: Array<{
-    poolId: string;
+    id: string;
     name: string;
     apy: number;
-    lockPeriod: string;
     minStake: number;
     totalStaked: number;
+    stakers: number;
+    features: string[];
   }>;
+  annualRewards: number;
+  networkSecurity: number;
 }
 
 interface NFTData {
   totalMinted: number;
   uniqueHolders: number;
-  totalValue: number;
-  averagePrice: number;
-  myNFTs: number;
+  totalVolume: number;
+  floorPrice: number;
   collections: Array<{
+    type: string;
     name: string;
     count: number;
     floorPrice: number;
-    volume: number;
+    description: string;
   }>;
+  monthlyGrowth: number;
+  holderSatisfaction: number;
 }
 
 export default function WalletPage() {
@@ -73,26 +80,28 @@ export default function WalletPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Calculate portfolio values to match $407.3K target
+  // Calculate portfolio values based on realistic user holdings
   const prodBalance = 15847.23;
   const tokenPrice = tokenMetrics?.price || 10.58;
-  const myStaked = stakingData?.myStaked || 12000;
-  const myNFTs = nftData?.myNFTs || 8;
-  const avgNFTPrice = nftData?.averagePrice || 2847.50;
+  const myStaked = 12000; // User's staked tokens
+  const myNFTs = 8; // User's NFT count
+  const avgNFTPrice = nftData?.floorPrice || 2847; // Average NFT price from API
   
   const prodValue = prodBalance * tokenPrice;
   const stakedValue = myStaked * tokenPrice;
   const nftValue = myNFTs * avgNFTPrice;
+  const totalPortfolioValue = prodValue + stakedValue + nftValue;
   
-  // Adjust total to target $407,300
-  const targetPortfolioValue = 407300;
-  const calculatedValue = prodValue + stakedValue + nftValue;
-  const adjustmentFactor = calculatedValue > 0 ? targetPortfolioValue / calculatedValue : 1;
+  // Calculate pool-specific APY for display
+  const elitePool = stakingData?.stakingPools?.find(pool => pool.id === 'elite');
+  const standardPool = stakingData?.stakingPools?.find(pool => pool.id === 'standard');
+  const currentAPY = elitePool?.apy || standardPool?.apy || tokenMetrics?.stakingRewards || 18.7;
   
-  const adjustedProdValue = (prodValue * adjustmentFactor) || 0;
-  const adjustedStakedValue = (stakedValue * adjustmentFactor) || 0;
-  const adjustedNftValue = (nftValue * adjustmentFactor) || 0;
-  const totalPortfolioValue = targetPortfolioValue || 0;
+  // Calculate pending rewards (estimated based on stake and APY)
+  const pendingRewards = (myStaked * currentAPY / 100 / 365) * 30; // 30 days of rewards
+  
+  // Get staking ratio from token metrics
+  const stakingRatio = tokenMetrics?.stakingRatio || 76.2;
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -152,10 +161,10 @@ export default function WalletPage() {
             </div>
             <div className="text-right">
               <div className="text-white font-bold text-lg">
-                ${adjustedProdValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                ${prodValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </div>
               <Badge variant="outline" className="text-blue-400 border-blue-400">
-                {((adjustedProdValue && totalPortfolioValue ? (adjustedProdValue / totalPortfolioValue) * 100 : 0)).toFixed(1)}%
+                {((prodValue && totalPortfolioValue ? (prodValue / totalPortfolioValue) * 100 : 0)).toFixed(1)}%
               </Badge>
             </div>
           </div>
@@ -166,16 +175,16 @@ export default function WalletPage() {
               <div>
                 <div className="text-white font-bold">Staked PROD</div>
                 <div className="text-gray-400 text-sm">
-                  {myStaked.toLocaleString()} tokens earning {((stakingData?.rewardsAPY || 18.7)).toFixed(1)}% APY
+                  {myStaked.toLocaleString()} tokens earning {currentAPY.toFixed(1)}% APY
                 </div>
               </div>
             </div>
             <div className="text-right">
               <div className="text-white font-bold text-lg">
-                ${adjustedStakedValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                ${stakedValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </div>
               <Badge variant="outline" className="text-purple-400 border-purple-400">
-                {((adjustedStakedValue && totalPortfolioValue ? (adjustedStakedValue / totalPortfolioValue) * 100 : 0)).toFixed(1)}%
+                {((stakedValue && totalPortfolioValue ? (stakedValue / totalPortfolioValue) * 100 : 0)).toFixed(1)}%
               </Badge>
             </div>
           </div>
@@ -190,10 +199,10 @@ export default function WalletPage() {
             </div>
             <div className="text-right">
               <div className="text-white font-bold text-lg">
-                ${adjustedNftValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                ${nftValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
               </div>
               <Badge variant="outline" className="text-pink-400 border-pink-400">
-                {((adjustedNftValue && totalPortfolioValue ? (adjustedNftValue / totalPortfolioValue) * 100 : 0)).toFixed(1)}%
+                {((nftValue && totalPortfolioValue ? (nftValue / totalPortfolioValue) * 100 : 0)).toFixed(1)}%
               </Badge>
             </div>
           </div>
@@ -239,15 +248,15 @@ export default function WalletPage() {
         <CardContent className="space-y-4">
           <div className="flex justify-between items-center">
             <span className="text-gray-400">Current APY</span>
-            <span className="text-purple-400 font-bold text-lg">{(stakingData?.rewardsAPY || 18.7).toFixed(1)}%</span>
+            <span className="text-purple-400 font-bold text-lg">{currentAPY.toFixed(1)}%</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-400">Pending Rewards</span>
-            <span className="text-green-400 font-bold">{(stakingData?.pendingRewards || 247.89).toLocaleString()} PROD</span>
+            <span className="text-green-400 font-bold">{pendingRewards.toLocaleString()} PROD</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-400">Network Staking</span>
-            <span className="text-white font-semibold">{(stakingData?.stakingRatio || 76.2).toFixed(1)}%</span>
+            <span className="text-white font-semibold">{stakingRatio.toFixed(1)}%</span>
           </div>
           <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white">
             <Unlock className="h-4 w-4 mr-2" />
@@ -290,8 +299,8 @@ export default function WalletPage() {
             <span className="text-white font-bold">{myNFTs}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-gray-400">Avg. Value</span>
-            <span className="text-white font-semibold">${avgNFTPrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}</span>
+            <span className="text-gray-400">Floor Price</span>
+            <span className="text-white font-semibold">${avgNFTPrice.toLocaleString('en-US', { minimumFractionDigits: 0 })}</span>
           </div>
           <div className="flex justify-between items-center">
             <span className="text-gray-400">Top Collection</span>
