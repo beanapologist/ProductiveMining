@@ -326,7 +326,20 @@ export class CryptographicSafetyEngine {
   }
 
   private assessQuantumResistance(keyStrength: number): number {
-    return Math.min(100, keyStrength / 10);
+    // Enhanced quantum resistance calculation based on key strength and cryptographic advancements
+    let baseResistance = Math.min(100, keyStrength / 10);
+    
+    // Apply additional quantum resistance bonuses for enhanced key strengths
+    if (keyStrength >= 512) {
+      baseResistance += 25; // Post-quantum cryptography level
+    } else if (keyStrength >= 384) {
+      baseResistance += 15; // Enhanced quantum resistance
+    } else if (keyStrength >= 256) {
+      baseResistance += 10; // Standard quantum resistance
+    }
+    
+    // Ensure we return a realistic quantum resistance percentage (20-95%)
+    return Math.min(95, Math.max(20, baseResistance));
   }
 
   private generatePrimeSignature(message: string, patterns: any[]): string[] {
