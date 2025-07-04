@@ -18,4 +18,7 @@ export default defineConfig({
     outDir: "./dist",
     emptyOutDir: true,
   },
+  optimizeDeps: {
+    exclude: ["@replit/vite-plugin-runtime-error-modal", "@replit/vite-plugin-cartographer"]
+  },
 });
