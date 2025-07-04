@@ -2,6 +2,27 @@
 
 This is a static build of the Productive Mining Platform, configured for deployment on GitHub Pages.
 
+## 🚨 CRITICAL: Directory Requirement
+
+**The error "File '/workspaces/ProductiveMining/App.tsx' is not a module" occurs when build commands are run from the wrong directory.**
+
+**Solution**: Always run build commands from the `github-pages-build` directory:
+
+```bash
+# CORRECT
+cd github-pages-build
+npm run build
+
+# INCORRECT (causes the error)
+npm run build  # from main project directory
+```
+
+Use the verification script to check your setup:
+```bash
+cd github-pages-build
+./verify-setup.sh
+```
+
 ## 🚀 Revolutionary Blockchain Platform
 
 A cutting-edge blockchain platform that replaces wasteful proof-of-work mining with productive mathematical computation, featuring:

@@ -1,5 +1,18 @@
 # GitHub Pages Deployment Instructions
 
+## ⚠️ IMPORTANT: Directory Location
+
+**Critical**: All build commands must be run from the `github-pages-build` directory, NOT the main project directory.
+
+```bash
+# CORRECT - Run from github-pages-build directory
+cd github-pages-build
+npm run build
+
+# INCORRECT - Do not run from main project directory
+# This will cause "File '/workspaces/ProductiveMining/App.tsx' is not a module" error
+```
+
 ## 📋 Complete Setup Guide
 
 ### 1. Repository Setup
