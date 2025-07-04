@@ -13,7 +13,7 @@ export default defineConfig({
   },
   build: {
     rollupOptions: {
-      input: "./client/index.html",
+      input: path.resolve(__dirname, "client/index.html"),
     },
     outDir: "./dist",
     emptyOutDir: true,
