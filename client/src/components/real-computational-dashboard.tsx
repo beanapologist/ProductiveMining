@@ -113,7 +113,7 @@ export default function RealComputationalDashboard() {
               <div>
                 <p className="text-sm font-medium text-green-700 dark:text-green-300">Scientific Value</p>
                 <p className="text-2xl font-bold text-green-900 dark:text-green-100">
-                  ${(totalScientificValue / 1000000).toFixed(1)}M
+                  ${Math.floor(totalScientificValue / 1000)}K
                 </p>
               </div>
               <TrendingUp className="w-8 h-8 text-green-600" />

@@ -89,7 +89,7 @@ export default function About() {
           <Card className="bg-gradient-to-br from-purple-600/20 to-pink-600/20 border-purple-500/30">
             <CardContent className="p-6 text-center">
               <Calculator className="h-8 w-8 text-purple-400 mx-auto mb-3" />
-              <div className="text-2xl font-bold text-purple-400">380+</div>
+              <div className="text-2xl font-bold text-purple-400">6,600+</div>
               <div className="text-sm text-slate-300">Mathematical Discoveries</div>
               <div className="text-xs text-purple-300 mt-1">Real breakthroughs made</div>
             </CardContent>
@@ -98,16 +98,16 @@ export default function About() {
           <Card className="bg-gradient-to-br from-green-600/20 to-emerald-600/20 border-green-500/30">
             <CardContent className="p-6 text-center">
               <DollarSign className="h-8 w-8 text-green-400 mx-auto mb-3" />
-              <div className="text-2xl font-bold text-green-400">$580M+</div>
+              <div className="text-2xl font-bold text-green-400">$15.8M+</div>
               <div className="text-sm text-slate-300">Scientific Value Created</div>
-              <div className="text-xs text-green-300 mt-1">Active mining generation</div>
+              <div className="text-xs text-green-300 mt-1">Realistic research valuations</div>
             </CardContent>
           </Card>
           
           <Card className="bg-gradient-to-br from-orange-600/20 to-red-600/20 border-orange-500/30">
             <CardContent className="p-6 text-center">
               <Globe className="h-8 w-8 text-orange-400 mx-auto mb-3" />
-              <div className="text-2xl font-bold text-orange-400">226</div>
+              <div className="text-2xl font-bold text-orange-400">4,340+</div>
               <div className="text-sm text-slate-300">Productive Blocks</div>
               <div className="text-xs text-orange-300 mt-1">Beyond Bitcoin's waste</div>
             </CardContent>

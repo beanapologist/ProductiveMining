@@ -373,12 +373,12 @@ export default function DiscoveriesPage() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-yellow-400">
-              ${(currentDiscoveries.reduce((sum, d) => sum + d.scientificValue, 0) / 1000000).toFixed(1)}M
+              ${Math.floor(currentDiscoveries.reduce((sum, d) => sum + d.scientificValue, 0) / 1000)}K
             </div>
             <div className="text-sm text-gray-400 mt-1">
               Avg: ${currentDiscoveries.length > 0 ? 
-                Math.floor(currentDiscoveries.reduce((sum, d) => sum + d.scientificValue, 0) / currentDiscoveries.length / 1000) : 0
-              }K per discovery
+                Math.floor(currentDiscoveries.reduce((sum, d) => sum + d.scientificValue, 0) / currentDiscoveries.length) : 0
+              } per discovery
             </div>
           </CardContent>
         </Card>
