@@ -57,6 +57,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }
   const httpServer = createServer(app);
 
+  // Initialize Proof-of-Research consensus engine
+  const { proofOfResearchEngine } = await import('./proof-of-research-engine');
+
   // WebSocket server for real-time updates
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
 
@@ -4473,6 +4476,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Proof-of-Research Consensus API Routes
+  
+  // Get PoR consensus status
+  app.get("/api/proof-of-research/status", async (req, res) => {
+    try {
+      const status = proofOfResearchEngine.getConsensusStatus();
+      res.json(status);
+    } catch (error) {
+      console.error("Error fetching PoR status:", error);
+      res.status(500).json({ error: "Failed to fetch Proof-of-Research status" });
+    }
+  });
+
+  // Get research validators
+  app.get("/api/proof-of-research/validators", async (req, res) => {
+    try {
+      const validators = proofOfResearchEngine.getResearchValidators();
+      res.json(validators);
+    } catch (error) {
+      console.error("Error fetching research validators:", error);
+      res.status(500).json({ error: "Failed to fetch research validators" });
+    }
+  });
+
+  // Get recent research validations
+  app.get("/api/proof-of-research/validations", async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 20;
+      const validations = proofOfResearchEngine.getRecentValidations(limit);
+      res.json(validations);
+    } catch (error) {
+      console.error("Error fetching research validations:", error);
+      res.status(500).json({ error: "Failed to fetch research validations" });
+    }
+  });
+
+  // Get consensus results
+  app.get("/api/proof-of-research/consensus", async (req, res) => {
+    try {
+      const results = proofOfResearchEngine.getConsensusResults();
+      res.json(results);
+    } catch (error) {
+      console.error("Error fetching consensus results:", error);
+      res.status(500).json({ error: "Failed to fetch consensus results" });
+    }
+  });
+
+  // Submit block for research validation
+  app.post("/api/proof-of-research/submit", async (req, res) => {
+    try {
+      const { blockId, discoveryId } = req.body;
+      
+      if (!blockId || !discoveryId) {
+        return res.status(400).json({ error: "Block ID and discovery ID are required" });
+      }
+
+      const validationId = await proofOfResearchEngine.submitForResearchValidation(blockId, discoveryId);
+      res.json({ 
+        message: "Block submitted for research validation",
+        validationId,
+        blockId,
+        discoveryId 
+      });
+    } catch (error) {
+      console.error("Error submitting for research validation:", error);
+      res.status(500).json({ error: "Failed to submit for research validation" });
+    }
+  });
+
   // Enhanced API Overview - All Available Endpoints
   app.get('/api/overview', async (req, res) => {
     try {
@@ -4499,6 +4571,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
             analysis: '/api/complexity-scaling/analysis',
             metrics: '/api/complexity/metrics',
             apply: '/api/complexity-scaling/apply'
+          },
+          proofOfResearch: {
+            status: '/api/proof-of-research/status',
+            validators: '/api/proof-of-research/validators',
+            validations: '/api/proof-of-research/validations',
+            consensus: '/api/proof-of-research/consensus',
+            submit: '/api/proof-of-research/submit'
           },
           security: {
             insights: '/api/security/insights',

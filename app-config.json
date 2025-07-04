@@ -10,7 +10,29 @@
     "network": {
       "name": "Productive Mining Network",
       "chainId": "productive-001",
-      "consensus": "hybrid-pos-pow",
+      "consensus": "triple-layer-hybrid",
+      "consensusLayers": {
+        "proofOfWork": {
+          "enabled": true,
+          "difficulty": {
+            "min": 150,
+            "max": 180,
+            "default": 170
+          }
+        },
+        "proofOfStake": {
+          "enabled": true,
+          "validators": 6,
+          "consensusThreshold": 0.67
+        },
+        "proofOfResearch": {
+          "enabled": true,
+          "researchValidators": 6,
+          "qualityThreshold": 70,
+          "consensusThreshold": 0.75,
+          "peerReview": true
+        }
+      },
       "blockTime": 180,
       "difficulty": {
         "min": 150,
@@ -103,6 +125,15 @@
       "consensusThreshold": 0.67,
       "immutableRecords": true,
       "auditTrail": true
+    },
+    "proofOfResearch": {
+      "enabled": true,
+      "researchValidators": 6,
+      "qualityThreshold": 70,
+      "consensusThreshold": 0.75,
+      "peerReview": true,
+      "validationInterval": 20000,
+      "peerReviewInterval": 35000
     }
   },
   "recursive": {
@@ -137,6 +168,7 @@
       "metrics": "/api/metrics",
       "security": "/api/security",
       "pos": "/api/pos",
+      "proofOfResearch": "/api/proof-of-research",
       "complexity": "/api/complexity-scaling",
       "recursive": "/api/recursive-enhancement",
       "hybrid": "/api/hybrid-system",
