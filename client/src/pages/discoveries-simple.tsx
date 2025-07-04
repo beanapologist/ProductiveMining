@@ -20,7 +20,7 @@ interface MathematicalWork {
 export default function DiscoveriesPage() {
   const { data: currentDiscoveries = [], isLoading } = useQuery<MathematicalWork[]>({
     queryKey: ['/api/discoveries'],
-    queryFn: () => fetch('/api/discoveries?limit=1000').then(res => res.json()),
+    queryFn: () => fetch('/api/discoveries?limit=10000').then(res => res.json()),
   });
 
   if (isLoading) {
