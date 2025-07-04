@@ -7,8 +7,8 @@ export default defineConfig({
   base: "/productive-mining-platform/",
   resolve: {
     alias: {
-      "@": path.resolve("./client/src"),
-      "@shared": path.resolve("./shared"),
+      "@": path.resolve(__dirname, "./client/src"),
+      "@shared": path.resolve(__dirname, "./shared"),
     },
   },
   build: {
