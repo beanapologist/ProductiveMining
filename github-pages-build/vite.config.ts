@@ -11,9 +11,11 @@ export default defineConfig({
       "@shared": path.resolve("./shared"),
     },
   },
-  root: "./client",
   build: {
-    outDir: "../dist",
+    rollupOptions: {
+      input: "./client/index.html",
+    },
+    outDir: "./dist",
     emptyOutDir: true,
   },
 });
