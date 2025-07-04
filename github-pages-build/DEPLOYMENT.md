@@ -124,6 +124,31 @@ Once deployed, the platform will be accessible at:
 https://YOUR_USERNAME.github.io/productive-mining-platform/
 ```
 
+## 🔧 Troubleshooting
+
+### Build Issues
+If you encounter module resolution errors:
+
+1. **main.tsx Import Error**: Ensure imports use explicit `.tsx` extensions:
+   ```typescript
+   import App from "./App.tsx";
+   ```
+
+2. **Path Resolution**: Verify `vite.config.ts` and `tsconfig.json` have matching path aliases:
+   ```typescript
+   // vite.config.ts
+   "@": path.resolve("./client/src")
+   
+   // tsconfig.json  
+   "@/*": ["./client/src/*"]
+   ```
+
+3. **Module Not Found**: Run from the correct directory:
+   ```bash
+   cd github-pages-build
+   npm run build
+   ```
+
 ## 🛠️ Customization
 
 ### Updating Mock Data
