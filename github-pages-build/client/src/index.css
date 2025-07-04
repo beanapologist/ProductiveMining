@@ -1,0 +1,524 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Modern Clean Theme */
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(240, 10%, 3.9%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(240, 10%, 3.9%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(240, 10%, 3.9%);
+  --primary: hsl(221, 83%, 53%);
+  --primary-foreground: hsl(0, 0%, 98%);
+  --secondary: hsl(210, 40%, 98%);
+  --secondary-foreground: hsl(222, 84%, 4.9%);
+  --muted: hsl(210, 40%, 98%);
+  --muted-foreground: hsl(215, 16%, 47%);
+  --accent: hsl(210, 40%, 98%);
+  --accent-foreground: hsl(222, 84%, 4.9%);
+  --destructive: hsl(0, 84%, 60%);
+  --destructive-foreground: hsl(0, 0%, 98%);
+  --border: hsl(214, 32%, 91%);
+  --input: hsl(214, 32%, 91%);
+  --ring: hsl(221, 83%, 53%);
+  --radius: 0.5rem;
+
+  /* Professional Colors */
+  --blue-500: #3b82f6;
+  --blue-600: #2563eb;
+  --green-500: #10b981;
+  --green-600: #059669;
+  --purple-500: #8b5cf6;
+  --purple-600: #7c3aed;
+  --orange-500: #f59e0b;
+  --orange-600: #d97706;
+  --red-500: #ef4444;
+  --red-600: #dc2626;
+}
+
+/* Global styles */
+body {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #e2e8f0 100%);
+  color: hsl(var(--foreground));
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* Modern interface components */
+.modern-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.modern-header {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid hsl(var(--border));
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.modern-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid hsl(var(--border));
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.modern-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border-color: var(--blue-500);
+}
+
+.modern-tabs {
+  background: hsl(var(--secondary));
+  border-bottom: 1px solid hsl(var(--border));
+  padding: 0 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.modern-tab {
+  padding: 1rem 1.5rem;
+  border: none;
+  background: none;
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.modern-tab:hover {
+  color: var(--blue-600);
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.modern-tab.active {
+  color: var(--blue-600);
+  border-bottom-color: var(--blue-500);
+  background: white;
+}
+
+.modern-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  background: white;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.modern-table th {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+  border-bottom: 2px solid hsl(var(--border));
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.modern-table td {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+.modern-table tbody tr:hover {
+  background: rgba(59, 130, 246, 0.02);
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.metric-item {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 250, 252, 0.9) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid hsl(var(--border));
+  border-radius: 1rem;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--blue-500), var(--purple-500));
+}
+
+.metric-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.metric-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: hsl(var(--foreground));
+  margin-bottom: 0.5rem;
+  font-family: 'SF Mono', 'Monaco', monospace;
+}
+
+.metric-label {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.875rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-active {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-pending {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.1));
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.status-completed {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(37, 99, 235, 0.1));
+  color: #1e40af;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.progress-bar {
+  width: 100%;
+  height: 0.75rem;
+  background: hsl(var(--muted));
+  border-radius: 9999px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue-500), var(--purple-500));
+  transition: width 0.8s ease;
+  border-radius: 9999px;
+}
+
+.nav-modern {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid hsl(var(--border));
+  padding: 0 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.nav-brand {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: hsl(var(--foreground));
+}
+
+.nav-menu {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.nav-link {
+  padding: 0.875rem 1.25rem;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  color: hsl(var(--muted-foreground));
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.nav-link:hover {
+  color: var(--blue-600);
+  background: rgba(59, 130, 246, 0.05);
+  transform: translateY(-1px);
+}
+
+.nav-link.active {
+  color: var(--blue-600);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.2);
+}
+
+/* Mining specific styling */
+.mining-card {
+  background: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  border: 1px solid hsl(var(--border));
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.mining-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.mining-button {
+  background: linear-gradient(135deg, var(--blue-500), var(--blue-600));
+  color: white;
+  border: none;
+  padding: 0.875rem 1.5rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.mining-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.4);
+}
+
+.mining-button:disabled {
+  background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Work type colors */
+.work-riemann { color: #1e40af; }
+.work-prime { color: #059669; }
+.work-yang-mills { color: #7c3aed; }
+.work-elliptic { color: #d97706; }
+.work-lattice { color: #dc2626; }
+
+/* Animations */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+.pulse-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  animation: pulse-dot 2s infinite;
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, var(--blue-500), var(--purple-500));
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, var(--blue-600), var(--purple-600));
+}
+/* Gaming UI Enhancements */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
+  50% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.8); }
+}
+
+@keyframes achievement-pop {
+  0% { transform: scale(0) rotate(-12deg); opacity: 0; }
+  50% { transform: scale(1.1) rotate(3deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes level-up {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); color: #fbbf24; }
+  100% { transform: scale(1); }
+}
+
+@keyframes xp-bar-fill {
+  0% { width: 0%; }
+  100% { width: var(--fill-percentage); }
+}
+
+@keyframes discovery-beam {
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(400%) skewX(-15deg); }
+}
+
+.game-card {
+  @apply relative overflow-hidden bg-gradient-to-br from-white via-blue-50 to-indigo-50 
+         backdrop-blur-md border border-blue-300/50 rounded-xl shadow-lg transition-all duration-300;
+}
+
+.game-card:hover {
+  @apply border-blue-400/60 shadow-blue-500/30;
+  transform: translateY(-2px);
+}
+
+.achievement-badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold
+         bg-gradient-to-r from-yellow-400 to-orange-500 text-black
+         shadow-lg transform transition-all duration-300 hover:scale-110;
+  animation: achievement-pop 0.6s ease-out;
+}
+
+.level-indicator {
+  @apply inline-flex items-center px-4 py-2 rounded-full text-sm font-bold
+         bg-gradient-to-r from-purple-500 to-pink-500 text-white
+         shadow-lg border-2 border-white/20;
+}
+
+.xp-bar {
+  @apply relative h-3 bg-gray-200 rounded-full overflow-hidden border border-gray-300;
+}
+
+.xp-fill {
+  @apply h-full bg-gradient-to-r from-green-400 to-blue-500 rounded-full relative;
+  animation: xp-bar-fill 2s ease-out;
+}
+
+.metric-gem {
+  @apply relative inline-flex items-center justify-center w-16 h-16 rounded-full
+         bg-gradient-to-br from-blue-400 to-purple-600 text-white font-bold text-lg
+         shadow-xl border-2 border-white/30 transform transition-all duration-300;
+}
+
+.metric-gem:hover {
+  animation: pulse-glow 1.5s infinite;
+  transform: scale(1.1);
+}
+
+.coin-counter {
+  @apply inline-flex items-center px-4 py-2 rounded-full
+         bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold
+         shadow-lg border-2 border-yellow-300/50;
+}
+
+.gaming-button {
+  @apply relative px-6 py-3 rounded-lg font-semibold text-white
+         bg-gradient-to-r from-blue-600 to-purple-600
+         shadow-lg transform transition-all duration-200
+         hover:shadow-xl hover:scale-105 active:scale-95
+         border border-blue-400/30;
+}
+
+.leaderboard-row.rank-1 {
+  @apply border-yellow-400 bg-gradient-to-r from-yellow-900/30 to-transparent;
+}
+
+.leaderboard-row.rank-2 {
+  @apply border-gray-300 bg-gradient-to-r from-gray-700/30 to-transparent;
+}
+
+.leaderboard-row.rank-3 {
+  @apply border-orange-400 bg-gradient-to-r from-orange-900/30 to-transparent;
+}
+
+.mining-progress {
+  @apply relative h-4 bg-gray-200 rounded-full overflow-hidden border border-gray-300;
+}
+
+.mining-fill {
+  @apply h-full bg-gradient-to-r from-orange-400 via-red-500 to-pink-500 rounded-full
+         transition-all duration-1000 ease-out relative;
+}
+
+.combo-counter {
+  @apply absolute top-4 right-4 px-3 py-1 rounded-full
+         bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold text-sm
+         shadow-lg border border-white/30 transform transition-all duration-300;
+}
+
+.holographic {
+  background: linear-gradient(45deg, #ff0080, #ff8c00, #40e0d0, #ff0080);
+  background-size: 400% 400%;
+}
+
+.neon-glow {
+  filter: drop-shadow(0 0 10px currentColor);
+}
+
+/* Wallet Component Styles */
+.wallet-display {
+  @apply flex flex-col items-end gap-1 px-3 py-2 rounded-lg
+         bg-gradient-to-br from-white/90 to-gray-50/90
+         border border-gray-300/50 backdrop-blur-sm;
+}
+
+.wallet-balance {
+  @apply text-right;
+}
+
+.wallet-address-container {
+  @apply flex items-center gap-2;
+}
+
+.wallet-address {
+  @apply font-mono tracking-wider;
+}
+
+.wallet-copy-btn {
+  @apply p-1 rounded hover:bg-gray-700/50 transition-colors duration-200
+         text-gray-400 hover:text-green-400;
+}
+
+.wallet-card-large {
+  @apply w-16 h-16 rounded-xl bg-gradient-to-br from-cyan-900/50 to-blue-900/50
+         border border-cyan-400/30 flex items-center justify-center
+         shadow-lg backdrop-blur-sm;
+}
