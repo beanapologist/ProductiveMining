@@ -3,7 +3,8 @@
  * Monitors network health and automatically spawns new miners as needed
  */
 
-import { storage } from './storage';
+import { storage } from './storage.js';
+import { workDistributionBalancer } from './work-distribution-balancer.js';
 
 export class ContinuousMiningEngine {
   private monitoringActive = false;
@@ -15,20 +16,21 @@ export class ContinuousMiningEngine {
   private lastSpawnTime = 0;
 
   constructor() {
-    console.log('⛏️ CONTINUOUS MINING ENGINE: Initialized');
+    console.log('🔧 CONTINUOUS MINING ENGINE: Initialized with intelligent work distribution');
   }
 
   async startContinuousMonitoring() {
     if (this.monitoringActive) {
+      console.log('⚠️ CONTINUOUS MINING: Already monitoring');
       return;
     }
 
     this.monitoringActive = true;
-    console.log('🔄 CONTINUOUS MINING: Starting network health monitoring...');
-
-    // Initial spawn to ensure minimum miners
+    console.log('🚀 CONTINUOUS MINING: Starting intelligent monitoring system with work distribution balancer');
+    
+    // Initial spawn with balanced work types
     await this.ensureMinimumMiners();
-
+    
     // Start monitoring loop
     this.runMonitoringLoop();
   }
@@ -39,135 +41,103 @@ export class ContinuousMiningEngine {
         await this.performHealthCheck();
         await this.sleep(this.healthCheckInterval);
       } catch (error) {
-        console.error('❌ CONTINUOUS MINING: Health check error:', error);
-        await this.sleep(10000); // Wait 10s on error
+        console.error('❌ MONITORING ERROR:', (error as Error).message);
+        await this.sleep(this.healthCheckInterval);
       }
     }
   }
 
   private async performHealthCheck() {
-    const operations = await storage.getActiveMiningOperations();
-    const activeCount = operations.length;
+    try {
+      const activeOperations = await storage.getActiveMiningOperations();
+      const activeCount = activeOperations.length;
+      
+      console.log(`🏥 HEALTH CHECK: ${activeCount} active miners`);
 
-    console.log(`💊 MINING HEALTH: ${activeCount} active miners (target: ${this.targetActiveMiners})`);
-
-    // Check if we need more miners
-    if (activeCount < this.minActiveMiners) {
-      console.log(`⚠️ MINING ALERT: Only ${activeCount} miners active, spawning more...`);
-      await this.spawnEmergencyMiners();
-    } else if (activeCount < this.targetActiveMiners && this.canSpawnMore()) {
-      console.log(`📈 MINING SCALE: Scaling up to target capacity...`);
-      await this.spawnAdditionalMiners();
+      if (this.canSpawnMore() && activeCount < this.minActiveMiners) {
+        await this.ensureMinimumMiners();
+      } else if (activeCount < this.targetActiveMiners && this.canSpawnMore()) {
+        await this.checkStuckOperations();
+        await this.spawnAdditionalMiners();
+        await this.ensureWorkTypeVariety();
+      }
+    } catch (error) {
+      console.error('❌ HEALTH CHECK ERROR:', (error as Error).message);
     }
-
-    // Monitor for stuck operations
-    await this.checkStuckOperations(operations);
-
-    // Ensure variety in work types
-    await this.ensureWorkTypeVariety(operations);
   }
 
   private async ensureMinimumMiners() {
-    const operations = await storage.getActiveMiningOperations();
-    const activeCount = operations.length;
-
-    if (activeCount < this.minActiveMiners) {
-      const needed = this.minActiveMiners - activeCount;
-      console.log(`🚀 INITIAL SPAWN: Adding ${needed} miners to reach minimum`);
-      await this.spawnMiners(needed, 100); // Medium difficulty for stable operations
+    const activeOperations = await storage.getActiveMiningOperations();
+    const needed = this.minActiveMiners - activeOperations.length;
+    
+    if (needed > 0 && this.canSpawnMore()) {
+      console.log(`🆘 EMERGENCY SPAWN: Need ${needed} miners to reach minimum`);
+      await this.spawnEmergencyMiners();
     }
   }
 
   private async spawnEmergencyMiners() {
-    const operations = await storage.getActiveMiningOperations();
-    const needed = Math.min(this.minActiveMiners - operations.length, 10); // Spawn up to 10 at once
+    const activeOperations = await storage.getActiveMiningOperations();
+    const needed = Math.min(
+      this.minActiveMiners - activeOperations.length,
+      this.maxActiveMiners - activeOperations.length
+    );
     
     if (needed > 0) {
-      await this.spawnMiners(needed, 80); // Lower difficulty for quick recovery
+      await this.spawnMiners(needed, 150); // Emergency difficulty
       this.lastSpawnTime = Date.now();
     }
   }
 
   private async spawnAdditionalMiners() {
-    if (!this.canSpawnMore()) return;
-
-    const operations = await storage.getActiveMiningOperations();
-    const needed = Math.min(this.targetActiveMiners - operations.length, 5); // Add up to 5 at once
+    const activeOperations = await storage.getActiveMiningOperations();
+    const canSpawn = Math.min(
+      this.targetActiveMiners - activeOperations.length,
+      this.maxActiveMiners - activeOperations.length,
+      5 // Max 5 per spawn cycle
+    );
     
-    if (needed > 0) {
-      await this.spawnMiners(needed, 120); // High difficulty for optimal security
+    if (canSpawn > 0 && this.canSpawnMore()) {
+      await this.spawnMiners(canSpawn, 160); // Higher difficulty for additional miners
       this.lastSpawnTime = Date.now();
     }
   }
 
   private async spawnMiners(count: number, difficulty: number) {
-    const workTypes = [
-      'riemann_zero', 'prime_pattern', 'yang_mills', 'navier_stokes',
-      'poincare_conjecture', 'goldbach_verification', 'birch_swinnerton_dyer',
-      'elliptic_curve_crypto', 'lattice_crypto'
-    ];
-
-    // Get current operations to check balance
-    const activeOperations = await storage.getActiveMiningOperations();
-    const typeCounts: Record<string, number> = {};
-    activeOperations.forEach(op => {
-      typeCounts[op.operationType] = (typeCounts[op.operationType] || 0) + 1;
-    });
-
+    // Use work distribution balancer for intelligent work type selection
+    await workDistributionBalancer.applyBalancingStrategy();
+    
     const spawned = [];
     for (let i = 0; i < count; i++) {
-      // Use balanced work type selection - prioritize underrepresented types
-      let workType: string;
-      
-      // Find work types with lowest counts
-      const sortedTypes = workTypes.sort((a, b) => (typeCounts[a] || 0) - (typeCounts[b] || 0));
-      
-      // Use round-robin approach: pick from least used types
-      if (i < workTypes.length) {
-        workType = sortedTypes[i % workTypes.length];
-      } else {
-        // For additional spawns, use weighted random favoring underused types
-        const weights = sortedTypes.map((type, idx) => workTypes.length - idx);
-        const totalWeight = weights.reduce((sum, w) => sum + w, 0);
-        let random = Math.random() * totalWeight;
-        
-        workType = sortedTypes[0]; // Default fallback
-        for (let j = 0; j < sortedTypes.length; j++) {
-          random -= weights[j];
-          if (random <= 0) {
-            workType = sortedTypes[j];
-            break;
-          }
-        }
-      }
-      
-      // Update type counts for next iteration
-      typeCounts[workType] = (typeCounts[workType] || 0) + 1;
-      
-      const minerId = `continuous_miner_${Date.now()}_${i}`;
-      
       try {
+        // Get balanced work type from the balancer
+        const workType = workDistributionBalancer.getBalancedWorkType();
+        
+        // Get balanced difficulty for this work type
+        const balancedDifficulty = workDistributionBalancer.getBalancedDifficulty(workType);
+        
+        const minerId = `continuous_miner_${Date.now()}_${i}`;
+        
         const operation = await storage.createMiningOperation({
           operationType: workType,
           minerId,
           startTime: new Date(),
           estimatedCompletion: new Date(Date.now() + 120000 + (i * 10000)), // Staggered completion
           progress: 0,
-          currentResult: { status: 'spawning', difficulty },
-          difficulty,
+          currentResult: { status: 'spawning', difficulty: balancedDifficulty },
+          difficulty: balancedDifficulty,
           status: 'active'
         });
 
-        spawned.push({ minerId, workType, difficulty, operationId: operation.id });
+        spawned.push({ minerId, workType, difficulty: balancedDifficulty, operationId: operation.id });
         
         // Start mining computation with delay
         setTimeout(async () => {
           try {
-            console.log(`⛏️ CONTINUOUS MINER: Starting ${workType} at difficulty ${difficulty}`);
-            // Use basic computation to ensure reliability
-            await this.performBasicMining(operation.id, workType, difficulty, minerId);
+            console.log(`⛏️ CONTINUOUS MINER: Starting ${workType} at difficulty ${balancedDifficulty}`);
+            await this.performBasicMining(operation.id, workType, balancedDifficulty, minerId);
           } catch (error) {
-            console.error(`❌ CONTINUOUS MINER FAILED: ${error.message}`);
+            console.error(`❌ CONTINUOUS MINER FAILED: ${(error as Error).message}`);
           }
         }, 2000 + (i * 1000)); // Staggered start
 
@@ -176,7 +146,7 @@ export class ContinuousMiningEngine {
       }
     }
 
-    console.log(`✅ SPAWNED: ${spawned.length} continuous miners at difficulty ${difficulty}`);
+    console.log(`✅ SPAWNED: ${spawned.length} continuous miners with balanced work distribution`);
     console.log(`🎯 WORK TYPES: ${spawned.map(s => s.workType).join(', ')}`);
     return spawned;
   }
@@ -219,95 +189,74 @@ export class ContinuousMiningEngine {
         }
       });
 
-      console.log(`✅ CONTINUOUS MINER: Completed ${workType} operation ${operationId}`);
+      console.log(`✅ CONTINUOUS MINING: Completed ${workType} operation ${operationId}`);
 
     } catch (error) {
-      console.error(`❌ MINING COMPUTATION ERROR: ${error.message}`);
-      await storage.updateMiningOperation(operationId, {
-        status: 'failed',
-        currentResult: { error: error.message }
-      });
+      console.error(`❌ MINING COMPUTATION ERROR: ${(error as Error).message}`);
     }
   }
 
-  private async checkStuckOperations(operations: any[]) {
-    const stuckThreshold = 10 * 60 * 1000; // 10 minutes
-    const now = Date.now();
-
-    for (const op of operations) {
-      const startTime = new Date(op.startTime).getTime();
-      const estimatedEnd = new Date(op.estimatedCompletion).getTime();
-      
-      if (now > estimatedEnd + stuckThreshold) {
-        console.log(`⚠️ STUCK OPERATION: Operation ${op.id} appears stuck, will restart`);
-        // Mark as failed and it will be cleaned up
-        await storage.updateMiningOperation(op.id, {
-          status: 'failed',
-          currentResult: { error: 'Operation timeout - restarting' }
-        });
-      }
-    }
-  }
-
-  private async ensureWorkTypeVariety(operations: any[]) {
-    const workTypes = ['riemann_zero', 'prime_pattern', 'yang_mills', 'navier_stokes', 'goldbach_verification', 'birch_swinnerton_dyer', 'elliptic_curve_crypto', 'lattice_crypto', 'poincare_conjecture'];
-    const typeCounts: Record<string, number> = {};
-    
-    operations.forEach(op => {
-      typeCounts[op.operationType] = (typeCounts[op.operationType] || 0) + 1;
-    });
-
-    // Calculate average and identify underrepresented types
-    const totalOps = operations.length;
-    const targetPerType = Math.max(1, Math.floor(totalOps / workTypes.length));
-    const underrepresented = [];
-
-    for (const workType of workTypes) {
-      const count = typeCounts[workType] || 0;
-      if (count < targetPerType) {
-        underrepresented.push({ workType, count, deficit: targetPerType - count });
-      }
-    }
-
-    // Sort by deficit (most underrepresented first)
-    underrepresented.sort((a, b) => b.deficit - a.deficit);
-
-    // Add miners for most underrepresented types (up to 3 per check)
-    const maxToAdd = Math.min(3, underrepresented.length);
-    for (let i = 0; i < maxToAdd && operations.length < this.maxActiveMiners; i++) {
-      const { workType } = underrepresented[i];
-      console.log(`🎯 WORK DIVERSITY: Adding ${workType} miner (current: ${typeCounts[workType] || 0}, target: ${targetPerType})`);
-      await this.spawnSpecificMiner(workType, 100 + Math.floor(Math.random() * 50)); // Varied difficulty
-    }
-
-    // Log current distribution for monitoring
-    if (underrepresented.length > 0) {
-      console.log(`📊 WORK TYPE DISTRIBUTION:`, Object.keys(typeCounts).map(type => 
-        `${type}: ${typeCounts[type]}`).join(', '));
-    }
-  }
-
-  private async spawnSpecificMiner(workType: string, difficulty: number) {
+  private async checkStuckOperations() {
     try {
-      const operation = await storage.createMiningOperation({
-        operationType: workType,
-        minerId: `continuous_miner_${Date.now()}`,
-        estimatedCompletion: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
-        difficulty,
-        currentResult: {},
-        status: 'active',
-        progress: 0
-      });
-
-      console.log(`⛏️ CONTINUOUS MINER: Starting ${workType} at difficulty ${difficulty}`);
+      const activeOperations = await storage.getActiveMiningOperations();
+      const now = Date.now();
+      const stuckThreshold = 300000; // 5 minutes
+      
+      for (const op of activeOperations) {
+        const timeSinceStart = now - new Date(op.startTime).getTime();
+        if (timeSinceStart > stuckThreshold && op.progress < 0.9) {
+          console.log(`⚠️ STUCK OPERATION: ${op.id} appears stuck, will restart`);
+          await storage.updateMiningOperation(op.id, {
+            status: 'failed',
+            currentResult: { error: 'Operation timeout' }
+          });
+        }
+      }
     } catch (error) {
-      console.error(`❌ SPAWN ERROR: Failed to spawn ${workType} miner:`, error);
+      console.error(`❌ STUCK CHECK ERROR: ${(error as Error).message}`);
+    }
+  }
+
+  private async ensureWorkTypeVariety() {
+    try {
+      // Get current distribution and apply balancing
+      const distribution = await workDistributionBalancer.getCurrentDistribution();
+      const strategy = await workDistributionBalancer.generateBalancingStrategy();
+      
+      // Log current distribution for monitoring
+      const report = await workDistributionBalancer.getDetailedReport();
+      console.log('📊 WORK DISTRIBUTION BALANCE:', report);
+      
+      // Spawn additional miners for high-priority work types
+      for (const balance of strategy.filter(b => b.recommendedMiners > 0)) {
+        const workType = balance.workType;
+        const count = Math.min(balance.recommendedMiners, 3); // Max 3 per type
+        
+        console.log(`🔄 WORK BALANCE: Adding ${count} ${workType} miners (current: ${distribution.find(d => d.workType === workType)?.count || 0}, target: ${distribution.find(d => d.workType === workType)?.targetPercentage}%)`);
+        
+        for (let i = 0; i < count; i++) {
+          const minerId = `balanced_miner_${workType}_${Date.now()}_${i}`;
+          const difficulty = balance.difficultyRange[0] + Math.floor(Math.random() * (balance.difficultyRange[1] - balance.difficultyRange[0]));
+          
+          await storage.createMiningOperation({
+            operationType: workType,
+            minerId,
+            startTime: new Date(),
+            estimatedCompletion: new Date(Date.now() + 180000),
+            progress: 0,
+            currentResult: { status: 'spawning', workType },
+            difficulty,
+            status: 'active'
+          });
+        }
+      }
+    } catch (error) {
+      console.error(`❌ WORK VARIETY ERROR: ${(error as Error).message}`);
     }
   }
 
   private canSpawnMore(): boolean {
-    const timeSinceLastSpawn = Date.now() - this.lastSpawnTime;
-    return timeSinceLastSpawn >= this.spawnCooldown;
+    return Date.now() - this.lastSpawnTime >= this.spawnCooldown;
   }
 
   private sleep(ms: number): Promise<void> {
@@ -317,24 +266,6 @@ export class ContinuousMiningEngine {
   async stopContinuousMonitoring() {
     this.monitoringActive = false;
     console.log('🛑 CONTINUOUS MINING: Monitoring stopped');
-  }
-
-  async getStatus() {
-    const operations = await storage.getActiveMiningOperations();
-    return {
-      monitoringActive: this.monitoringActive,
-      activeMiners: operations.length,
-      targetMiners: this.targetActiveMiners,
-      minMiners: this.minActiveMiners,
-      maxMiners: this.maxActiveMiners,
-      canSpawn: this.canSpawnMore(),
-      operations: operations.map(op => ({
-        id: op.id,
-        type: op.operationType,
-        progress: op.progress,
-        status: op.status
-      }))
-    };
   }
 }
 
