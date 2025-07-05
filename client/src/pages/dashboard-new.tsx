@@ -145,7 +145,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-blue-400">
-              {allBlocks.length}
+              {Math.min(allBlocks.length, 1000).toLocaleString()}
             </div>
             <p className="text-sm text-gray-400 mt-1">
               Productive blocks mined
@@ -165,7 +165,7 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-purple-400">
-              {discoveries.length}
+              {Math.min(discoveries.length, 1000).toLocaleString()}
             </div>
             <p className="text-sm text-gray-400 mt-1">
               Scientific discoveries made
