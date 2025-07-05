@@ -74,6 +74,7 @@ export default function DiscoveriesPage() {
 
   const { data: blocksData = [] } = useQuery({
     queryKey: ['/api/blocks'],
+    queryFn: () => fetch('/api/blocks?limit=10000').then(res => res.json()),
   });
 
   const currentDiscoveries = allDiscoveries as MathematicalWork[] || [];
