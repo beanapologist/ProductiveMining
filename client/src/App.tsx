@@ -22,6 +22,7 @@ import APIOverview from "@/pages/api-overview";
 import ScientificValuation from "@/pages/scientific-valuation";
 import AdaptiveLearningPage from "@/pages/adaptive-learning";
 import MathMinerPage from "@/pages/math-miner";
+import MinerSubmissionDemo from "@/pages/miner-submission-demo";
 
 import WalletPage from "@/pages/wallet";
 import About from "@/pages/about";
@@ -43,6 +44,7 @@ function Router() {
         <Route path="/valuation" component={ScientificValuation} />
         <Route path="/adaptive-learning" component={AdaptiveLearningPage} />
         <Route path="/math-miner" component={MathMinerPage} />
+        <Route path="/miner-demo" component={MinerSubmissionDemo} />
 
         <Route path="/blocks" component={BlockExplorer} />
         <Route path="/wallet" component={WalletPage} />
