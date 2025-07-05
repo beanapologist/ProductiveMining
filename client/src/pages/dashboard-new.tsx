@@ -72,9 +72,10 @@ export default function Dashboard() {
   });
 
   const { data: discoveries = [] } = useQuery<MathematicalWork[]>({
-    queryKey: ['/api/discoveries'],
-    queryFn: () => fetch('/api/discoveries?limit=10000').then(res => res.json()),
+    queryKey: ['/api/discoveries', 'limit-50000'],
+    queryFn: () => fetch('/api/discoveries?limit=50000').then(res => res.json()),
     refetchInterval: 5000,
+    staleTime: 0, // Force fresh data
   });
 
   const { data: miningOperations = [] } = useQuery<MiningOperationData[]>({

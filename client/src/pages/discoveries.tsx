@@ -59,9 +59,10 @@ export default function DiscoveriesPage() {
   const [activeTab, setActiveTab] = useState("discoveries");
 
   const { data: allDiscoveries = [] } = useQuery({
-    queryKey: ["/api/discoveries"],
+    queryKey: ["/api/discoveries", "limit-50000"],
     queryFn: () => fetch("/api/discoveries?limit=50000").then(res => res.json()),
     refetchInterval: 10000,
+    staleTime: 0, // Force fresh data
   });
 
   const { data: immutableRecords = [] } = useQuery<ImmutableRecord[]>({
@@ -73,8 +74,9 @@ export default function DiscoveriesPage() {
   });
 
   const { data: blocksData = [] } = useQuery({
-    queryKey: ['/api/blocks'],
+    queryKey: ['/api/blocks', 'limit-50000'],
     queryFn: () => fetch('/api/blocks?limit=50000').then(res => res.json()),
+    staleTime: 0, // Force fresh data
   });
 
   const currentDiscoveries = allDiscoveries as MathematicalWork[] || [];

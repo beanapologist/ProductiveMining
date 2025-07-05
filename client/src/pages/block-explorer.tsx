@@ -48,7 +48,7 @@ export default function BlockExplorerPage() {
 
   const { data: initialBlocks = [] } = useQuery({
     queryKey: ["/api/blocks"],
-    queryFn: () => fetch('/api/blocks?limit=10000').then(res => res.json()),
+    queryFn: () => fetch('/api/blocks?limit=50000').then(res => res.json()),
     staleTime: 30000,
   });
 

@@ -182,7 +182,7 @@ export default function SecurityDashboard() {
 
   const { data: discoveries } = useQuery({
     queryKey: ['/api/discoveries'],
-    queryFn: () => fetch('/api/discoveries?limit=10000').then(res => res.json()),
+    queryFn: () => fetch('/api/discoveries?limit=50000').then(res => res.json()),
   });
 
   const { data: securityInsights, isLoading: loadingInsights } = useQuery<SecurityInsights>({
