@@ -176,7 +176,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get recent blocks
   app.get("/api/blocks", async (req, res) => {
     try {
-      const limit = parseInt(req.query.limit as string) || 1000; // Return all blocks by default
+      const limit = parseInt(req.query.limit as string) || 50000; // Return all blocks by default
       const blocks = await storage.getRecentBlocks(limit);
       res.json(blocks);
     } catch (error) {
@@ -392,7 +392,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get recent mathematical discoveries - ONLY REAL MINED DATA
   app.get("/api/discoveries", async (req, res) => {
     try {
-      const limit = parseInt(req.query.limit as string) || 1000;
+      const limit = parseInt(req.query.limit as string) || 50000;
       const { db } = await import('./db');
       const { mathematicalWork } = await import('@shared/schema');
       const { gte } = await import('drizzle-orm');
@@ -4685,7 +4685,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get current discoveries from database
       const { db } = await import('./db');
       const { mathematicalWork } = await import('@shared/schema');
-      const allDiscoveries = await db.select().from(mathematicalWork).limit(1000);
+      const allDiscoveries = await db.select().from(mathematicalWork).limit(50000);
       
       console.log('Found discoveries:', allDiscoveries?.length || 0);
       
