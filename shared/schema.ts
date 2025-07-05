@@ -37,6 +37,63 @@ export const blockMathematicalWork = pgTable("block_mathematical_work", {
   workId: integer("work_id").references(() => mathematicalWork.id).notNull(),
 });
 
+// Math Miner Gamification System
+export const mathMiners = pgTable("math_miners", {
+  id: serial("id").primaryKey(),
+  minerId: text("miner_id").notNull().unique(),
+  nickname: text("nickname").notNull(),
+  level: integer("level").notNull().default(1),
+  experience: bigint("experience", { mode: "number" }).notNull().default(0),
+  totalDiscoveries: integer("total_discoveries").notNull().default(0),
+  totalScientificValue: numeric("total_scientific_value", { precision: 20, scale: 2 }).notNull().default('0'),
+  preferredWorkType: text("preferred_work_type"),
+  rank: text("rank").notNull().default('Apprentice'),
+  joinedAt: timestamp("joined_at").notNull().defaultNow(),
+  lastActiveAt: timestamp("last_active_at").notNull().defaultNow(),
+  avatar: text("avatar").default('⚡'),
+  title: text("title").default('Math Explorer'),
+});
+
+export const achievements = pgTable("achievements", {
+  id: serial("id").primaryKey(),
+  achievementId: text("achievement_id").notNull().unique(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  icon: text("icon").notNull(),
+  rarity: text("rarity").notNull(), // 'common', 'rare', 'epic', 'legendary'
+  xpReward: integer("xp_reward").notNull(),
+  category: text("category").notNull(), // 'discovery', 'mining', 'efficiency', 'streak', 'milestone'
+  requirements: jsonb("requirements").notNull(),
+  isActive: boolean("is_active").notNull().default(true),
+});
+
+export const minerAchievements = pgTable("miner_achievements", {
+  id: serial("id").primaryKey(),
+  minerId: text("miner_id").references(() => mathMiners.minerId).notNull(),
+  achievementId: text("achievement_id").references(() => achievements.achievementId).notNull(),
+  unlockedAt: timestamp("unlocked_at").notNull().defaultNow(),
+  progress: jsonb("progress"), // For tracking partial progress
+});
+
+export const miningStreaks = pgTable("mining_streaks", {
+  id: serial("id").primaryKey(),
+  minerId: text("miner_id").references(() => mathMiners.minerId).notNull(),
+  currentStreak: integer("current_streak").notNull().default(0),
+  longestStreak: integer("longest_streak").notNull().default(0),
+  lastMiningDate: timestamp("last_mining_date"),
+  streakType: text("streak_type").notNull(), // 'daily', 'discovery', 'efficiency'
+});
+
+export const levelProgression = pgTable("level_progression", {
+  id: serial("id").primaryKey(),
+  level: integer("level").notNull().unique(),
+  xpRequired: bigint("xp_required", { mode: "number" }).notNull(),
+  rank: text("rank").notNull(),
+  title: text("title").notNull(),
+  perks: jsonb("perks").notNull(), // Unlocked benefits
+  description: text("description").notNull(),
+});
+
 export const miningOperations = pgTable("mining_operations", {
   id: serial("id").primaryKey(),
   operationType: text("operation_type").notNull(),
@@ -112,6 +169,13 @@ export const insertStakerSchema = createInsertSchema(stakers);
 export const insertDiscoveryValidationSchema = createInsertSchema(discoveryValidations);
 export const insertImmutableRecordSchema = createInsertSchema(immutableRecordsPool);
 
+// Gamification Insert Schemas
+export const insertMathMinerSchema = createInsertSchema(mathMiners);
+export const insertAchievementSchema = createInsertSchema(achievements);
+export const insertMinerAchievementSchema = createInsertSchema(minerAchievements);
+export const insertMiningStreakSchema = createInsertSchema(miningStreaks);
+export const insertLevelProgressionSchema = createInsertSchema(levelProgression);
+
 // Types
 export type MathematicalWork = typeof mathematicalWork.$inferSelect;
 export type InsertMathematicalWork = z.infer<typeof insertMathematicalWorkSchema>;
@@ -127,6 +191,18 @@ export type DiscoveryValidation = typeof discoveryValidations.$inferSelect;
 export type InsertDiscoveryValidation = z.infer<typeof insertDiscoveryValidationSchema>;
 export type ImmutableRecord = typeof immutableRecordsPool.$inferSelect;
 export type InsertImmutableRecord = z.infer<typeof insertImmutableRecordSchema>;
+
+// Gamification Types
+export type MathMiner = typeof mathMiners.$inferSelect;
+export type InsertMathMiner = z.infer<typeof insertMathMinerSchema>;
+export type Achievement = typeof achievements.$inferSelect;
+export type InsertAchievement = z.infer<typeof insertAchievementSchema>;
+export type MinerAchievement = typeof minerAchievements.$inferSelect;
+export type InsertMinerAchievement = z.infer<typeof insertMinerAchievementSchema>;
+export type MiningStreak = typeof miningStreaks.$inferSelect;
+export type InsertMiningStreak = z.infer<typeof insertMiningStreakSchema>;
+export type LevelProgression = typeof levelProgression.$inferSelect;
+export type InsertLevelProgression = z.infer<typeof insertLevelProgressionSchema>;
 
 // WebSocket message types
 export interface WebSocketMessage {

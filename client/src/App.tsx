@@ -5,7 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useState } from "react";
-import { BarChart3, Pickaxe, Database, Brain, Info, Shield, Users, GraduationCap, HardDrive, Coins, Wallet, Copy, Check, FileCode, TrendingUp, Play, Beaker, Layers } from "lucide-react";
+import { BarChart3, Pickaxe, Database, Brain, Info, Shield, Users, User, GraduationCap, HardDrive, Coins, Wallet, Copy, Check, FileCode, TrendingUp, Play, Beaker, Layers, Sparkles } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import Dashboard from "@/pages/dashboard-new";
@@ -21,6 +21,7 @@ import ComplexityAnalysisPage from "@/pages/complexity-analysis";
 import APIOverview from "@/pages/api-overview";
 import ScientificValuation from "@/pages/scientific-valuation";
 import AdaptiveLearningPage from "@/pages/adaptive-learning";
+import MathMinerPage from "@/pages/math-miner";
 
 import WalletPage from "@/pages/wallet";
 import About from "@/pages/about";
@@ -41,6 +42,7 @@ function Router() {
         <Route path="/complexity" component={ComplexityAnalysisPage} />
         <Route path="/valuation" component={ScientificValuation} />
         <Route path="/adaptive-learning" component={AdaptiveLearningPage} />
+        <Route path="/math-miner" component={MathMinerPage} />
 
         <Route path="/blocks" component={BlockExplorer} />
         <Route path="/wallet" component={WalletPage} />
@@ -108,6 +110,7 @@ function Navigation() {
   const navItems = [
     { path: '/', title: 'Adventure Hub', icon: BarChart3 },
     { path: '/mining', title: 'Mining Quest', icon: Pickaxe },
+    { path: '/math-miner', title: 'Math Miner', icon: User },
     { path: '/discoveries', title: 'Discovery Lab', icon: Brain },
     { path: '/validators', title: 'Guild Council', icon: Users },
     { path: '/institutional', title: 'Academy', icon: GraduationCap },

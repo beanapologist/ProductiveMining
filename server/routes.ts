@@ -14,6 +14,7 @@ import { recursiveEnhancementEngine } from "./recursive-enhancement-engine";
 import { adaptiveSecurityEngine } from "./adaptive-security-engine";
 import { adaptiveLearningEngine } from "./adaptive-learning-engine";
 import { hybridMathematicalSystem } from "./hybrid-mathematical-system";
+import { mathMinerEngine } from "./math-miner-engine";
 
 // Blockchain utility functions
 function generateSimpleHash(input: string): string {
@@ -745,6 +746,123 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(wallets);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch token wallets" });
+    }
+  });
+
+  // ========== MATH MINER GAMIFICATION API ==========
+  
+  // Initialize math miner engine
+  await mathMinerEngine.initialize();
+
+  // Get or create miner profile
+  app.get('/api/miners/:minerId', async (req, res) => {
+    try {
+      const { minerId } = req.params;
+      const profile = await mathMinerEngine.getMinerProfile(minerId);
+      
+      if (!profile) {
+        // Create new miner
+        const newMiner = await mathMinerEngine.createOrUpdateMiner(minerId);
+        return res.json(newMiner);
+      }
+      
+      res.json(profile);
+    } catch (error) {
+      console.error('Error fetching miner profile:', error);
+      res.status(500).json({ error: "Failed to fetch miner profile" });
+    }
+  });
+
+  // Create or update miner
+  app.post('/api/miners/create', async (req, res) => {
+    try {
+      const { minerId, nickname } = req.body;
+      const miner = await mathMinerEngine.createOrUpdateMiner(minerId, nickname);
+      res.json(miner);
+    } catch (error) {
+      console.error('Error creating miner:', error);
+      res.status(500).json({ error: "Failed to create miner" });
+    }
+  });
+
+  // Award experience to miner
+  app.post('/api/miners/:minerId/award-xp', async (req, res) => {
+    try {
+      const { minerId } = req.params;
+      const { xp, source } = req.body;
+      
+      const result = await mathMinerEngine.awardExperience(minerId, xp, source);
+      res.json(result);
+    } catch (error) {
+      console.error('Error awarding XP:', error);
+      res.status(500).json({ error: "Failed to award experience" });
+    }
+  });
+
+  // Get miner achievements
+  app.get('/api/miners/:minerId/achievements', async (req, res) => {
+    try {
+      const { minerId } = req.params;
+      const achievements = await mathMinerEngine.getMinerAchievements(minerId);
+      res.json(achievements);
+    } catch (error) {
+      console.error('Error fetching achievements:', error);
+      res.status(500).json({ error: "Failed to fetch achievements" });
+    }
+  });
+
+  // Get level progression info
+  app.get('/api/miners/:minerId/progression', async (req, res) => {
+    try {
+      const { minerId } = req.params;
+      const progression = await mathMinerEngine.getProgressToNextLevel(minerId);
+      res.json(progression);
+    } catch (error) {
+      console.error('Error fetching progression:', error);
+      res.status(500).json({ error: "Failed to fetch progression" });
+    }
+  });
+
+  // Get leaderboard
+  app.get('/api/miners/leaderboard', async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const leaderboard = await mathMinerEngine.getLeaderboard(limit);
+      res.json(leaderboard);
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+      res.status(500).json({ error: "Failed to fetch leaderboard" });
+    }
+  });
+
+  // Check achievements for miner
+  app.post('/api/miners/:minerId/check-achievements', async (req, res) => {
+    try {
+      const { minerId } = req.params;
+      const achievements = await mathMinerEngine.checkAchievements(minerId);
+      res.json({ unlockedAchievements: achievements });
+    } catch (error) {
+      console.error('Error checking achievements:', error);
+      res.status(500).json({ error: "Failed to check achievements" });
+    }
+  });
+
+  // Update miner stats (called when discoveries are made)
+  app.post('/api/miners/:minerId/update-stats', async (req, res) => {
+    try {
+      const { minerId } = req.params;
+      const { discoveries, scientificValue } = req.body;
+      
+      await mathMinerEngine.updateMinerStats(minerId, discoveries, scientificValue);
+      
+      // Award XP for discovery
+      const xpReward = Math.floor(scientificValue / 100); // 1 XP per $100 scientific value
+      const result = await mathMinerEngine.awardExperience(minerId, xpReward, 'Mathematical Discovery');
+      
+      res.json({ success: true, xpAwarded: xpReward, ...result });
+    } catch (error) {
+      console.error('Error updating miner stats:', error);
+      res.status(500).json({ error: "Failed to update miner stats" });
     }
   });
 
