@@ -107,10 +107,43 @@ export class ContinuousMiningEngine {
       'elliptic_curve_crypto', 'lattice_crypto'
     ];
 
+    // Get current operations to check balance
+    const activeOperations = await storage.getActiveMiningOperations();
+    const typeCounts: Record<string, number> = {};
+    activeOperations.forEach(op => {
+      typeCounts[op.operationType] = (typeCounts[op.operationType] || 0) + 1;
+    });
+
     const spawned = [];
     for (let i = 0; i < count; i++) {
-      // Randomly select work type instead of using modulo
-      const workType = workTypes[Math.floor(Math.random() * workTypes.length)];
+      // Use balanced work type selection - prioritize underrepresented types
+      let workType: string;
+      
+      // Find work types with lowest counts
+      const sortedTypes = workTypes.sort((a, b) => (typeCounts[a] || 0) - (typeCounts[b] || 0));
+      
+      // Use round-robin approach: pick from least used types
+      if (i < workTypes.length) {
+        workType = sortedTypes[i % workTypes.length];
+      } else {
+        // For additional spawns, use weighted random favoring underused types
+        const weights = sortedTypes.map((type, idx) => workTypes.length - idx);
+        const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+        let random = Math.random() * totalWeight;
+        
+        workType = sortedTypes[0]; // Default fallback
+        for (let j = 0; j < sortedTypes.length; j++) {
+          random -= weights[j];
+          if (random <= 0) {
+            workType = sortedTypes[j];
+            break;
+          }
+        }
+      }
+      
+      // Update type counts for next iteration
+      typeCounts[workType] = (typeCounts[workType] || 0) + 1;
+      
       const minerId = `continuous_miner_${Date.now()}_${i}`;
       
       try {
@@ -144,6 +177,7 @@ export class ContinuousMiningEngine {
     }
 
     console.log(`✅ SPAWNED: ${spawned.length} continuous miners at difficulty ${difficulty}`);
+    console.log(`🎯 WORK TYPES: ${spawned.map(s => s.workType).join(', ')}`);
     return spawned;
   }
 
@@ -223,13 +257,33 @@ export class ContinuousMiningEngine {
       typeCounts[op.operationType] = (typeCounts[op.operationType] || 0) + 1;
     });
 
-    // Ensure at least one of each primary work type
+    // Calculate average and identify underrepresented types
+    const totalOps = operations.length;
+    const targetPerType = Math.max(1, Math.floor(totalOps / workTypes.length));
+    const underrepresented = [];
+
     for (const workType of workTypes) {
-      if (!typeCounts[workType] && operations.length < this.maxActiveMiners) {
-        console.log(`🎯 WORK DIVERSITY: Adding ${workType} miner for variety`);
-        await this.spawnSpecificMiner(workType, 100);
-        break; // Only add one per check
+      const count = typeCounts[workType] || 0;
+      if (count < targetPerType) {
+        underrepresented.push({ workType, count, deficit: targetPerType - count });
       }
+    }
+
+    // Sort by deficit (most underrepresented first)
+    underrepresented.sort((a, b) => b.deficit - a.deficit);
+
+    // Add miners for most underrepresented types (up to 3 per check)
+    const maxToAdd = Math.min(3, underrepresented.length);
+    for (let i = 0; i < maxToAdd && operations.length < this.maxActiveMiners; i++) {
+      const { workType } = underrepresented[i];
+      console.log(`🎯 WORK DIVERSITY: Adding ${workType} miner (current: ${typeCounts[workType] || 0}, target: ${targetPerType})`);
+      await this.spawnSpecificMiner(workType, 100 + Math.floor(Math.random() * 50)); // Varied difficulty
+    }
+
+    // Log current distribution for monitoring
+    if (underrepresented.length > 0) {
+      console.log(`📊 WORK TYPE DISTRIBUTION:`, Object.keys(typeCounts).map(type => 
+        `${type}: ${typeCounts[type]}`).join(', '));
     }
   }
 
