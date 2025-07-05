@@ -60,7 +60,7 @@ export default function DiscoveriesPage() {
 
   const { data: allDiscoveries = [] } = useQuery({
     queryKey: ["/api/discoveries"],
-    queryFn: () => fetch("/api/discoveries?limit=10000").then(res => res.json()),
+    queryFn: () => fetch("/api/discoveries?limit=50000").then(res => res.json()),
     refetchInterval: 10000,
   });
 
@@ -74,7 +74,7 @@ export default function DiscoveriesPage() {
 
   const { data: blocksData = [] } = useQuery({
     queryKey: ['/api/blocks'],
-    queryFn: () => fetch('/api/blocks?limit=10000').then(res => res.json()),
+    queryFn: () => fetch('/api/blocks?limit=50000').then(res => res.json()),
   });
 
   const currentDiscoveries = allDiscoveries as MathematicalWork[] || [];
