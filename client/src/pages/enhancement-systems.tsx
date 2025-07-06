@@ -61,7 +61,7 @@ export default function EnhancementSystemsPage() {
   // Trigger enhancement mutation
   const triggerEnhancementMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest('/api/recursive-enhancement/trigger-cycle', {
+      const response = await fetch('/api/recursive-enhancement/trigger-cycle', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({})
@@ -88,7 +88,7 @@ export default function EnhancementSystemsPage() {
   // Trigger security iteration mutation
   const triggerSecurityMutation = useMutation({
     mutationFn: async () => {
-      const response = await apiRequest('/api/adaptive-security/trigger', {
+      const response = await fetch('/api/adaptive-security/trigger', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({})
