@@ -189,44 +189,61 @@ export default function ApiPage() {
 
         <TabsContent value="endpoints" className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {apiOverview?.endpoints && Object.entries(apiOverview.endpoints).map(([category, endpoints]) => (
-              <Card key={category} className="bg-slate-800 border-slate-700">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center space-x-2 text-white">
-                    {getCategoryIcon(category)}
-                    <span className="capitalize">{category}</span>
-                    <Badge variant="secondary" className="ml-auto">
-                      {Object.keys(endpoints).length}
-                    </Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  {Object.entries(endpoints).map(([name, endpoint]) => (
-                    <div key={name} className="flex items-center justify-between p-2 bg-slate-700 rounded">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-2 h-2 rounded-full ${getMethodColor(endpoint)}`}></div>
-                        <div>
-                          <p className="text-sm font-medium text-white">{name}</p>
-                          <p className="text-xs text-gray-400">{endpoint}</p>
+            {apiOverview?.endpoints && Object.entries(apiOverview.endpoints).map(([category, endpoints]) => {
+              // Flatten nested endpoint objects
+              const flattenedEndpoints: Record<string, string> = {};
+              
+              const flattenObject = (obj: any, prefix = '') => {
+                Object.entries(obj).forEach(([key, value]) => {
+                  if (typeof value === 'string') {
+                    flattenedEndpoints[prefix ? `${prefix}.${key}` : key] = value;
+                  } else if (typeof value === 'object' && value !== null) {
+                    flattenObject(value, prefix ? `${prefix}.${key}` : key);
+                  }
+                });
+              };
+              
+              flattenObject(endpoints);
+              
+              return (
+                <Card key={category} className="bg-slate-800 border-slate-700">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center space-x-2 text-white">
+                      {getCategoryIcon(category)}
+                      <span className="capitalize">{category}</span>
+                      <Badge variant="secondary" className="ml-auto">
+                        {Object.keys(flattenedEndpoints).length}
+                      </Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    {Object.entries(flattenedEndpoints).map(([name, endpoint]) => (
+                      <div key={name} className="flex items-center justify-between p-2 bg-slate-700 rounded">
+                        <div className="flex items-center space-x-3">
+                          <div className={`w-2 h-2 rounded-full ${getMethodColor(endpoint)}`}></div>
+                          <div>
+                            <p className="text-sm font-medium text-white">{name}</p>
+                            <p className="text-xs text-gray-400">{endpoint}</p>
+                          </div>
                         </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => copyEndpoint(endpoint)}
+                          className="text-gray-400 hover:text-white"
+                        >
+                          {copiedEndpoint === endpoint ? (
+                            <Check className="w-4 h-4" />
+                          ) : (
+                            <Copy className="w-4 h-4" />
+                          )}
+                        </Button>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => copyEndpoint(endpoint)}
-                        className="text-gray-400 hover:text-white"
-                      >
-                        {copiedEndpoint === endpoint ? (
-                          <Check className="w-4 h-4" />
-                        ) : (
-                          <Copy className="w-4 h-4" />
-                        )}
-                      </Button>
-                    </div>
-                  ))}
-                </CardContent>
-              </Card>
-            ))}
+                    ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </TabsContent>
 
