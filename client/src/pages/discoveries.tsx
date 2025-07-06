@@ -58,9 +58,14 @@ export default function DiscoveriesPage() {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [activeTab, setActiveTab] = useState("discoveries");
 
-  const { data: allDiscoveries = [] } = useQuery({
+  const { data: allDiscoveries = [], isLoading: discoveriesLoading, error: discoveriesError } = useQuery({
     queryKey: ["/api/discoveries", "all-discoveries"],
-    queryFn: () => fetch("/api/discoveries").then(res => res.json()),
+    queryFn: async () => {
+      const response = await fetch("/api/discoveries");
+      const data = await response.json();
+      console.log(`🔍 Frontend received ${data.length} discoveries`);
+      return data;
+    },
     refetchInterval: 10000,
     staleTime: 0, // Force fresh data
   });
@@ -79,7 +84,9 @@ export default function DiscoveriesPage() {
     staleTime: 0, // Force fresh data
   });
 
-  const currentDiscoveries = allDiscoveries as MathematicalWork[] || [];
+  const currentDiscoveries = (allDiscoveries as MathematicalWork[]) || [];
+  
+  console.log(`🔍 currentDiscoveries length: ${currentDiscoveries.length}`);
 
   // Function to get immutable records related to a specific discovery
   const getDiscoveryRecords = (workId: number): ImmutableRecord[] => {
@@ -131,6 +138,8 @@ export default function DiscoveriesPage() {
     
       return matchesSearch && matchesType && matchesDifficulty && matchesValue;
     })
+    
+  console.log(`🔍 filteredDiscoveries length: ${filteredDiscoveries.length}`);
     .sort((a, b) => {
       let aValue, bValue;
       
@@ -316,8 +325,10 @@ export default function DiscoveriesPage() {
             Mathematical Discoveries
           </h1>
           <p className="text-gray-400 mt-2">
-            Explore groundbreaking mathematical breakthroughs and scientific achievements
+            Found {currentDiscoveries.length} total discoveries from productive mining
           </p>
+          {discoveriesLoading && <p className="text-yellow-400 text-sm">Loading...</p>}
+          {discoveriesError && <p className="text-red-400 text-sm">Error: {discoveriesError.message}</p>}
         </div>
         <div className="flex gap-2">
           <Button 
@@ -356,10 +367,14 @@ export default function DiscoveriesPage() {
               {currentDiscoveries.length}
             </div>
             <div className="text-sm text-gray-400 mt-1">
-              {currentDiscoveries.length > 0 ? 
+              {discoveriesLoading ? 'Loading...' : 
+               currentDiscoveries.length > 0 ? 
                 `+${Math.floor(currentDiscoveries.length / 10)} this week` : 
-                'No discoveries yet'
+                'No discoveries loaded yet'
               }
+            </div>
+            <div className="text-xs text-red-400 mt-1">
+              DEBUG: API={allDiscoveries.length} | Current={currentDiscoveries.length} | Filtered={filteredDiscoveries.length}
             </div>
           </CardContent>
         </Card>
