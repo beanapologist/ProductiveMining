@@ -125,9 +125,9 @@ export default function DiscoveriesPage() {
         (difficultyFilter === "high" && discovery.difficulty >= 50);
       
       const matchesValue = valueFilter === "all" ||
-        (valueFilter === "low" && discovery.scientificValue < 1000000) ||
-        (valueFilter === "medium" && discovery.scientificValue >= 1000000 && discovery.scientificValue < 5000000) ||
-        (valueFilter === "high" && discovery.scientificValue >= 5000000);
+        (valueFilter === "low" && discovery.scientificValue < 1500) ||
+        (valueFilter === "medium" && discovery.scientificValue >= 1500 && discovery.scientificValue < 2500) ||
+        (valueFilter === "high" && discovery.scientificValue >= 2500);
     
       return matchesSearch && matchesType && matchesDifficulty && matchesValue;
     })
@@ -302,9 +302,9 @@ export default function DiscoveriesPage() {
   };
 
   const valueRanges = {
-    low: currentDiscoveries.filter(d => d.scientificValue < 1000000).length,
-    medium: currentDiscoveries.filter(d => d.scientificValue >= 1000000 && d.scientificValue < 5000000).length,
-    high: currentDiscoveries.filter(d => d.scientificValue >= 5000000).length,
+    low: currentDiscoveries.filter(d => d.scientificValue < 1500).length,
+    medium: currentDiscoveries.filter(d => d.scientificValue >= 1500 && d.scientificValue < 2500).length,
+    high: currentDiscoveries.filter(d => d.scientificValue >= 2500).length,
   };
 
   return (
@@ -885,7 +885,7 @@ export default function DiscoveriesPage() {
                           Difficulty: {discovery.difficulty}
                         </Badge>
                         <Badge className="bg-purple-600 text-white">
-                          ${(discovery.scientificValue / 1000000).toFixed(1)}M
+                          ${discovery.scientificValue?.toLocaleString() || 0}
                         </Badge>
                       </div>
                     </div>
@@ -1311,9 +1311,9 @@ export default function DiscoveriesPage() {
                           </SelectTrigger>
                           <SelectContent className="bg-slate-800 border-slate-600">
                             <SelectItem value="all">All Values</SelectItem>
-                            <SelectItem value="low">Low (&lt;$1M)</SelectItem>
-                            <SelectItem value="medium">Medium ($1M-$5M)</SelectItem>
-                            <SelectItem value="high">High ($5M+)</SelectItem>
+                            <SelectItem value="low">Low (&lt;$1.5K)</SelectItem>
+                            <SelectItem value="medium">Medium ($1.5K-$2.5K)</SelectItem>
+                            <SelectItem value="high">High ($2.5K+)</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
