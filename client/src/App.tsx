@@ -47,6 +47,7 @@ function Router() {
         <Route path="/miner-demo" component={MinerSubmissionDemo} />
 
         <Route path="/blocks" component={BlockExplorer} />
+        <Route path="/block-explorer" component={BlockExplorer} />
         <Route path="/wallet" component={WalletPage} />
         <Route path="/data-management" component={DataManagement} />
         <Route path="/api" component={APIOverview} />

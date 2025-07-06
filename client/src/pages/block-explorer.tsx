@@ -53,7 +53,8 @@ export default function BlockExplorerPage() {
   });
 
   const { data: blockWork, isLoading: isBlockWorkLoading } = useQuery<BlockWorkData>({
-    queryKey: ["/api/blocks", selectedBlock?.id, "work"],
+    queryKey: ["/api/blocks/index", selectedBlock?.index],
+    queryFn: () => fetch(`/api/blocks/index/${selectedBlock?.index}`).then(res => res.json()),
     enabled: !!selectedBlock,
     staleTime: 30000,
   });
