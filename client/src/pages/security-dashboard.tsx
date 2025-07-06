@@ -1455,12 +1455,35 @@ export default function SecurityDashboard() {
 
 // AI Systems Component Implementations
 function RecursiveEnhancementStatusContent() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
   const { data: enhancementStatus } = useQuery({
     queryKey: ['/api/recursive-enhancement/status'],
   });
 
   const { data: aiInsights } = useQuery({
     queryKey: ['/api/ai/insights'],
+  });
+
+  const triggerEnhancement = useMutation({
+    mutationFn: () => apiRequest('/api/recursive-enhancement/trigger', {
+      method: 'POST',
+    }),
+    onSuccess: () => {
+      toast({
+        title: "Enhancement Triggered",
+        description: "Recursive iterative improvement cycle initiated",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/recursive-enhancement/status'] });
+    },
+    onError: () => {
+      toast({
+        title: "Enhancement Failed",
+        description: "Failed to trigger improvement cycle",
+        variant: "destructive",
+      });
+    },
   });
 
   return (
@@ -1489,6 +1512,17 @@ function RecursiveEnhancementStatusContent() {
         <div className="text-sm text-white">
           {enhancementStatus?.evolutionStatus || "Self-improving algorithms actively learning"}
         </div>
+      </div>
+
+      <div className="pt-3 border-t border-slate-600">
+        <Button
+          onClick={() => triggerEnhancement.mutate()}
+          disabled={triggerEnhancement.isPending}
+          className="w-full bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-50"
+        >
+          <Zap className="mr-2 h-4 w-4" />
+          {triggerEnhancement.isPending ? 'Triggering...' : 'Trigger Recursive Improvement'}
+        </Button>
       </div>
     </div>
   );
