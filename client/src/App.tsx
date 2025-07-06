@@ -16,7 +16,7 @@ import SecurityDashboard from "@/pages/security-dashboard";
 import DataManagementPage from "@/pages/data-management";
 
 import WalletPage from "@/pages/wallet";
-import About from "@/pages/about";
+import ApiPage from "@/pages/api-page";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -33,7 +33,7 @@ function Router() {
         <Route path="/database" component={DataManagementPage} />
         <Route path="/data-management" component={DataManagementPage} />
         <Route path="/wallet" component={WalletPage} />
-        <Route path="/about" component={About} />
+        <Route path="/about" component={ApiPage} />
         
         {/* Legacy routes for bookmarks/direct links */}
         <Route path="/validators" component={SecurityDashboard} />
@@ -43,7 +43,7 @@ function Router() {
         <Route path="/valuation" component={DiscoveriesPage} />
         <Route path="/adaptive-learning" component={SecurityDashboard} />
         <Route path="/data-management" component={BlockExplorer} />
-        <Route path="/api" component={About} />
+        <Route path="/api" component={ApiPage} />
         <Route path="/miner-demo" component={MiningPage} />
         
         <Route component={NotFound} />
@@ -112,7 +112,7 @@ function Navigation() {
     { path: '/blocks', title: 'Explorer', icon: Layers },
     { path: '/database', title: 'Database', icon: Database },
     { path: '/wallet', title: 'Wallet', icon: Wallet },
-    { path: '/about', title: 'About', icon: Info }
+    { path: '/about', title: 'API', icon: FileCode }
   ];
 
   return (

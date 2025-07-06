@@ -1904,6 +1904,125 @@ function AIAnalysisModal() {
   );
 }
 
+function AIRecommendedActions() {
+  const [executingAction, setExecutingAction] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const executeAction = async (actionType: string, actionName: string) => {
+    setExecutingAction(actionType);
+    
+    try {
+      const response = await fetch(`/api/ai/actions/${actionType}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to execute ${actionName}`);
+      }
+
+      const result = await response.json();
+      
+      toast({
+        title: "AI Action Executed",
+        description: `${actionName} has been successfully initiated. Operation ID: ${result.operationId || result.operations?.join(', ') || 'Multiple'}`,
+        duration: 4000,
+      });
+
+    } catch (error) {
+      toast({
+        title: "Action Failed",
+        description: `Failed to execute ${actionName}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        variant: "destructive",
+        duration: 4000,
+      });
+    } finally {
+      setExecutingAction(null);
+    }
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+        <div className="flex items-center space-x-3">
+          <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+          <div>
+            <div className="text-sm font-medium text-gray-200">Riemann Hypothesis Breakthrough Mining</div>
+            <div className="text-xs text-gray-400">Increase mining difficulty to explore breakthrough region</div>
+          </div>
+        </div>
+        <Button
+          size="sm"
+          onClick={() => executeAction('riemann-boost', 'Riemann Hypothesis Boost')}
+          disabled={executingAction === 'riemann-boost'}
+          className="bg-green-600 hover:bg-green-700 text-white"
+        >
+          {executingAction === 'riemann-boost' ? (
+            <div className="flex items-center space-x-2">
+              <div className="animate-spin h-3 w-3 border border-white border-t-transparent rounded-full" />
+              <span>Executing...</span>
+            </div>
+          ) : (
+            'Execute'
+          )}
+        </Button>
+      </div>
+
+      <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+        <div className="flex items-center space-x-3">
+          <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+          <div>
+            <div className="text-sm font-medium text-gray-200">Yang-Mills / Lattice Crypto Correlation</div>
+            <div className="text-xs text-gray-400">Allocate resources to cross-domain correlation analysis</div>
+          </div>
+        </div>
+        <Button
+          size="sm"
+          onClick={() => executeAction('correlation-analysis', 'Correlation Analysis')}
+          disabled={executingAction === 'correlation-analysis'}
+          className="bg-blue-600 hover:bg-blue-700 text-white"
+        >
+          {executingAction === 'correlation-analysis' ? (
+            <div className="flex items-center space-x-2">
+              <div className="animate-spin h-3 w-3 border border-white border-t-transparent rounded-full" />
+              <span>Executing...</span>
+            </div>
+          ) : (
+            'Execute'
+          )}
+        </Button>
+      </div>
+
+      <div className="flex items-center justify-between p-3 bg-slate-700 rounded-lg">
+        <div className="flex items-center space-x-3">
+          <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+          <div>
+            <div className="text-sm font-medium text-gray-200">Adaptive Difficulty Optimization</div>
+            <div className="text-xs text-gray-400">Deploy intelligent difficulty scaling in next mining cycle</div>
+          </div>
+        </div>
+        <Button
+          size="sm"
+          onClick={() => executeAction('adaptive-difficulty', 'Adaptive Difficulty Optimization')}
+          disabled={executingAction === 'adaptive-difficulty'}
+          className="bg-purple-600 hover:bg-purple-700 text-white"
+        >
+          {executingAction === 'adaptive-difficulty' ? (
+            <div className="flex items-center space-x-2">
+              <div className="animate-spin h-3 w-3 border border-white border-t-transparent rounded-full" />
+              <span>Executing...</span>
+            </div>
+          ) : (
+            'Execute'
+          )}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function AIInsightsModal() {
   return (
     <div className="space-y-6">
@@ -1949,20 +2068,7 @@ function AIInsightsModal() {
           <CardTitle className="text-white">Recommended Actions</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-              <span className="text-sm text-gray-300">Increase Riemann hypothesis mining difficulty to explore breakthrough region</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-              <span className="text-sm text-gray-300">Allocate additional resources to Yang-Mills / lattice crypto correlation analysis</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-              <span className="text-sm text-gray-300">Deploy adaptive difficulty optimization in next mining cycle</span>
-            </div>
-          </div>
+          <AIRecommendedActions />
         </CardContent>
       </Card>
     </div>
