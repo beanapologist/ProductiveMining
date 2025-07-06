@@ -17,6 +17,7 @@ import DataManagementPage from "@/pages/data-management";
 
 import WalletPage from "@/pages/wallet";
 import ApiPage from "@/pages/api-page";
+import About from "@/pages/about";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -33,7 +34,7 @@ function Router() {
         <Route path="/database" component={DataManagementPage} />
         <Route path="/data-management" component={DataManagementPage} />
         <Route path="/wallet" component={WalletPage} />
-        <Route path="/about" component={ApiPage} />
+        <Route path="/about" component={About} />
         
         {/* Legacy routes for bookmarks/direct links */}
         <Route path="/validators" component={SecurityDashboard} />

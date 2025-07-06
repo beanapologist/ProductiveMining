@@ -42,7 +42,8 @@ export default function ApiPage() {
     staleTime: 5000,
   });
 
-  const copyEndpoint = (endpoint: string) => {
+  const copyEndpoint = (endpoint: string | any) => {
+    if (typeof endpoint !== 'string') return;
     const fullUrl = `${window.location.origin}${endpoint}`;
     navigator.clipboard.writeText(fullUrl);
     setCopiedEndpoint(endpoint);
@@ -54,7 +55,8 @@ export default function ApiPage() {
     setTimeout(() => setCopiedEndpoint(null), 2000);
   };
 
-  const getMethodColor = (endpoint: string) => {
+  const getMethodColor = (endpoint: string | any) => {
+    if (typeof endpoint !== 'string') return 'bg-gray-500';
     if (endpoint.includes('start') || endpoint.includes('trigger') || endpoint.includes('create')) {
       return 'bg-green-500';
     }
