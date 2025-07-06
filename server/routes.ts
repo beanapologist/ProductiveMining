@@ -393,22 +393,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get recent mathematical discoveries - ONLY REAL MINED DATA
   app.get("/api/discoveries", async (req, res) => {
     try {
-      const limit = parseInt(req.query.limit as string) || 100000;
+      console.log('🔍 DISCOVERIES API: Starting to fetch all discoveries...');
       const { db } = await import('./db');
       const { mathematicalWork } = await import('@shared/schema');
       const { desc } = await import('drizzle-orm');
       
-      // Return all discoveries from productive mining blockchain (newest first)
+      // Return ALL discoveries from productive mining blockchain (newest first) - NO LIMIT
       const realMinedDiscoveries = await db.select()
         .from(mathematicalWork)
-        .orderBy(desc(mathematicalWork.timestamp))
-        .limit(limit);
+        .orderBy(desc(mathematicalWork.timestamp));
+      
+      console.log(`🔍 DISCOVERIES API: Found ${realMinedDiscoveries.length} total discoveries`);
       
       res.setHeader('X-Data-Source', 'AUTHENTIC_PRODUCTIVE_MINING');
       res.setHeader('X-Mining-Session', 'REAL_MATHEMATICAL_COMPUTATION');
       res.json(realMinedDiscoveries);
     } catch (error) {
-      res.status(500).json({ error: "Failed to fetch real mined discoveries" });
+      console.error('❌ DISCOVERIES API ERROR:', error);
+      res.status(500).json({ error: "Failed to fetch real mined discoveries", details: error instanceof Error ? error.message : 'Unknown error' });
     }
   });
 
