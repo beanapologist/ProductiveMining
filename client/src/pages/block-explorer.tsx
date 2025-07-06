@@ -118,14 +118,16 @@ export default function BlockExplorerPage() {
     return typeMap[formatted] || formatted;
   };
 
-  // Calculate actual totals from current network data
-  const totalScientificValue = currentBlocks.reduce((sum: number, block: ProductiveBlock) => 
-    sum + (block.totalScientificValue || 0), 0
-  );
+  // Calculate actual totals from current network data with better error handling
+  const totalScientificValue = currentBlocks.reduce((sum: number, block: ProductiveBlock) => {
+    const blockValue = typeof block.totalScientificValue === 'number' ? block.totalScientificValue : 0;
+    return sum + blockValue;
+  }, 0);
 
-  const totalEnergyEfficiency = currentBlocks.reduce((sum: number, block: ProductiveBlock) => 
-    sum + (block.energyConsumed || 0), 0
-  );
+  const totalEnergyEfficiency = currentBlocks.reduce((sum: number, block: ProductiveBlock) => {
+    const energyValue = typeof block.energyConsumed === 'number' ? block.energyConsumed : 0;
+    return sum + energyValue;
+  }, 0);
 
   // Get the latest difficulty from the most recent block (highest index)
   const latestDifficulty = currentBlocks.length > 0 
@@ -137,12 +139,16 @@ export default function BlockExplorerPage() {
     ? Math.max(...currentBlocks.map(block => block.index || 0)) + 1
     : 0;
   
-  // Format large numbers properly
-  const formatCurrency = (value: number) => {
+  // Format scientific values properly  
+  const formatCurrency = (value: number | undefined) => {
+    if (!value || isNaN(value)) return '$0';
+    
     if (value >= 1000000) {
       return `$${(value / 1000000).toFixed(1)}M`;
+    } else if (value >= 1000) {
+      return `$${(value / 1000).toFixed(1)}K`;
     }
-    return `$${value.toLocaleString()}`;
+    return `$${Math.round(value).toLocaleString()}`;
   };
 
   return (
@@ -275,7 +281,7 @@ export default function BlockExplorerPage() {
                     </div>
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-400">Scientific Value:</span>
-                      <span className="text-green-400 font-semibold">{formatCurrency(block.totalScientificValue)}</span>
+                      <span className="text-green-400 font-semibold">{formatCurrency(block.totalScientificValue || 0)}</span>
                     </div>
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-400">Difficulty:</span>
@@ -358,7 +364,7 @@ export default function BlockExplorerPage() {
                               <span className="text-white font-semibold">{formatWorkType(work.workType)}</span>
                             </div>
                             <Badge variant="outline" className="text-green-400 border-green-400">
-                              {formatCurrency(work.scientificValue)}
+                              {formatCurrency(work.scientificValue || 0)}
                             </Badge>
                           </div>
                           <div className="space-y-1 text-sm">
