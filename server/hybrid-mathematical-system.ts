@@ -37,11 +37,18 @@ export class HybridMathematicalSystem {
     
     console.log(`🔬 HYBRID COMPUTATION: ${workType} at difficulty ${difficulty} using ${mode} computation`);
     
+    let result;
     if (mode === 'real') {
-      return this.performRealComputation(workType, difficulty);
+      result = this.performRealComputation(workType, difficulty);
     } else {
-      return this.performSimulatedComputation(workType, difficulty);
+      result = this.performSimulatedComputation(workType, difficulty);
     }
+    
+    // Ensure work type is preserved in result
+    result.workType = workType;
+    result.originalWorkType = workType;
+    
+    return result;
   }
 
   /**
@@ -90,6 +97,7 @@ export class HybridMathematicalSystem {
       hybridSystemVersion: '1.0',
       tractable: false,
       workType,
+      originalWorkType: workType,
       difficulty,
       computationTime: simulatedTime,
       energyConsumed: simulatedTime * 0.12, // Higher energy for simulation
