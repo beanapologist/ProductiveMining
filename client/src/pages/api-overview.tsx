@@ -599,9 +599,9 @@ export default function APIOverview() {
                 </CardTitle>
                 <p className="text-gray-400">
                   {subcategory === 'emergentAI' && 'Advanced AI pattern recognition and cross-disciplinary synthesis'}
-                  {subcategory === 'recursiveEnhancement' && 'Self-improving algorithms that evolve with discoveries'}
+                  {subcategory === 'recursiveEnhancement' && 'Self-improving algorithms that evolve with discoveries - Manual trigger available in AI Learning page'}
                   {subcategory === 'complexityScaling' && 'Intelligent difficulty progression and network optimization'}
-                  {subcategory === 'security' && 'Advanced threat detection and cryptographic enhancement'}
+                  {subcategory === 'security' && 'Advanced threat detection and cryptographic enhancement - Manual trigger available in Security Dashboard'}
                   {subcategory === 'institutional' && 'Academic validation and institutional certification'}
                 </p>
               </CardHeader>

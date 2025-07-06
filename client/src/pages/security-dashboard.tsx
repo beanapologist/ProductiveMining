@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Shield, Lock, Key, Zap, AlertTriangle, CheckCircle, Database, Search, FileText, ExternalLink, Users, Brain, TrendingUp, Target } from 'lucide-react';
+import { Shield, Lock, Key, Zap, AlertTriangle, CheckCircle, Database, Search, FileText, ExternalLink, Users, Brain, TrendingUp, Target, RefreshCw, Play } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface SecurityAnalysis {
@@ -151,6 +151,21 @@ interface ImmutableRecord {
   lastVerificationCheck?: string;
 }
 
+interface AdaptiveSecurityStatus {
+  currentIteration: number;
+  lastIteration: string;
+  totalIterations: number;
+  latestSecurityMetrics: {
+    overallSecurityScore: number;
+    threatDetectionAccuracy: number;
+    cryptographicStrength: number;
+    adaptiveDefenseLevel: number;
+    quantumResistanceLevel: number;
+  } | null;
+  adaptiveProtocolsActive: number;
+  securityEvolutionTrend: number;
+}
+
 interface IntegrityResults {
   summary: {
     totalBlocks: number;
@@ -179,6 +194,39 @@ export default function SecurityDashboard() {
   const [integrityResults, setIntegrityResults] = useState<IntegrityResults | null>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
+
+  // Adaptive Security Status
+  const { data: adaptiveSecurityStatus } = useQuery<AdaptiveSecurityStatus>({
+    queryKey: ['/api/adaptive-security/status'],
+    refetchInterval: 10000,
+  });
+
+  // Trigger security iteration mutation
+  const triggerSecurityMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/adaptive-security/trigger', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+      if (!response.ok) throw new Error('Failed to trigger security iteration');
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Security Iteration Triggered!",
+        description: "Adaptive security improvement cycle has been initiated",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/adaptive-security/status'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Security Iteration Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
 
   const { data: discoveries } = useQuery({
     queryKey: ['/api/discoveries'],
@@ -704,6 +752,94 @@ export default function SecurityDashboard() {
                 </div>
               ))}
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Adaptive Security Evolution System */}
+      {adaptiveSecurityStatus && (
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center justify-between">
+              <div className="flex items-center">
+                <Shield className="mr-2 h-5 w-5 text-green-400" />
+                Adaptive Security Evolution System
+              </div>
+              <Button
+                onClick={() => triggerSecurityMutation.mutate()}
+                disabled={triggerSecurityMutation.isPending}
+                className="bg-green-600 hover:bg-green-700 text-white"
+                size="sm"
+              >
+                {triggerSecurityMutation.isPending ? (
+                  <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+                ) : (
+                  <Play className="h-4 w-4 mr-2" />
+                )}
+                Trigger Security Iteration
+              </Button>
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Self-improving security system with real-time threat adaptation
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                <div className="text-2xl font-bold text-green-400">
+                  {adaptiveSecurityStatus.currentIteration}
+                </div>
+                <div className="text-sm text-gray-400">Current Iteration</div>
+              </div>
+              <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                <div className="text-2xl font-bold text-blue-400">
+                  {adaptiveSecurityStatus.latestSecurityMetrics?.overallSecurityScore || '--'}%
+                </div>
+                <div className="text-sm text-gray-400">Security Score</div>
+              </div>
+              <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                <div className="text-2xl font-bold text-purple-400">
+                  {adaptiveSecurityStatus.adaptiveProtocolsActive}
+                </div>
+                <div className="text-sm text-gray-400">Active Protocols</div>
+              </div>
+              <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                <div className="text-2xl font-bold text-orange-400">
+                  {adaptiveSecurityStatus.latestSecurityMetrics?.threatDetectionAccuracy || '--'}%
+                </div>
+                <div className="text-sm text-gray-400">Threat Detection</div>
+              </div>
+            </div>
+            
+            {/* Security Evolution Metrics */}
+            {adaptiveSecurityStatus.latestSecurityMetrics && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-400">Cryptographic Strength:</span>
+                    <span className="text-green-400 font-bold">
+                      {adaptiveSecurityStatus.latestSecurityMetrics.cryptographicStrength}%
+                    </span>
+                  </div>
+                  <Progress 
+                    value={adaptiveSecurityStatus.latestSecurityMetrics.cryptographicStrength} 
+                    className="h-2"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-400">Quantum Resistance:</span>
+                    <span className="text-blue-400 font-bold">
+                      {adaptiveSecurityStatus.latestSecurityMetrics.quantumResistanceLevel}%
+                    </span>
+                  </div>
+                  <Progress 
+                    value={adaptiveSecurityStatus.latestSecurityMetrics.quantumResistanceLevel} 
+                    className="h-2"
+                  />
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}

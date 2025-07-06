@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
-import { Brain, Layers, Cpu, Gauge, Play, Pause, Eye, Grid3X3 } from 'lucide-react';
+import { Brain, Layers, Cpu, Gauge, Play, Pause, Eye, Grid3X3, Zap, RefreshCw } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface LearningPattern {
   id: string;
@@ -67,6 +68,41 @@ interface AdaptiveLearningMetrics {
 
 export default function AdaptiveLearningPage() {
   const [selectedDimension, setSelectedDimension] = useState<number>(4);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Recursive Enhancement Status
+  const { data: recursiveEnhancementStatus } = useQuery<RecursiveEnhancementStatus>({
+    queryKey: ['/api/recursive-enhancement/status'],
+    refetchInterval: 10000,
+  });
+
+  // Trigger enhancement mutation
+  const triggerEnhancementMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/recursive-enhancement/trigger-cycle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({})
+      });
+      if (!response.ok) throw new Error('Failed to trigger enhancement cycle');
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Enhancement Triggered!",
+        description: "Recursive enhancement cycle has been initiated",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/recursive-enhancement/status'] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Enhancement Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  });
 
   const { data: learningStatus } = useQuery({
     queryKey: ['/api/adaptive-learning/status'],
@@ -204,6 +240,97 @@ export default function AdaptiveLearningPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Recursive Enhancement System */}
+      {recursiveEnhancementStatus && (
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center justify-between">
+              <div className="flex items-center">
+                <Zap className="mr-2 h-5 w-5 text-yellow-400" />
+                Recursive Enhancement System
+              </div>
+              <Button
+                onClick={() => triggerEnhancementMutation.mutate()}
+                disabled={triggerEnhancementMutation.isPending}
+                className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                size="sm"
+              >
+                {triggerEnhancementMutation.isPending ? (
+                  <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+                ) : (
+                  <Play className="h-4 w-4 mr-2" />
+                )}
+                Trigger Enhancement
+              </Button>
+            </CardTitle>
+            <CardDescription className="text-gray-400">
+              Self-improving algorithms that evolve through recursive mathematical optimization
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                <div className="text-2xl font-bold text-yellow-400">
+                  {recursiveEnhancementStatus.currentGeneration}
+                </div>
+                <div className="text-sm text-gray-400">Current Generation</div>
+              </div>
+              <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                <div className="text-2xl font-bold text-blue-400">
+                  {recursiveEnhancementStatus.activeAlgorithms}
+                </div>
+                <div className="text-sm text-gray-400">Active Algorithms</div>
+              </div>
+              <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                <div className="text-2xl font-bold text-purple-400">
+                  {recursiveEnhancementStatus.avgPerformance}%
+                </div>
+                <div className="text-sm text-gray-400">Avg Performance</div>
+              </div>
+              <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                <div className="text-2xl font-bold text-green-400">
+                  {recursiveEnhancementStatus.quantumCoherence}%
+                </div>
+                <div className="text-sm text-gray-400">Quantum Coherence</div>
+              </div>
+            </div>
+
+            {/* Algorithm Status */}
+            <div className="space-y-3">
+              <h4 className="text-white font-medium">Algorithm Evolution Status</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {recursiveEnhancementStatus.algorithms?.map((algorithm, index) => (
+                  <div key={index} className="p-3 bg-slate-700/50 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-white font-medium">
+                        {algorithm.type.replace('_', ' ').toUpperCase()}
+                      </span>
+                      <Badge className="bg-yellow-600 text-white">
+                        Gen {algorithm.generation}
+                      </Badge>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-gray-400">Accuracy:</span>
+                        <span className="text-green-400">{algorithm.accuracy}%</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-gray-400">Efficiency:</span>
+                        <span className="text-blue-400">{algorithm.efficiency}%</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-gray-400">Improvements:</span>
+                        <span className="text-purple-400">{algorithm.improvements}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <Tabs defaultValue="patterns" className="space-y-4">
         <TabsList className="grid w-full grid-cols-3 bg-slate-700">

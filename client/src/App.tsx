@@ -21,7 +21,7 @@ import ComplexityAnalysisPage from "@/pages/complexity-analysis";
 import APIOverview from "@/pages/api-overview";
 import ScientificValuation from "@/pages/scientific-valuation";
 import AdaptiveLearningPage from "@/pages/adaptive-learning";
-import EnhancementSystemsPage from "@/pages/enhancement-systems";
+
 
 import MinerSubmissionDemo from "@/pages/miner-submission-demo";
 
@@ -44,7 +44,6 @@ function Router() {
         <Route path="/complexity" component={ComplexityAnalysisPage} />
         <Route path="/valuation" component={ScientificValuation} />
         <Route path="/adaptive-learning" component={AdaptiveLearningPage} />
-        <Route path="/enhancement" component={EnhancementSystemsPage} />
 
         <Route path="/miner-demo" component={MinerSubmissionDemo} />
 
