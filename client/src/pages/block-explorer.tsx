@@ -89,21 +89,6 @@ export default function BlockExplorer() {
     return labels[workType] || workType;
   };
 
-  const getWorkTypeLabel = (workType: string) => {
-    const labels: { [key: string]: string } = {
-      riemann_zero: "Riemann Hypothesis",
-      prime_pattern: "Prime Patterns",
-      yang_mills: "Yang-Mills Theory",
-      navier_stokes: "Navier-Stokes",
-      goldbach_verification: "Goldbach Conjecture",
-      birch_swinnerton_dyer: "Birch-Swinnerton-Dyer",
-      elliptic_curve_crypto: "Elliptic Curve Crypto",
-      lattice_crypto: "Lattice Cryptography",
-      poincare_conjecture: "Poincaré Conjecture"
-    };
-    return labels[workType] || workType.replace(/_/g, ' ');
-  };
-
   const getVerificationStatus = (work: MathematicalWork) => {
     const verified = work.verificationData?.verified || false;
     const consensusScore = Math.random() * 100; // This would come from actual validation data
