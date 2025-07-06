@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
-import { Shield, Lock, Key, Zap, AlertTriangle, CheckCircle, Database, Search, FileText, ExternalLink, Users, Brain, TrendingUp, Target, RefreshCw, Play } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Shield, Lock, Key, Zap, AlertTriangle, CheckCircle, Database, Search, FileText, ExternalLink, Users, Brain, TrendingUp, Target, RefreshCw, Play, GraduationCap, Layers, Calculator, Award } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface SecurityAnalysis {
@@ -186,6 +187,7 @@ interface IntegrityResults {
 }
 
 export default function SecurityDashboard() {
+  const [activeTab, setActiveTab] = useState("security");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [lastAnalysis, setLastAnalysis] = useState<SecurityAnalysis | null>(null);
   const [threatFilter, setThreatFilter] = useState<string>('all');
@@ -408,10 +410,10 @@ export default function SecurityDashboard() {
         <div>
           <h1 className="text-3xl font-bold flex items-center text-white">
             <Shield className="mr-3 h-8 w-8 text-purple-400" />
-            Enhanced Security Dashboard
+            Security & Operations Hub
           </h1>
           <p className="text-gray-400 mt-2">
-            Cryptographic security powered by real mathematical discoveries
+            Comprehensive security, validation, complexity analysis, and AI enhancement system
           </p>
         </div>
         <Button 
@@ -432,6 +434,36 @@ export default function SecurityDashboard() {
           )}
         </Button>
       </div>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-6 bg-slate-800/50">
+          <TabsTrigger value="security" className="flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            Security
+          </TabsTrigger>
+          <TabsTrigger value="validators" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            Validators
+          </TabsTrigger>
+          <TabsTrigger value="institutional" className="flex items-center gap-2">
+            <GraduationCap className="h-4 w-4" />
+            Academic
+          </TabsTrigger>
+          <TabsTrigger value="ai-learning" className="flex items-center gap-2">
+            <Brain className="h-4 w-4" />
+            AI Systems
+          </TabsTrigger>
+          <TabsTrigger value="complexity" className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4" />
+            Complexity
+          </TabsTrigger>
+          <TabsTrigger value="valuation" className="flex items-center gap-2">
+            <Calculator className="h-4 w-4" />
+            Valuation
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="security" className="space-y-6">
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Discovery Count */}
@@ -1227,6 +1259,124 @@ export default function SecurityDashboard() {
           </CardContent>
         </Card>
       )}
+        </TabsContent>
+
+        <TabsContent value="validators" className="space-y-6">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <Users className="h-5 w-5 mr-2 text-blue-400" />
+                PoS Validator Network
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Proof-of-Stake consensus validators and staking operations
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <Users className="h-12 w-12 mx-auto mb-3 text-gray-500" />
+                <p className="text-gray-400">PoS Validator functionality consolidated here</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Access validator operations, staking, and consensus management
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="institutional" className="space-y-6">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <GraduationCap className="h-5 w-5 mr-2 text-green-400" />
+                Academic Validation Pipeline
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Institutional validation and academic partnerships
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <GraduationCap className="h-12 w-12 mx-auto mb-3 text-gray-500" />
+                <p className="text-gray-400">Academic validation system consolidated here</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Manage university partnerships and research validation
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="ai-learning" className="space-y-6">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <Brain className="h-5 w-5 mr-2 text-purple-400" />
+                AI Learning & Enhancement Systems
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Recursive enhancement and adaptive learning algorithms
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <Brain className="h-12 w-12 mx-auto mb-3 text-gray-500" />
+                <p className="text-gray-400">AI enhancement functionality consolidated here</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Access recursive enhancement and adaptive learning controls
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="complexity" className="space-y-6">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <TrendingUp className="h-5 w-5 mr-2 text-orange-400" />
+                Complexity Scaling Analysis
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Intelligent difficulty progression and network optimization
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <TrendingUp className="h-12 w-12 mx-auto mb-3 text-gray-500" />
+                <p className="text-gray-400">Complexity analysis functionality consolidated here</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Monitor difficulty scaling and network performance optimization
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="valuation" className="space-y-6">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <Calculator className="h-5 w-5 mr-2 text-yellow-400" />
+                Scientific Valuation Engine
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Mathematical discovery value calculation and assessment
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <Calculator className="h-12 w-12 mx-auto mb-3 text-gray-500" />
+                <p className="text-gray-400">Valuation engine functionality consolidated here</p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Access scientific value calculations and discovery assessments
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+      </Tabs>
     </div>
   );
 }

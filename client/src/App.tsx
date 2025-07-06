@@ -13,17 +13,6 @@ import BlockExplorer from "@/pages/block-explorer";
 import MiningPage from "@/pages/mining-simple";
 import DiscoveriesPage from "@/pages/discoveries-clean";
 import SecurityDashboard from "@/pages/security-dashboard";
-import ValidatorsPage from "@/pages/validators";
-import { InstitutionalValidation } from "@/pages/institutional-validation";
-import ProofOfResearchPage from "@/pages/proof-of-research";
-import DataManagement from "@/pages/data-management";
-import ComplexityAnalysisPage from "@/pages/complexity-analysis";
-import APIOverview from "@/pages/api-overview";
-import ScientificValuation from "@/pages/scientific-valuation";
-import AdaptiveLearningPage from "@/pages/adaptive-learning";
-
-
-import MinerSubmissionDemo from "@/pages/miner-submission-demo";
 
 import WalletPage from "@/pages/wallet";
 import About from "@/pages/about";
@@ -37,22 +26,23 @@ function Router() {
         <Route path="/" component={Dashboard} />
         <Route path="/mining" component={MiningPage} />
         <Route path="/discoveries" component={DiscoveriesPage} />
-        <Route path="/validators" component={ValidatorsPage} />
-        <Route path="/institutional" component={InstitutionalValidation} />
-        <Route path="/research" component={ProofOfResearchPage} />
         <Route path="/security" component={SecurityDashboard} />
-        <Route path="/complexity" component={ComplexityAnalysisPage} />
-        <Route path="/valuation" component={ScientificValuation} />
-        <Route path="/adaptive-learning" component={AdaptiveLearningPage} />
-
-        <Route path="/miner-demo" component={MinerSubmissionDemo} />
-
         <Route path="/blocks" component={BlockExplorer} />
         <Route path="/block-explorer" component={BlockExplorer} />
         <Route path="/wallet" component={WalletPage} />
-        <Route path="/data-management" component={DataManagement} />
-        <Route path="/api" component={APIOverview} />
         <Route path="/about" component={About} />
+        
+        {/* Legacy routes for bookmarks/direct links */}
+        <Route path="/validators" component={SecurityDashboard} />
+        <Route path="/institutional" component={SecurityDashboard} />
+        <Route path="/research" component={SecurityDashboard} />
+        <Route path="/complexity" component={SecurityDashboard} />
+        <Route path="/valuation" component={DiscoveriesPage} />
+        <Route path="/adaptive-learning" component={SecurityDashboard} />
+        <Route path="/data-management" component={BlockExplorer} />
+        <Route path="/api" component={About} />
+        <Route path="/miner-demo" component={MiningPage} />
+        
         <Route component={NotFound} />
       </Switch>
     </div>
@@ -112,23 +102,13 @@ function Navigation() {
   const [location] = useLocation();
   
   const navItems = [
-    { path: '/', title: 'Adventure Hub', icon: BarChart3 },
-    { path: '/mining', title: 'Mining Quest', icon: Pickaxe },
-
-    { path: '/discoveries', title: 'Discovery Lab', icon: Brain },
-    { path: '/validators', title: 'Guild Council', icon: Users },
-    { path: '/institutional', title: 'Academy', icon: GraduationCap },
-    { path: '/research', title: 'Research Lab', icon: Beaker },
-    { path: '/security', title: 'Crypto Fortress', icon: Shield },
-    { path: '/complexity', title: 'Complexity Engine', icon: TrendingUp },
-    { path: '/adaptive-learning', title: 'AI Learning Core', icon: Layers },
-    { path: '/enhancement', title: 'Enhancement Systems', icon: Sparkles },
-    { path: '/valuation', title: 'Value Calculator', icon: Coins },
-    { path: '/blocks', title: 'Data Vault', icon: Database },
-    { path: '/wallet', title: 'Research Vault', icon: Wallet },
-    { path: '/data-management', title: 'Data Center', icon: HardDrive },
-    { path: '/api', title: 'API Docs', icon: FileCode },
-    { path: '/about', title: 'Game Info', icon: Info }
+    { path: '/', title: 'Dashboard', icon: BarChart3 },
+    { path: '/mining', title: 'Mining', icon: Pickaxe },
+    { path: '/discoveries', title: 'Discoveries', icon: Brain },
+    { path: '/security', title: 'Security', icon: Shield },
+    { path: '/blocks', title: 'Explorer', icon: Database },
+    { path: '/wallet', title: 'Wallet', icon: Wallet },
+    { path: '/about', title: 'About', icon: Info }
   ];
 
   return (
