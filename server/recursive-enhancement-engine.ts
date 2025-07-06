@@ -695,7 +695,7 @@ export class RecursiveEnhancementEngine {
   }> {
     try {
       // Get emergent patterns from AI engine
-      const emergentData = await emergentAIEngine.performEmergentAnalysis();
+      const emergentData = await emergentAIEngine.analyzeEmergentComplexity();
       
       if (emergentData.patterns.length > 3) {
         // High pattern count triggers enhancement
