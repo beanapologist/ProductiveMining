@@ -37,28 +37,32 @@ type MathematicalWork = {
 
 export default function BlockExplorer() {
   const [selectedWork, setSelectedWork] = useState<MathematicalWork | null>(null);
+  const [selectedBlockWork, setSelectedBlockWork] = useState<MathematicalWork[]>([]);
 
   const { data: blocks, isLoading: blocksLoading } = useQuery<Block[]>({
     queryKey: ["/api/blocks"],
     staleTime: 5000,
   });
 
-  const { data: mathematicalWork, isLoading: workLoading } = useQuery<MathematicalWork[]>({
-    queryKey: ["/api/discoveries"],
-    staleTime: 5000,
-  });
+  // Fetch work for specific block when clicked
+  const fetchBlockWork = async (blockIndex: number) => {
+    try {
+      const response = await fetch(`/api/blocks/index/${blockIndex}`);
+      const data = await response.json();
+      setSelectedBlockWork(data.work || []);
+    } catch (error) {
+      console.error('Failed to fetch block work:', error);
+      setSelectedBlockWork([]);
+    }
+  };
 
-  if (blocksLoading || workLoading) {
+  if (blocksLoading) {
     return (
       <div className="container mx-auto p-6 space-y-6">
         <div className="text-center">Loading blockchain data...</div>
       </div>
     );
   }
-
-  const getWorkForBlock = (blockIndex: number) => {
-    return mathematicalWork?.filter(work => work.id <= blockIndex * 5) || [];
-  };
 
   const formatValue = (value: number) => {
     if (value >= 1000000) return `$${(value / 1000000).toFixed(1)}M`;
@@ -102,7 +106,6 @@ export default function BlockExplorer() {
 
       <div className="space-y-4">
         {blocks?.map((block) => {
-          const blockWork = getWorkForBlock(block.index);
           
           return (
             <Card key={block.id} className="bg-slate-800 border-slate-700">
@@ -161,76 +164,25 @@ export default function BlockExplorer() {
 
                 <Separator className="bg-slate-700" />
 
-                {/* Mathematical Work */}
+                {/* Block Actions */}
                 <div className="space-y-3">
-                  <h4 className="text-white font-semibold flex items-center gap-2">
-                    <Calculator className="h-4 w-4 text-purple-400" />
-                    Mathematical Discoveries ({blockWork.length})
-                  </h4>
-                  
-                  {blockWork.length > 0 ? (
-                    <div className="grid gap-3">
-                      {blockWork.slice(0, 3).map((work) => {
-                        const verification = getVerificationStatus(work);
-                        
-                        return (
-                          <div 
-                            key={work.id} 
-                            className="bg-slate-900 rounded-lg p-4 border border-slate-600 cursor-pointer hover:border-slate-500 transition-colors"
-                            onClick={() => setSelectedWork(work)}
-                          >
-                            <div className="flex items-center justify-between mb-3">
-                              <div className="flex items-center gap-2">
-                                <Badge variant="secondary" className="text-xs">
-                                  {getWorkTypeLabel(work.workType)}
-                                </Badge>
-                                <span className="text-gray-400 text-sm">Difficulty {work.difficulty}</span>
-                              </div>
-                              <span className="text-green-400 font-semibold">
-                                {formatValue(work.scientificValue)}
-                              </span>
-                            </div>
-                            
-                            <div className="grid grid-cols-2 gap-4 text-xs">
-                              <div className="space-y-1">
-                                <div className="text-gray-400">Processing Time:</div>
-                                <div className="text-white">{(work.computationalCost * 1000).toFixed(0)}ms</div>
-                              </div>
-                              <div className="space-y-1">
-                                <div className="text-gray-400">Energy Consumed:</div>
-                                <div className="text-white">{work.energyEfficiency.toFixed(4)} units</div>
-                              </div>
-                              <div className="space-y-1">
-                                <div className="text-gray-400">Worker ID:</div>
-                                <div className="text-white font-mono">{work.workerId}</div>
-                              </div>
-                              <div className="space-y-1">
-                                <div className="text-gray-400">Verification:</div>
-                                <div className="flex items-center gap-1">
-                                  {verification.verified ? (
-                                    <CheckCircle className="h-3 w-3 text-green-400" />
-                                  ) : (
-                                    <AlertCircle className="h-3 w-3 text-yellow-400" />
-                                  )}
-                                  <span className="text-white">
-                                    {verification.verified ? "Verified" : "Pending"}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                      
-                      {blockWork.length > 3 && (
-                        <div className="text-center text-gray-400 text-sm">
-                          +{blockWork.length - 3} more discoveries
-                        </div>
-                      )}
+                  <button
+                    onClick={() => fetchBlockWork(block.index)}
+                    className="w-full text-left bg-slate-900 rounded-lg p-4 border border-slate-600 hover:border-slate-500 transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Calculator className="h-4 w-4 text-purple-400" />
+                        <span className="text-white font-medium">View Mathematical Discoveries</span>
+                      </div>
+                      <div className="text-blue-400">→</div>
                     </div>
-                  ) : (
-                    <div className="text-gray-500 text-sm italic">No mathematical work in this block</div>
-                  )}
+                    <div className="text-gray-400 text-sm mt-1">
+                      Click to explore the productive mathematical work contained in this block
+                    </div>
+                  </button>
+                  
+
                 </div>
               </CardContent>
             </Card>

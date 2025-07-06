@@ -185,6 +185,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get block-to-work mapping for accurate scientific value display
+  app.get("/api/blocks/work-mapping", async (req, res) => {
+    try {
+      const blocks = await storage.getRecentBlocks(50000);
+      const workMapping: {[blockId: number]: any[]} = {};
+      
+      for (const block of blocks) {
+        const blockWithWork = await storage.getBlockWithMathematicalWork(block.id);
+        workMapping[block.id] = blockWithWork?.work || [];
+      }
+      
+      res.json(workMapping);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch block work mapping" });
+    }
+  });
+
   // Get block by index with mathematical work
   app.get("/api/blocks/index/:index", async (req, res) => {
     try {
