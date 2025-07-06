@@ -398,10 +398,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { mathematicalWork } = await import('@shared/schema');
       const { gte } = await import('drizzle-orm');
       
-      // Only return real mined discoveries from current productive mining session
+      // Return all discoveries from productive mining blockchain
       const realMinedDiscoveries = await db.select()
         .from(mathematicalWork)
-        .where(gte(mathematicalWork.id, 160))  // Only authentic mining data
         .orderBy(mathematicalWork.timestamp)
         .limit(limit);
       
