@@ -21,7 +21,8 @@ import ComplexityAnalysisPage from "@/pages/complexity-analysis";
 import APIOverview from "@/pages/api-overview";
 import ScientificValuation from "@/pages/scientific-valuation";
 import AdaptiveLearningPage from "@/pages/adaptive-learning";
-import MathMinerPage from "@/pages/math-miner";
+import EnhancementSystemsPage from "@/pages/enhancement-systems";
+
 import MinerSubmissionDemo from "@/pages/miner-submission-demo";
 
 import WalletPage from "@/pages/wallet";
@@ -43,7 +44,8 @@ function Router() {
         <Route path="/complexity" component={ComplexityAnalysisPage} />
         <Route path="/valuation" component={ScientificValuation} />
         <Route path="/adaptive-learning" component={AdaptiveLearningPage} />
-        <Route path="/math-miner" component={MathMinerPage} />
+        <Route path="/enhancement" component={EnhancementSystemsPage} />
+
         <Route path="/miner-demo" component={MinerSubmissionDemo} />
 
         <Route path="/blocks" component={BlockExplorer} />
@@ -113,7 +115,7 @@ function Navigation() {
   const navItems = [
     { path: '/', title: 'Adventure Hub', icon: BarChart3 },
     { path: '/mining', title: 'Mining Quest', icon: Pickaxe },
-    { path: '/math-miner', title: 'Math Miner', icon: User },
+
     { path: '/discoveries', title: 'Discovery Lab', icon: Brain },
     { path: '/validators', title: 'Guild Council', icon: Users },
     { path: '/institutional', title: 'Academy', icon: GraduationCap },
@@ -121,6 +123,7 @@ function Navigation() {
     { path: '/security', title: 'Crypto Fortress', icon: Shield },
     { path: '/complexity', title: 'Complexity Engine', icon: TrendingUp },
     { path: '/adaptive-learning', title: 'AI Learning Core', icon: Layers },
+    { path: '/enhancement', title: 'Enhancement Systems', icon: Sparkles },
     { path: '/valuation', title: 'Value Calculator', icon: Coins },
     { path: '/blocks', title: 'Data Vault', icon: Database },
     { path: '/wallet', title: 'Research Vault', icon: Wallet },
