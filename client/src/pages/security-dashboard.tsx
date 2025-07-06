@@ -1308,26 +1308,14 @@ export default function SecurityDashboard() {
         </TabsContent>
 
         <TabsContent value="ai-learning" className="space-y-6">
-          <Card className="bg-slate-800 border-slate-700">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center">
-                <Brain className="h-5 w-5 mr-2 text-purple-400" />
-                AI Learning & Enhancement Systems
-              </CardTitle>
-              <CardDescription className="text-gray-400">
-                Recursive enhancement and adaptive learning algorithms
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8">
-                <Brain className="h-12 w-12 mx-auto mb-3 text-gray-500" />
-                <p className="text-gray-400">AI enhancement functionality consolidated here</p>
-                <p className="text-sm text-gray-500 mt-1">
-                  Access recursive enhancement and adaptive learning controls
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Recursive Enhancement Status */}
+          <RecursiveEnhancementPanel />
+          
+          {/* Emergent AI Analysis */}
+          <EmergentAIPanel />
+          
+          {/* AI Discovery Engine */}
+          <AIDiscoveryEnginePanel />
         </TabsContent>
 
         <TabsContent value="complexity" className="space-y-6">
