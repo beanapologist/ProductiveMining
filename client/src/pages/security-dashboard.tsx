@@ -1605,22 +1605,22 @@ function ComplexityScalingMetrics() {
         </div>
         <div className="space-y-2">
           <div className="text-sm text-gray-400">Performance Score</div>
-          <div className="text-lg font-semibold text-white">{(complexityMetrics?.performanceScore || 88.5).toFixed(1)}%</div>
+          <div className="text-lg font-semibold text-white">{Number(complexityMetrics?.performanceScore || 88.5).toFixed(1)}%</div>
         </div>
         <div className="space-y-2">
           <div className="text-sm text-gray-400">Scaling Factor</div>
-          <div className="text-lg font-semibold text-white">{(complexityMetrics?.scalingFactor || 1.25).toFixed(2)}x</div>
+          <div className="text-lg font-semibold text-white">{Number(complexityMetrics?.scalingFactor || 1.25).toFixed(2)}x</div>
         </div>
       </div>
       
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <div className="text-sm text-gray-400">Emergent Complexity</div>
-          <div className="text-lg font-semibold text-white">{(complexityMetrics?.emergentComplexity || 76.3).toFixed(1)}%</div>
+          <div className="text-lg font-semibold text-white">{Number(complexityMetrics?.emergentComplexity || 76.3).toFixed(1)}%</div>
         </div>
         <div className="space-y-2">
           <div className="text-sm text-gray-400">Work Type Optimization</div>
-          <div className="text-lg font-semibold text-white">{(complexityMetrics?.workTypeOptimization || 82.1).toFixed(1)}%</div>
+          <div className="text-lg font-semibold text-white">{Number(complexityMetrics?.workTypeOptimization || 82.1).toFixed(1)}%</div>
         </div>
       </div>
       
@@ -1656,11 +1656,11 @@ function BreakthroughPotentialTracker() {
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <div className="text-sm text-gray-400">Breakthrough Potential</div>
-          <div className="text-lg font-semibold text-white">{(complexityMetrics?.breakthroughPotential || 91.2).toFixed(1)}%</div>
+          <div className="text-lg font-semibold text-white">{Number(complexityMetrics?.breakthroughPotential || 91.2).toFixed(1)}%</div>
         </div>
         <div className="space-y-2">
           <div className="text-sm text-gray-400">Discovery Probability</div>
-          <div className="text-lg font-semibold text-white">{(scalingAnalysis?.breakthroughProbability || 0.73 * 100).toFixed(1)}%</div>
+          <div className="text-lg font-semibold text-white">{Number(scalingAnalysis?.breakthroughProbability || 0.73 * 100).toFixed(1)}%</div>
         </div>
       </div>
       
