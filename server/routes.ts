@@ -251,7 +251,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Blockchain restart endpoint
   app.post("/api/restart-blockchain", async (req, res) => {
     try {
-      console.log('🔄 BLOCKCHAIN RESTART: Starting fresh blockchain with corrected scientific valuations...');
+      console.log('🔥 FORCE BLOCKCHAIN RESTART: Clearing all data and restarting from Block #0...');
       
       const { db } = await import('./db');
       const { 
@@ -266,22 +266,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } = await import('@shared/schema');
       const { sql } = await import('drizzle-orm');
       
-      // Clear all blockchain data in correct order to avoid foreign key constraint violations
-      // First clear dependent tables (with foreign keys) - handle missing tables gracefully
-      try {
-        await db.delete(immutableRecordsPool);
-      } catch (error) {
-        console.log('Immutable records table not found, skipping');
-      }
+      // Force complete database reset with TRUNCATE to restart auto-increment sequences
+      console.log('🗑️ TRUNCATING: All tables with auto-increment reset...');
+      
+      // Use TRUNCATE CASCADE to reset everything including sequences
+      await db.execute(sql`TRUNCATE TABLE productive_blocks RESTART IDENTITY CASCADE`);
+      await db.execute(sql`TRUNCATE TABLE mathematical_work RESTART IDENTITY CASCADE`);
+      await db.execute(sql`TRUNCATE TABLE mining_operations RESTART IDENTITY CASCADE`);
+      await db.execute(sql`TRUNCATE TABLE network_metrics RESTART IDENTITY CASCADE`);
       
       try {
-        await db.delete(discoveryValidations);
+        await db.execute(sql`TRUNCATE TABLE discovery_validations RESTART IDENTITY CASCADE`);
       } catch (error) {
         console.log('Discovery validations table not found, skipping');
       }
       
       try {
-        await db.delete(blockMathematicalWork);
+        await db.execute(sql`TRUNCATE TABLE immutable_records_pool RESTART IDENTITY CASCADE`);
+      } catch (error) {
+        console.log('Immutable records table not found, skipping');
+      }
+      
+      try {
+        await db.execute(sql`TRUNCATE TABLE block_mathematical_work RESTART IDENTITY CASCADE`);
       } catch (error) {
         console.log('Block mathematical work table not found, skipping');
       }
@@ -370,11 +377,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       await createInitialValidators();
       console.log('🏛️ VALIDATORS: Recreated PoS validator network');
       
+      // Create genesis block (Block #0) to establish new blockchain
+      const genesisBlock = await storage.createBlock({
+        index: 0,
+        previousHash: '0000000000000000000000000000000000000000000000000000000000000000',
+        merkleRoot: '0000000000000000000000000000000000000000000000000000000000000000',
+        difficulty: 1,
+        nonce: 1,
+        blockHash: '00000000000000000000000000000000000000000000000000000000000genesis',
+        totalScientificValue: 0,
+        minerId: 'genesis_block_creator',
+        energyConsumed: 0,
+        knowledgeCreated: 0
+      });
+      
+      console.log('🌱 GENESIS BLOCK: Created Block #0');
       console.log('✅ BLOCKCHAIN RESTART: Complete with realistic scientific valuations');
       
       res.json({ 
         success: true, 
-        message: 'Blockchain restarted with corrected scientific valuations',
+        message: 'Blockchain restarted from genesis Block #0 with corrected scientific valuations',
+        genesisBlock: genesisBlock,
         timestamp: new Date().toISOString()
       });
       
