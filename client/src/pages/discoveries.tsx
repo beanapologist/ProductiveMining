@@ -59,8 +59,8 @@ export default function DiscoveriesPage() {
   const [activeTab, setActiveTab] = useState("discoveries");
 
   const { data: allDiscoveries = [] } = useQuery({
-    queryKey: ["/api/discoveries", "limit-50000"],
-    queryFn: () => fetch("/api/discoveries?limit=50000").then(res => res.json()),
+    queryKey: ["/api/discoveries", "all-discoveries"],
+    queryFn: () => fetch("/api/discoveries?limit=100000").then(res => res.json()),
     refetchInterval: 10000,
     staleTime: 0, // Force fresh data
   });

@@ -393,15 +393,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get recent mathematical discoveries - ONLY REAL MINED DATA
   app.get("/api/discoveries", async (req, res) => {
     try {
-      const limit = parseInt(req.query.limit as string) || 50000;
+      const limit = parseInt(req.query.limit as string) || 100000;
       const { db } = await import('./db');
       const { mathematicalWork } = await import('@shared/schema');
-      const { gte } = await import('drizzle-orm');
+      const { desc } = await import('drizzle-orm');
       
-      // Return all discoveries from productive mining blockchain
+      // Return all discoveries from productive mining blockchain (newest first)
       const realMinedDiscoveries = await db.select()
         .from(mathematicalWork)
-        .orderBy(mathematicalWork.timestamp)
+        .orderBy(desc(mathematicalWork.timestamp))
         .limit(limit);
       
       res.setHeader('X-Data-Source', 'AUTHENTIC_PRODUCTIVE_MINING');
