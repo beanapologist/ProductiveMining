@@ -13,6 +13,7 @@ import BlockExplorer from "@/pages/block-explorer";
 import MiningPage from "@/pages/mining-simple";
 import DiscoveriesPage from "@/pages/discoveries-clean";
 import SecurityDashboard from "@/pages/security-dashboard";
+import DataManagementPage from "@/pages/data-management";
 
 import WalletPage from "@/pages/wallet";
 import About from "@/pages/about";
@@ -29,6 +30,8 @@ function Router() {
         <Route path="/security" component={SecurityDashboard} />
         <Route path="/blocks" component={BlockExplorer} />
         <Route path="/block-explorer" component={BlockExplorer} />
+        <Route path="/database" component={DataManagementPage} />
+        <Route path="/data-management" component={DataManagementPage} />
         <Route path="/wallet" component={WalletPage} />
         <Route path="/about" component={About} />
         
@@ -106,7 +109,8 @@ function Navigation() {
     { path: '/mining', title: 'Mining', icon: Pickaxe },
     { path: '/discoveries', title: 'Discoveries', icon: Brain },
     { path: '/security', title: 'Security', icon: Shield },
-    { path: '/blocks', title: 'Explorer', icon: Database },
+    { path: '/blocks', title: 'Explorer', icon: Layers },
+    { path: '/database', title: 'Database', icon: Database },
     { path: '/wallet', title: 'Wallet', icon: Wallet },
     { path: '/about', title: 'About', icon: Info }
   ];
