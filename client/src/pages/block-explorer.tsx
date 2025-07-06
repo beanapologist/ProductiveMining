@@ -78,6 +78,21 @@ export default function BlockExplorer() {
     const labels: { [key: string]: string } = {
       riemann_zero: "Riemann Hypothesis",
       prime_pattern: "Prime Patterns",
+      yang_mills: "Yang-Mills",
+      navier_stokes: "Navier-Stokes",
+      goldbach_verification: "Goldbach Conjecture",
+      birch_swinnerton_dyer: "Birch-Swinnerton-Dyer",
+      elliptic_curve_crypto: "Elliptic Curve Crypto",
+      lattice_crypto: "Lattice Crypto",
+      poincare_conjecture: "Poincaré Conjecture"
+    };
+    return labels[workType] || workType;
+  };
+
+  const getWorkTypeLabel = (workType: string) => {
+    const labels: { [key: string]: string } = {
+      riemann_zero: "Riemann Hypothesis",
+      prime_pattern: "Prime Patterns",
       yang_mills: "Yang-Mills Theory",
       navier_stokes: "Navier-Stokes",
       goldbach_verification: "Goldbach Conjecture",
@@ -182,6 +197,51 @@ export default function BlockExplorer() {
                     </div>
                   </button>
                   
+                  {selectedBlockWork.length > 0 && (
+                    <div className="mt-4 p-4 bg-slate-900 rounded-lg border border-slate-600">
+                      <h5 className="text-white font-medium mb-3">Mathematical Discoveries ({selectedBlockWork.length})</h5>
+                      <div className="grid gap-3">
+                        {selectedBlockWork.slice(0, 3).map((work: any) => (
+                          <div 
+                            key={work.id} 
+                            className="bg-slate-800 rounded-lg p-3 border border-slate-600 cursor-pointer hover:border-slate-500 transition-colors"
+                            onClick={() => setSelectedWork(work)}
+                          >
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center gap-2">
+                                <Badge variant="secondary" className="text-xs">
+                                  {getWorkTypeLabel(work.workType)}
+                                </Badge>
+                                <span className="text-gray-400 text-sm">Difficulty {work.difficulty}</span>
+                              </div>
+                              <span className="text-green-400 font-mono text-sm">
+                                {formatValue(work.scientificValue)}
+                              </span>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-4 text-sm">
+                              <div>
+                                <span className="text-gray-400">Energy:</span>
+                                <span className="text-yellow-400 ml-1">{work.energyEfficiency?.toFixed(2) || 'N/A'} kWh</span>
+                              </div>
+                              <div>
+                                <span className="text-gray-400">Worker:</span>
+                                <span className="text-blue-400 ml-1 font-mono">{work.workerId}</span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                        
+                        {selectedBlockWork.length > 3 && (
+                          <div className="text-center">
+                            <button className="text-blue-400 hover:text-blue-300 text-sm">
+                              View all {selectedBlockWork.length} discoveries →
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
 
                 </div>
               </CardContent>
