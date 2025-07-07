@@ -4793,10 +4793,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ===== EMERGENT AI COMPLEXITY ENGINE ENDPOINTS =====
   
+  // Debug endpoint to test database connectivity
+  app.get("/api/emergent-ai/debug", async (req, res) => {
+    try {
+      console.log('🔍 DEBUG: Testing database methods...');
+      
+      // Test storage methods
+      // Test direct database access like discoveries endpoint
+      const { db } = await import('./db');
+      const { mathematicalWork } = await import('../shared/schema');
+      const { desc } = await import('drizzle-orm');
+      
+      const discoveries = await db.select()
+        .from(mathematicalWork)
+        .orderBy(desc(mathematicalWork.timestamp))
+        .limit(1000);
+      console.log('🔍 DEBUG: Direct DB access returned:', discoveries ? discoveries.length : 'null/undefined', 'discoveries');
+      
+      const { EmergentAIEngine } = await import('./emergent-ai-engine');
+      const emergentAIEngine = EmergentAIEngine.getInstance(storage);
+      console.log('🔍 DEBUG: EmergentAIEngine instance created');
+      
+      res.json({
+        success: true,
+        discoveryCount: discoveries ? discoveries.length : 0,
+        hasDiscoveries: Boolean(discoveries && discoveries.length > 0),
+        engineInitialized: Boolean(emergentAIEngine)
+      });
+    } catch (error) {
+      console.error('❌ DEBUG ERROR:', error);
+      res.status(500).json({ error: 'Debug failed', details: error.message });
+    }
+  });
+  
   // Get comprehensive emergent complexity analysis
   app.get("/api/emergent-ai/analysis", async (req, res) => {
     try {
-      const { emergentAIEngine } = await import('./emergent-ai-engine');
+      const { EmergentAIEngine } = await import('./emergent-ai-engine');
+      const emergentAIEngine = EmergentAIEngine.getInstance(storage);
       const analysis = await emergentAIEngine.analyzeEmergentComplexity();
       
       console.log(`🧠 EMERGENT AI: Analysis complete - ${analysis.patterns.length} patterns, ${(analysis.metrics.aiConfidence * 100).toFixed(1)}% confidence`);
@@ -4811,7 +4845,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get emergent patterns for specific work types
   app.get("/api/emergent-ai/patterns/:workType", async (req, res) => {
     try {
-      const { emergentAIEngine } = await import('./emergent-ai-engine');
+      const { EmergentAIEngine } = await import('./emergent-ai-engine');
+      const emergentAIEngine = EmergentAIEngine.getInstance(storage);
       const analysis = await emergentAIEngine.analyzeEmergentComplexity();
       
       const workType = req.params.workType;
@@ -4869,7 +4904,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get cross-disciplinary unification opportunities
   app.get("/api/emergent-ai/unification", async (req, res) => {
     try {
-      const { emergentAIEngine } = await import('./emergent-ai-engine');
+      const { EmergentAIEngine } = await import('./emergent-ai-engine');
+      const emergentAIEngine = EmergentAIEngine.getInstance(storage);
       const analysis = await emergentAIEngine.analyzeEmergentComplexity();
       
       const unificationPatterns = analysis.patterns.filter(p => 
@@ -4913,7 +4949,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get emergent complexity metrics and trends
   app.get("/api/emergent-ai/metrics", async (req, res) => {
     try {
-      const { emergentAIEngine } = await import('./emergent-ai-engine');
+      const { EmergentAIEngine } = await import('./emergent-ai-engine');
+      const emergentAIEngine = EmergentAIEngine.getInstance(storage);
       const analysis = await emergentAIEngine.analyzeEmergentComplexity();
       
       const trendData = {

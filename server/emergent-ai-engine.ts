@@ -4,8 +4,8 @@
  * Generates emergent insights from productive mining operations
  */
 
-import { database } from './database';
 import type { MathematicalWork } from '@shared/schema';
+import type { DatabaseStorage } from './storage';
 
 interface EmergentPattern {
   id: string;
@@ -53,10 +53,15 @@ export class EmergentAIEngine {
   private emergentPatterns: Map<string, EmergentPattern> = new Map();
   private complexityThreshold = 0.75;
   private patternMemory: Map<string, any[]> = new Map();
+  private database: DatabaseStorage;
 
-  public static getInstance(): EmergentAIEngine {
-    if (!EmergentAIEngine.instance) {
-      EmergentAIEngine.instance = new EmergentAIEngine();
+  constructor(database: DatabaseStorage) {
+    this.database = database;
+  }
+
+  public static getInstance(database?: DatabaseStorage): EmergentAIEngine {
+    if (!EmergentAIEngine.instance && database) {
+      EmergentAIEngine.instance = new EmergentAIEngine(database);
     }
     return EmergentAIEngine.instance;
   }
@@ -72,7 +77,31 @@ export class EmergentAIEngine {
   }> {
     console.log('🧠 EMERGENT AI: Starting advanced complexity analysis...');
     
-    const discoveries = await database.getMathematicalWork();
+    // Use direct database access like the working discoveries endpoint
+    const { db } = await import('./db');
+    const { mathematicalWork } = await import('../shared/schema');
+    const { desc } = await import('drizzle-orm');
+    
+    const discoveries = await db.select()
+      .from(mathematicalWork)
+      .orderBy(desc(mathematicalWork.timestamp))
+      .limit(1000);
+    if (!discoveries || discoveries.length === 0) {
+      console.log('⚠️ EMERGENT AI: No discoveries found, returning empty analysis');
+      return {
+        patterns: [],
+        metrics: {
+          emergentPatterns: 0,
+          crossDisciplinaryConnections: 0,
+          recursiveDepth: 0,
+          dimensionalComplexity: 0,
+          aiConfidence: 0,
+          mathematicalNovelty: 0
+        },
+        insights: [],
+        recommendations: ['Start mathematical discoveries to enable emergent pattern analysis']
+      };
+    }
     const recentDiscoveries = discoveries.slice(-50); // Focus on recent work for emergent patterns
     
     // Generate emergent patterns from cross-disciplinary analysis
