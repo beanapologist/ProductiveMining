@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Separator } from '@/components/ui/separator';
-import { Brain, Zap, TrendingUp, Target, AlertTriangle, CheckCircle, Clock, ArrowRight, Lightbulb, Network, Gauge, Settings, Activity, Bot, Eye, Cpu, Database, Shield } from 'lucide-react';
+import { Brain, Zap, TrendingUp, Target, AlertTriangle, CheckCircle, Clock, ArrowRight, Lightbulb, Network, Gauge, Settings, Activity, Bot, Eye, Cpu, Database, Shield, RefreshCw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface AIMetrics {
