@@ -23,6 +23,7 @@ import Gen2BackupPage from "@/pages/gen2-backup";
 import WalletPage from "@/pages/wallet";
 import ApiPage from "@/pages/about";
 import About from "@/pages/about";
+import AppArchitecturePage from "@/pages/app-architecture";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -47,6 +48,8 @@ function Router() {
         <Route path="/data-management" component={DataManagementPage} />
         <Route path="/wallet" component={WalletPage} />
         <Route path="/about" component={ApiPage} />
+        <Route path="/app" component={AppArchitecturePage} />
+        <Route path="/app-architecture" component={AppArchitecturePage} />
         
         {/* Legacy routes for bookmarks/direct links */}
         <Route path="/validators" component={SecurityDashboard} />

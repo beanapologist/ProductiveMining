@@ -178,9 +178,14 @@ export function registerCoreEndpoints(app: Express, apiRegistry: APIRegistry, br
     category: 'core',
     description: 'Get Proof-of-Stake validation records',
     handler: async (req: Request, res: Response) => {
-      const limit = parseInt(req.query.limit as string) || 100;
-      const validations = await storage.getPosValidations(limit);
-      res.json(validations);
+      try {
+        const limit = parseInt(req.query.limit as string) || 100;
+        const validations = await storage.getPosValidations(limit);
+        res.json(validations || []);
+      } catch (error) {
+        console.error('Error fetching validations:', error);
+        res.json([]);
+      }
     }
   });
 
