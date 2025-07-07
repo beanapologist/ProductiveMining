@@ -2424,8 +2424,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const status = recursiveEnhancementEngine.getSystemStatus();
       
       // Calculate additional metrics
-      const algorithms = status.activeAlgorithms;
-      const averagePerformance = algorithms.reduce((sum, algo) => {
+      const algorithms = status.activeAlgorithms || [];
+      const averagePerformance = algorithms.reduce((sum: number, algo: any) => {
         const performance = (
           algo.performanceMetrics.accuracy * 0.3 +
           algo.performanceMetrics.efficiency * 0.25 +
@@ -2433,18 +2433,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           algo.performanceMetrics.adaptability * 0.2
         );
         return sum + performance;
-      }, 0) / Math.max(algorithms.length, 1);
+      }, 0) / Math.max(algorithms.length || 1, 1);
       
       const metrics = {
         totalGenerations: status.totalGenerations,
-        activeAlgorithms: status.activeAlgorithmCount,
+        activeAlgorithms: status.activeAlgorithms || 0,
         averagePerformance: Math.round(averagePerformance * 100 * 100) / 100, // Round to 2 decimals
         lastEnhancement: status.lastEnhancement,
         enhancementFrequency: '30 seconds',
         quantumCoherence: Math.round(Math.random() * 15 + 85), // 85-100% range
         evolutionStatus: 'Active',
         protocolsActive: 4,
-        algorithms: algorithms.map(algo => ({
+        algorithms: algorithms.map((algo: any) => ({
           type: algo.algorithmType,
           generation: algo.generation,
           accuracy: Math.round(algo.performanceMetrics.accuracy * 100),

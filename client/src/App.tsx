@@ -16,7 +16,7 @@ import SecurityDashboard from "@/pages/security-dashboard";
 import DataManagementPage from "@/pages/data-management";
 
 import WalletPage from "@/pages/wallet";
-import ApiPage from "@/pages/api-page";
+import ApiPage from "@/pages/about";
 import About from "@/pages/about";
 import NotFound from "@/pages/not-found";
 
