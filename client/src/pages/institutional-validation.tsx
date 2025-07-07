@@ -26,7 +26,7 @@ import {
   Filter,
   Search,
   Star,
-  Globe,
+  Network,
   BookOpen,
   Code,
   Download,
@@ -308,7 +308,7 @@ export function InstitutionalValidation() {
                             </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-2 text-gray-300">
-                                <Globe className="w-4 h-4 text-gray-400" />
+                                <Network className="w-4 h-4 text-gray-400" />
                                 {validator.country}
                               </div>
                             </TableCell>

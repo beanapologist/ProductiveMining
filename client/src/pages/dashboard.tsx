@@ -21,7 +21,7 @@ import {
   Gamepad2,
   Calculator,
   DollarSign,
-  Globe,
+  Network,
   ExternalLink,
   ArrowRight
 } from "lucide-react";

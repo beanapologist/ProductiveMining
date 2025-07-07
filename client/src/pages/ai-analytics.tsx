@@ -320,7 +320,7 @@ export default function AIAnalyticsPage() {
                 <div className="text-3xl font-bold text-white">Gen {aiMetrics?.recursiveEnhancement?.currentGeneration || 1}</div>
                 <div className="text-sm text-slate-400">Current generation</div>
                 <div className="text-xs text-green-400 mt-1">
-                  +{aiMetrics?.recursiveEnhancement?.performanceGains ?? 0}% performance
+                  +{aiMetrics?.recursiveEnhancement?.performanceGains || 0}% performance
                 </div>
               </CardContent>
             </Card>
@@ -333,10 +333,10 @@ export default function AIAnalyticsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-white">{aiMetrics?.discoveryAnalysis?.totalReports ?? analysisReports?.length ?? 0}</div>
+                <div className="text-3xl font-bold text-white">{aiMetrics?.discoveryAnalysis?.totalReports || analysisReports?.length || 0}</div>
                 <div className="text-sm text-slate-400">Generated reports</div>
                 <div className="text-xs text-blue-400 mt-1">
-                  {aiMetrics?.discoveryAnalysis?.accuracyRate ?? 88}% accuracy rate
+                  {aiMetrics?.discoveryAnalysis?.accuracyRate || 88}% accuracy rate
                 </div>
               </CardContent>
             </Card>
@@ -349,7 +349,7 @@ export default function AIAnalyticsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-white">{aiMetrics?.emergentAI?.systemIntelligence || 92}%</div>
+                <div className="text-3xl font-bold text-white">{(aiMetrics?.emergentAI?.systemIntelligence) || 92}%</div>
                 <div className="text-sm text-slate-400">System intelligence</div>
                 <div className="text-xs text-purple-400 mt-1">
                   {emergentPatterns?.length || 0} patterns detected

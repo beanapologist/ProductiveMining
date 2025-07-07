@@ -8,12 +8,13 @@ import { workDistributionBalancer } from './work-distribution-balancer.js';
 
 export class ContinuousMiningEngine {
   private monitoringActive = false;
-  private minActiveMiners = 3; // Minimum miners to maintain
-  private targetActiveMiners = 8; // Target number of active miners
-  private maxActiveMiners = 12; // Maximum to prevent overload
-  private healthCheckInterval = 60000; // 60 seconds
-  private spawnCooldown = 60000; // 1 minute between spawns
+  private minActiveMiners = 2; // Reduced minimum miners
+  private targetActiveMiners = 5; // Reduced target to prevent memory issues
+  private maxActiveMiners = 8; // Reduced maximum to prevent overload
+  private healthCheckInterval = 90000; // Increased to 90 seconds
+  private spawnCooldown = 120000; // Increased to 2 minutes between spawns
   private lastSpawnTime = 0;
+  private maxOperationsPerDay = 500; // Daily limit to prevent accumulation
 
   constructor() {
     console.log('🔧 CONTINUOUS MINING ENGINE: Initialized with intelligent work distribution');
@@ -49,17 +50,26 @@ export class ContinuousMiningEngine {
 
   private async performHealthCheck() {
     try {
+      // Clean up completed operations first
+      await this.cleanupCompletedOperations();
+      
       const activeOperations = await storage.getActiveMiningOperations();
       const activeCount = activeOperations.length;
       
       console.log(`🏥 HEALTH CHECK: ${activeCount} active miners`);
+
+      // Check daily operation limit
+      const todayOperations = await this.getTodayOperationCount();
+      if (todayOperations > this.maxOperationsPerDay) {
+        console.log(`⚠️ DAILY LIMIT REACHED: ${todayOperations} operations today, suspending new spawns`);
+        return;
+      }
 
       if (this.canSpawnMore() && activeCount < this.minActiveMiners) {
         await this.ensureMinimumMiners();
       } else if (activeCount < this.targetActiveMiners && this.canSpawnMore()) {
         await this.checkStuckOperations();
         await this.spawnAdditionalMiners();
-        await this.ensureWorkTypeVariety();
       }
     } catch (error) {
       console.error('❌ HEALTH CHECK ERROR:', (error as Error).message);
@@ -247,43 +257,7 @@ export class ContinuousMiningEngine {
     }
   }
 
-  private async ensureWorkTypeVariety() {
-    try {
-      // Get current distribution and apply balancing
-      const distribution = await workDistributionBalancer.getCurrentDistribution();
-      const strategy = await workDistributionBalancer.generateBalancingStrategy();
-      
-      // Log current distribution for monitoring
-      const report = await workDistributionBalancer.getDetailedReport();
-      console.log('📊 WORK DISTRIBUTION BALANCE:', report);
-      
-      // Spawn additional miners for high-priority work types
-      for (const balance of strategy.filter(b => b.recommendedMiners > 0)) {
-        const workType = balance.workType;
-        const count = Math.min(balance.recommendedMiners, 3); // Max 3 per type
-        
-        console.log(`🔄 WORK BALANCE: Adding ${count} ${workType} miners (current: ${distribution.find(d => d.workType === workType)?.count || 0}, target: ${distribution.find(d => d.workType === workType)?.targetPercentage}%)`);
-        
-        for (let i = 0; i < count; i++) {
-          const minerId = `balanced_miner_${workType}_${Date.now()}_${i}`;
-          const difficulty = balance.difficultyRange[0] + Math.floor(Math.random() * (balance.difficultyRange[1] - balance.difficultyRange[0]));
-          
-          await storage.createMiningOperation({
-            operationType: workType,
-            minerId,
-            startTime: new Date(),
-            estimatedCompletion: new Date(Date.now() + 180000),
-            progress: 0,
-            currentResult: { status: 'spawning', workType },
-            difficulty,
-            status: 'active'
-          });
-        }
-      }
-    } catch (error) {
-      console.error(`❌ WORK VARIETY ERROR: ${(error as Error).message}`);
-    }
-  }
+  // Removed ensureWorkTypeVariety to prevent excessive spawning
 
   private canSpawnMore(): boolean {
     return Date.now() - this.lastSpawnTime >= this.spawnCooldown;
@@ -291,6 +265,45 @@ export class ContinuousMiningEngine {
 
   private sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  private async cleanupCompletedOperations() {
+    try {
+      // Keep only recent completed operations to prevent memory buildup
+      const allOperations = await storage.getAllMiningOperations();
+      const now = Date.now();
+      const oneHourAgo = now - (60 * 60 * 1000);
+      
+      const oldCompleted = allOperations.filter(op => 
+        op.status === 'completed' && 
+        new Date(op.startTime).getTime() < oneHourAgo
+      );
+      
+      if (oldCompleted.length > 10) {
+        console.log(`🧹 CLEANUP: Removing ${oldCompleted.length} old completed operations`);
+        // In a real app, you'd archive these operations rather than delete
+        for (const op of oldCompleted.slice(0, -10)) { // Keep 10 most recent
+          await storage.deleteMiningOperation?.(op.id);
+        }
+      }
+    } catch (error) {
+      console.error('❌ CLEANUP ERROR:', (error as Error).message);
+    }
+  }
+
+  private async getTodayOperationCount(): Promise<number> {
+    try {
+      const allOperations = await storage.getAllMiningOperations();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      return allOperations.filter(op => 
+        new Date(op.startTime) >= today
+      ).length;
+    } catch (error) {
+      console.error('❌ COUNT ERROR:', (error as Error).message);
+      return 0;
+    }
   }
 
   async stopContinuousMonitoring() {

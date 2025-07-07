@@ -18,7 +18,7 @@ import {
   Wallet,
   Crown,
   Star,
-  Globe
+  Network
 } from "lucide-react";
 
 interface TokenMetrics {
@@ -339,7 +339,7 @@ export default function Token() {
                     Discovery validation fees
                   </li>
                   <li className="flex items-center gap-2">
-                    <Globe className="h-4 w-4 text-purple-400" />
+                    <Network className="h-4 w-4 text-purple-400" />
                     Network security rewards
                   </li>
                 </ul>
@@ -551,7 +551,7 @@ export default function Token() {
                       Staking and validation fees
                     </li>
                     <li className="flex items-center gap-2">
-                      <Globe className="h-4 w-4 text-cyan-400" />
+                      <Network className="h-4 w-4 text-cyan-400" />
                       Institutional partnerships
                     </li>
                   </ul>
