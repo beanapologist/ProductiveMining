@@ -128,6 +128,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   });
 
+  // Quantum Fault Tolerance API
+  app.get('/api/fault-tolerance/status', async (req, res) => {
+    try {
+      const { quantumFaultToleranceEngine } = await import('./quantum-fault-tolerance-engine');
+      const status = quantumFaultToleranceEngine.getFaultToleranceStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('Error getting fault tolerance status:', error);
+      res.status(500).json({ error: 'Failed to get fault tolerance status' });
+    }
+  });
+
+  app.get('/api/fault-tolerance/report', async (req, res) => {
+    try {
+      const { quantumFaultToleranceEngine } = await import('./quantum-fault-tolerance-engine');
+      const report = quantumFaultToleranceEngine.getErrorCorrectionsReport();
+      res.json(report);
+    } catch (error) {
+      console.error('Error getting fault tolerance report:', error);
+      res.status(500).json({ error: 'Failed to get fault tolerance report' });
+    }
+  });
+
+  app.post('/api/fault-tolerance/force-correction', async (req, res) => {
+    try {
+      const { quantumFaultToleranceEngine } = await import('./quantum-fault-tolerance-engine');
+      const result = quantumFaultToleranceEngine.forceErrorCorrection();
+      res.json(result);
+    } catch (error) {
+      console.error('Error forcing error correction:', error);
+      res.status(500).json({ error: 'Failed to force error correction' });
+    }
+  });
+
+  app.post('/api/fault-tolerance/optimize', async (req, res) => {
+    try {
+      const { quantumFaultToleranceEngine } = await import('./quantum-fault-tolerance-engine');
+      const result = quantumFaultToleranceEngine.optimizeFaultTolerance();
+      res.json(result);
+    } catch (error) {
+      console.error('Error optimizing fault tolerance:', error);
+      res.status(500).json({ error: 'Failed to optimize fault tolerance' });
+    }
+  });
+
   // AI Threat Detection API endpoints
   app.get('/api/threat-detection/monitoring', async (req, res) => {
     try {

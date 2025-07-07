@@ -16,6 +16,7 @@ import SecurityDashboard from "@/pages/security-dashboard";
 import DataManagementPage from "@/pages/data-management";
 import AIAnalyticsPage from "@/pages/ai-analytics";
 import CommunityCollaborationPage from "@/pages/community-collaboration";
+import { FaultTolerancePage } from "@/pages/fault-tolerance";
 import Gen2BackupPage from "@/pages/gen2-backup";
 
 
@@ -39,6 +40,7 @@ function Router() {
         <Route path="/gen2-backup" component={Gen2BackupPage} />
 
         <Route path="/security" component={SecurityDashboard} />
+        <Route path="/fault-tolerance" component={FaultTolerancePage} />
         <Route path="/blocks" component={BlockExplorer} />
         <Route path="/block-explorer" component={BlockExplorer} />
         <Route path="/database" component={DataManagementPage} />
@@ -124,6 +126,7 @@ function Navigation() {
     { path: '/gen2-backup', title: 'Gen 2 Backup', icon: HardDrive },
 
     { path: '/security', title: 'Security', icon: Shield },
+    { path: '/fault-tolerance', title: 'Fault Tolerance', icon: Shield },
     { path: '/blocks', title: 'Explorer', icon: Layers },
     { path: '/database', title: 'Database', icon: Database },
     { path: '/wallet', title: 'Wallet', icon: Wallet },
