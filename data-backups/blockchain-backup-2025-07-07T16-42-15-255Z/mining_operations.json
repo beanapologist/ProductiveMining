@@ -1,0 +1,174 @@
+[
+  {
+    "id": 10297,
+    "operationType": "navier_stokes",
+    "minerId": "continuous_miner_1751906532493_0",
+    "startTime": "2025-07-07T16:42:12.493Z",
+    "estimatedCompletion": "2025-07-07T16:44:12.493Z",
+    "progress": 0.18,
+    "currentResult": {
+      "stage": "computation_1",
+      "status": "computing",
+      "progress": 18,
+      "workType": "navier_stokes"
+    },
+    "difficulty": 42,
+    "status": "active"
+  },
+  {
+    "id": 10296,
+    "operationType": "prime_pattern",
+    "minerId": "continuous_miner_1751906530667_2",
+    "startTime": "2025-07-07T16:42:10.667Z",
+    "estimatedCompletion": "2025-07-07T16:44:30.667Z",
+    "progress": 0.18,
+    "currentResult": {
+      "stage": "computation_1",
+      "status": "computing",
+      "progress": 18,
+      "workType": "prime_pattern"
+    },
+    "difficulty": 100,
+    "status": "active"
+  },
+  {
+    "id": 10295,
+    "operationType": "navier_stokes",
+    "minerId": "continuous_miner_1751906530599_1",
+    "startTime": "2025-07-07T16:42:10.599Z",
+    "estimatedCompletion": "2025-07-07T16:44:20.599Z",
+    "progress": 0.18,
+    "currentResult": {
+      "stage": "computation_1",
+      "status": "computing",
+      "progress": 18,
+      "workType": "navier_stokes"
+    },
+    "difficulty": 72,
+    "status": "active"
+  },
+  {
+    "id": 10294,
+    "operationType": "riemann_zero",
+    "minerId": "continuous_miner_1751906530504_0",
+    "startTime": "2025-07-07T16:42:10.504Z",
+    "estimatedCompletion": "2025-07-07T16:44:10.504Z",
+    "progress": 0.2031161,
+    "currentResult": {
+      "stage": "computation_1",
+      "status": "computing",
+      "progress": 18,
+      "workType": "riemann_zero"
+    },
+    "difficulty": 78,
+    "status": "active"
+  },
+  {
+    "id": 10293,
+    "operationType": "lattice_crypto",
+    "minerId": "continuous_miner_1751906526156_1",
+    "startTime": "2025-07-07T16:42:06.156Z",
+    "estimatedCompletion": "2025-07-07T16:44:16.156Z",
+    "progress": 0.34,
+    "currentResult": {
+      "stage": "computation_3",
+      "status": "computing",
+      "progress": 34,
+      "workType": "lattice_crypto"
+    },
+    "difficulty": 51,
+    "status": "active"
+  },
+  {
+    "id": 10292,
+    "operationType": "navier_stokes",
+    "minerId": "continuous_miner_1751906526139_0",
+    "startTime": "2025-07-07T16:42:06.139Z",
+    "estimatedCompletion": "2025-07-07T16:44:06.139Z",
+    "progress": 0.34,
+    "currentResult": {
+      "stage": "computation_3",
+      "status": "computing",
+      "progress": 34,
+      "workType": "navier_stokes"
+    },
+    "difficulty": 74,
+    "status": "active"
+  },
+  {
+    "id": 10284,
+    "operationType": "elliptic_curve_crypto",
+    "minerId": "continuous_miner_1751906513882_7",
+    "startTime": "2025-07-07T16:41:53.882Z",
+    "estimatedCompletion": "2025-07-07T16:45:03.882Z",
+    "progress": 0.3805725,
+    "currentResult": {
+      "status": "computing",
+      "workType": "elliptic_curve_crypto"
+    },
+    "difficulty": 60,
+    "status": "active"
+  },
+  {
+    "id": 10283,
+    "operationType": "navier_stokes",
+    "minerId": "continuous_miner_1751906513816_6",
+    "startTime": "2025-07-07T16:41:53.816Z",
+    "estimatedCompletion": "2025-07-07T16:44:53.816Z",
+    "progress": 0.65964913,
+    "currentResult": {
+      "status": "computing",
+      "workType": "navier_stokes"
+    },
+    "difficulty": 42,
+    "status": "active"
+  },
+  {
+    "id": 10281,
+    "operationType": "poincare_conjecture",
+    "minerId": "continuous_miner_1751906513685_4",
+    "startTime": "2025-07-07T16:41:53.685Z",
+    "estimatedCompletion": "2025-07-07T16:44:33.685Z",
+    "progress": 0.8553708,
+    "currentResult": {
+      "stage": "computation_1",
+      "status": "computing",
+      "progress": 18,
+      "workType": "poincare_conjecture"
+    },
+    "difficulty": 56,
+    "status": "active"
+  },
+  {
+    "id": 10278,
+    "operationType": "navier_stokes",
+    "minerId": "continuous_miner_1751906513471_1",
+    "startTime": "2025-07-07T16:41:53.471Z",
+    "estimatedCompletion": "2025-07-07T16:44:03.471Z",
+    "progress": 0.6862688,
+    "currentResult": {
+      "stage": "computation_2",
+      "status": "computing",
+      "progress": 26,
+      "workType": "navier_stokes"
+    },
+    "difficulty": 56,
+    "status": "active"
+  },
+  {
+    "id": 10277,
+    "operationType": "goldbach_verification",
+    "minerId": "continuous_miner_1751906513405_0",
+    "startTime": "2025-07-07T16:41:53.405Z",
+    "estimatedCompletion": "2025-07-07T16:43:53.405Z",
+    "progress": 0.89920074,
+    "currentResult": {
+      "stage": "computation_2",
+      "status": "computing",
+      "progress": 26,
+      "workType": "goldbach_verification"
+    },
+    "difficulty": 82,
+    "status": "active"
+  }
+]

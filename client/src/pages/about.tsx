@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Server, Database, Activity, Zap, Shield, Brain, CheckCircle, FileCode, TrendingUp, Settings, Copy, Check } from 'lucide-react';
+import { Server, Database, Activity, Zap, Shield, Brain, CheckCircle, FileCode, TrendingUp, Settings, Copy, Check, Globe } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface ApiOverview {
@@ -371,192 +371,96 @@ export default function About() {
         </TabsContent>
       </Tabs>
 
-      {/* Enhanced Security Infrastructure */}
-      <div className="mb-12">
-        <h2 className="text-3xl font-bold text-center mb-8 text-white">
-          🔒 Enterprise-Grade Security Infrastructure
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          <Card className="bg-gradient-to-br from-red-600/20 to-orange-600/20 border-red-500/30">
-            <CardHeader>
-              <CardTitle className="text-xl text-red-400 flex items-center gap-2">
-                <Shield className="h-6 w-6" />
-                Discovery Security Audit System
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-slate-300">Mathematical Formula Validation</span>
-                  <Badge className="bg-green-500/20 text-green-400">ACTIVE</Badge>
+      {/* Technical Specifications */}
+      <Card className="bg-slate-800 border-slate-700 mb-8">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center">
+            <Settings className="mr-2 h-5 w-5 text-gray-400" />
+            Technical Specifications
+          </CardTitle>
+          <CardDescription className="text-gray-400">
+            Platform architecture and performance details
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <h4 className="text-lg font-semibold text-white">Core Technology</h4>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Backend Framework:</span>
+                  <span className="text-white">Node.js + Express</span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-slate-300">Cryptographic Signature Verification</span>
-                  <Badge className="bg-green-500/20 text-green-400">ACTIVE</Badge>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Database:</span>
+                  <span className="text-white">PostgreSQL</span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-slate-300">Real-time Fraud Detection</span>
-                  <Badge className="bg-green-500/20 text-green-400">ACTIVE</Badge>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Real-time:</span>
+                  <span className="text-white">WebSocket</span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-slate-300">Multi-layered Consensus Validation</span>
-                  <Badge className="bg-green-500/20 text-green-400">ACTIVE</Badge>
-                </div>
-              </div>
-              <div className="pt-3 border-t border-red-500/20">
-                <div className="text-sm text-slate-400">Security Score Monitoring</div>
-                <div className="text-2xl font-bold text-red-400">95.8%</div>
-                <div className="text-xs text-red-300">Continuous security assessment</div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-purple-600/20 to-blue-600/20 border-purple-500/30">
-            <CardHeader>
-              <CardTitle className="text-xl text-purple-400 flex items-center gap-2">
-                <Lock className="h-6 w-6" />
-                Post-Quantum Cryptography
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-slate-300">Riemann Zero Integration</span>
-                  <Badge className="bg-purple-500/20 text-purple-400">DEPLOYED</Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-slate-300">Prime Pattern Encryption</span>
-                  <Badge className="bg-purple-500/20 text-purple-400">DEPLOYED</Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-slate-300">Lattice-based Security</span>
-                  <Badge className="bg-purple-500/20 text-purple-400">DEPLOYED</Badge>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-slate-300">Quantum-resistant Signatures</span>
-                  <Badge className="bg-purple-500/20 text-purple-400">DEPLOYED</Badge>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Authentication:</span>
+                  <span className="text-white">JWT + Session</span>
                 </div>
               </div>
-              <div className="pt-3 border-t border-purple-500/20">
-                <div className="text-sm text-slate-400">Cryptographic Strength</div>
-                <div className="text-2xl font-bold text-purple-400">POST_QUANTUM</div>
-                <div className="text-xs text-purple-300">Future-proof security</div>
+            </div>
+            <div className="space-y-4">
+              <h4 className="text-lg font-semibold text-white">Performance</h4>
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Response Time:</span>
+                  <span className="text-green-400">&lt; 200ms</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Uptime:</span>
+                  <span className="text-green-400">99.9%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Rate Limit:</span>
+                  <span className="text-white">1000/hour</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Concurrent Users:</span>
+                  <span className="text-white">10,000+</span>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="bg-gradient-to-br from-cyan-600/20 to-blue-600/20 border-cyan-500/30">
-            <CardContent className="p-6 text-center">
-              <Shield className="h-8 w-8 text-cyan-400 mx-auto mb-3" />
-              <div className="text-2xl font-bold text-cyan-400">2,400+</div>
-              <div className="text-sm text-slate-300">Validation Records</div>
-              <div className="text-xs text-cyan-300 mt-1">Immutable audit trails</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gradient-to-br from-teal-600/20 to-green-600/20 border-teal-500/30">
-            <CardContent className="p-6 text-center">
-              <Lock className="h-8 w-8 text-teal-400 mx-auto mb-3" />
-              <div className="text-2xl font-bold text-teal-400">Difficulty 50</div>
-              <div className="text-sm text-slate-300">Mining Security Level</div>
-              <div className="text-xs text-teal-300 mt-1">Enhanced from 25 to 50</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gradient-to-br from-red-600/20 to-pink-600/20 border-red-500/30">
-            <CardContent className="p-6 text-center">
-              <Brain className="h-8 w-8 text-red-400 mx-auto mb-3" />
-              <div className="text-2xl font-bold text-red-400">Zero</div>
-              <div className="text-sm text-slate-300">Security Breaches</div>
-              <div className="text-xs text-red-300 mt-1">Enterprise-grade protection</div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* Competitive Advantages */}
-      <div className="mb-12">
-        <h2 className="text-3xl font-bold text-center mb-8 text-white">
-          Competitive Advantages
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="bg-gradient-to-br from-purple-600/20 to-pink-600/20 border-purple-500/30">
-            <CardContent className="p-6 text-center">
-              <Brain className="h-12 w-12 text-purple-400 mx-auto mb-4" />
-              <CardTitle className="text-lg mb-3">First Mover Advantage</CardTitle>
-              <p className="text-sm text-slate-300">
-                World's first energy-generating blockchain with institutional validation from MIT, Stanford, Cambridge, Princeton, and Clay Institute.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-green-600/20 to-emerald-600/20 border-green-500/30">
-            <CardContent className="p-6 text-center">
-              <Zap className="h-12 w-12 text-green-400 mx-auto mb-4" />
-              <CardTitle className="text-lg mb-3">Proprietary Technology</CardTitle>
-              <p className="text-sm text-slate-300">
-                QDT (Quantum Data Transformation) achieves negative energy consumption while solving millennium prize problems worth millions.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-gradient-to-br from-blue-600/20 to-cyan-600/20 border-blue-500/30">
-            <CardContent className="p-6 text-center">
-              <Globe className="h-12 w-12 text-blue-400 mx-auto mb-4" />
-              <CardTitle className="text-lg mb-3">Scalable Revenue Model</CardTitle>
-              <p className="text-sm text-slate-300">
-                Multiple revenue streams: scientific discovery licensing, energy generation credits, staking rewards, and Discovery NFTs.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* Investment Summary */}
-      <div className="text-center bg-gradient-to-r from-green-600/20 to-blue-600/20 rounded-2xl p-8 border border-green-500/30">
-        <h2 className="text-3xl font-bold mb-4 text-white">
-          Investment Opportunity Summary
-        </h2>
-        <p className="text-lg text-slate-300 mb-6 max-w-3xl mx-auto">
-          Revolutionary blockchain platform with proven revenue generation, institutional backing, and patent-protected energy-generating technology. Currently operating at scale with measurable scientific and financial returns.
-        </p>
-        
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-green-400">$580M+</div>
-            <div className="text-sm text-slate-400">Scientific Value Generated</div>
+            </div>
           </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-blue-400">$582M</div>
-            <div className="text-sm text-slate-400">Token Market Cap</div>
+        </CardContent>
+      </Card>
+
+      {/* API Features */}
+      <Card className="bg-slate-800 border-slate-700">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center">
+            <Activity className="mr-2 h-5 w-5 text-blue-400" />
+            Platform Features
+          </CardTitle>
+          <CardDescription className="text-gray-400">
+            Core features available through API endpoints
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {(apiOverview?.systemStats?.features || [
+              'Real-time Mining Operations',
+              'Mathematical Discovery Analysis',
+              'Blockchain Data Access',
+              'Security Threat Detection',
+              'AI Pattern Recognition',
+              'Validation Records',
+              'Token Economics',
+              'WebSocket Streaming'
+            ]).map((feature, index) => (
+              <div key={index} className="flex items-center space-x-3 p-3 bg-slate-700/50 rounded-lg">
+                <CheckCircle className="h-5 w-5 text-green-400 flex-shrink-0" />
+                <span className="text-white">{feature}</span>
+              </div>
+            ))}
           </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-purple-400">-565%</div>
-            <div className="text-sm text-slate-400">Energy Efficiency</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-orange-400">18.7%</div>
-            <div className="text-sm text-slate-400">Annual Staking Yield</div>
-          </div>
-        </div>
-        
-        <div className="flex flex-wrap justify-center gap-3">
-          <Badge className="bg-green-500/20 text-green-400 px-4 py-2">
-            First-to-Market Technology
-          </Badge>
-          <Badge className="bg-blue-500/20 text-blue-400 px-4 py-2">
-            Institutional Validation
-          </Badge>
-          <Badge className="bg-purple-500/20 text-purple-400 px-4 py-2">
-            Proprietary Technology
-          </Badge>
-          <Badge className="bg-orange-500/20 text-orange-400 px-4 py-2">
-            Multiple Revenue Streams
-          </Badge>
-        </div>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
