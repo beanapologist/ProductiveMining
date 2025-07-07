@@ -1,6 +1,67 @@
+version: '3.8'
+
 services:
-  productivemining:
-    image: productivemining
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+  productive-mining-dev:
+    build: .
+    container_name: productive-mining-dev
+    ports:
+      - "3000:5000"
+      - "9229:9229"  # Node.js debug port
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/productive_mining_dev
+      - QDT_ENABLED=false
+      - DEBUG=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - productive-mining-network
+    command: ["npm", "run", "dev"]
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: productive-mining-db-dev
+    environment:
+      - POSTGRES_DB=productive_mining_dev
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-productive_mining_password}
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5433:5432"  # Different port to avoid conflicts
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d productive_mining_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - productive-mining-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: productive-mining-cache-dev
+    ports:
+      - "6380:6379"  # Different port to avoid conflicts
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_dev_data:/data
+    restart: unless-stopped
+    networks:
+      - productive-mining-network
+
+networks:
+  productive-mining-network:
+    driver: bridge
+
+volumes:
+  postgres_dev_data:
+    driver: local
+  redis_dev_data:
+    driver: local
