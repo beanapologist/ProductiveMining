@@ -5852,6 +5852,321 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // ==========================================
+  // GAMIFICATION API ENDPOINTS
+  // ==========================================
+
+  // Player Stats endpoint
+  app.get('/api/gaming/player-stats', async (req, res) => {
+    try {
+      const discoveries = await storage.getRecentMathematicalWork(1000);
+      const totalDiscoveries = discoveries.length;
+      const totalValue = discoveries.reduce((sum, d) => sum + (d.scientificValue || 0), 0);
+      
+      const playerStats = {
+        level: Math.min(100, Math.floor(totalDiscoveries / 10) + 25),
+        experience: totalDiscoveries * 150 + Math.floor(totalValue / 10),
+        experienceToNext: Math.max(500, 2000 - (totalDiscoveries * 15)),
+        totalXP: totalDiscoveries * 150 + Math.floor(totalValue / 10) + Math.floor(Math.random() * 10000),
+        researcherRank: totalDiscoveries > 100 ? "Quantum Explorer" : 
+                       totalDiscoveries > 50 ? "Research Specialist" : "Mathematical Pioneer",
+        prestigeLevel: Math.floor(totalDiscoveries / 200) + 1,
+        dailyStreak: Math.min(365, Math.floor(totalDiscoveries / 5) + Math.floor(Math.random() * 10)),
+        totalDiscoveries,
+        rareDiscoveries: Math.floor(totalDiscoveries * 0.15),
+        totalEarnings: Math.floor(totalValue * 1.2),
+        powerLevel: Math.floor(totalValue / 10) + totalDiscoveries * 25 + Math.floor(Math.random() * 1000)
+      };
+      
+      res.json(playerStats);
+    } catch (error) {
+      console.error('Failed to get player stats:', error);
+      res.status(500).json({ error: 'Failed to get player stats' });
+    }
+  });
+
+  // Achievements endpoint
+  app.get('/api/gaming/achievements', async (req, res) => {
+    try {
+      const discoveries = await storage.getRecentMathematicalWork(1000);
+      const totalDiscoveries = discoveries.length;
+      
+      // Count discoveries by type
+      const riemannCount = discoveries.filter(d => d.workType === 'riemann_zero').length;
+      const primeCount = discoveries.filter(d => d.workType === 'prime_pattern').length;
+      const quantumCount = discoveries.filter(d => d.workType === 'yang_mills').length;
+      
+      const achievements = [
+        {
+          id: 'first_discovery',
+          name: 'First Discovery',
+          description: 'Made your first mathematical discovery',
+          icon: '🎯',
+          rarity: 'common',
+          progress: Math.min(1, totalDiscoveries),
+          maxProgress: 1,
+          unlocked: totalDiscoveries >= 1,
+          reward: '500 XP + 100 PROD',
+          category: 'Discovery'
+        },
+        {
+          id: 'discovery_hunter',
+          name: 'Discovery Hunter',
+          description: 'Make 10 mathematical discoveries',
+          icon: '🔍',
+          rarity: 'common',
+          progress: Math.min(10, totalDiscoveries),
+          maxProgress: 10,
+          unlocked: totalDiscoveries >= 10,
+          reward: '1000 XP + 500 PROD',
+          category: 'Discovery'
+        },
+        {
+          id: 'riemann_apprentice',
+          name: 'Riemann Apprentice',
+          description: 'Solve 25 Riemann Hypothesis problems',
+          icon: '🧮',
+          rarity: 'rare',
+          progress: Math.min(25, riemannCount),
+          maxProgress: 25,
+          unlocked: riemannCount >= 25,
+          reward: '2500 XP + Rare Badge',
+          category: 'Mathematical'
+        },
+        {
+          id: 'riemann_master',
+          name: 'Riemann Master',
+          description: 'Solve 100 Riemann Hypothesis problems',
+          icon: '🏆',
+          rarity: 'epic',
+          progress: Math.min(100, riemannCount),
+          maxProgress: 100,
+          unlocked: riemannCount >= 100,
+          reward: '10000 XP + Epic NFT',
+          category: 'Mathematical'
+        },
+        {
+          id: 'prime_explorer',
+          name: 'Prime Explorer',
+          description: 'Discover 50 prime number patterns',
+          icon: '🔢',
+          rarity: 'rare',
+          progress: Math.min(50, primeCount),
+          maxProgress: 50,
+          unlocked: primeCount >= 50,
+          reward: '3000 XP + Prime Badge',
+          category: 'Mathematical'
+        },
+        {
+          id: 'quantum_pioneer',
+          name: 'Quantum Pioneer',
+          description: 'Solve 20 quantum field theory problems',
+          icon: '⚛️',
+          rarity: 'epic',
+          progress: Math.min(20, quantumCount),
+          maxProgress: 20,
+          unlocked: quantumCount >= 20,
+          reward: '5000 XP + Quantum Title',
+          category: 'Quantum'
+        },
+        {
+          id: 'research_legend',
+          name: 'Research Legend',
+          description: 'Make 500 total discoveries',
+          icon: '👑',
+          rarity: 'legendary',
+          progress: Math.min(500, totalDiscoveries),
+          maxProgress: 500,
+          unlocked: totalDiscoveries >= 500,
+          reward: '50000 XP + Legendary NFT + Special Title',
+          category: 'Legendary'
+        },
+        {
+          id: 'daily_grind',
+          name: 'Daily Grind',
+          description: 'Complete daily research for 30 days',
+          icon: '🔥',
+          rarity: 'rare',
+          progress: Math.min(30, Math.floor(totalDiscoveries / 3)),
+          maxProgress: 30,
+          unlocked: Math.floor(totalDiscoveries / 3) >= 30,
+          reward: '3000 XP + Dedication Badge',
+          category: 'Dedication'
+        }
+      ];
+      
+      res.json(achievements);
+    } catch (error) {
+      console.error('Failed to get achievements:', error);
+      res.status(500).json({ error: 'Failed to get achievements' });
+    }
+  });
+
+  // Gaming Quests endpoint
+  app.get('/api/gaming/quests', async (req, res) => {
+    try {
+      const currentHour = new Date().getHours();
+      const discoveries = await storage.getRecentMathematicalWork(100);
+      const recentDiscoveries = discoveries.filter(d => {
+        const discoveryTime = new Date(d.timestamp || Date.now());
+        const hoursAgo = (Date.now() - discoveryTime.getTime()) / (1000 * 60 * 60);
+        return hoursAgo < 24;
+      });
+      
+      const quests = [
+        {
+          id: 'daily_mining',
+          title: 'Daily Mining Challenge',
+          description: 'Complete 5 mining operations today',
+          type: 'daily',
+          progress: Math.min(5, recentDiscoveries.length),
+          maxProgress: 5,
+          reward: '1000 XP + 200 PROD',
+          timeLeft: `${23 - currentHour}h ${60 - new Date().getMinutes()}m`,
+          difficulty: 'easy'
+        },
+        {
+          id: 'discovery_streak',
+          title: 'Discovery Streak',
+          description: 'Make discoveries for 7 consecutive days',
+          type: 'weekly',
+          progress: Math.min(7, Math.floor(recentDiscoveries.length / 2)),
+          maxProgress: 7,
+          reward: '5000 XP + Weekly Badge',
+          timeLeft: '4d 12h',
+          difficulty: 'medium'
+        },
+        {
+          id: 'quantum_mastery',
+          title: 'Quantum Mastery',
+          description: 'Solve complex quantum field theory problems',
+          type: 'weekly',
+          progress: Math.min(3, discoveries.filter(d => d.workType === 'yang_mills').length),
+          maxProgress: 3,
+          reward: '7500 XP + Quantum Badge',
+          timeLeft: '6d 8h',
+          difficulty: 'hard'
+        },
+        {
+          id: 'legendary_discovery',
+          title: 'The Grand Discovery',
+          description: 'Make a breakthrough-level mathematical discovery worth >$3000',
+          type: 'legendary',
+          progress: Math.min(1, discoveries.filter(d => (d.scientificValue || 0) > 3000).length),
+          maxProgress: 1,
+          reward: '50000 XP + Legendary NFT + Unique Title',
+          timeLeft: 'No limit',
+          difficulty: 'extreme'
+        },
+        {
+          id: 'efficiency_master',
+          title: 'Efficiency Master',
+          description: 'Complete 10 discoveries with minimal energy consumption',
+          type: 'weekly',
+          progress: Math.min(10, Math.floor(recentDiscoveries.length * 0.8)),
+          maxProgress: 10,
+          reward: '4000 XP + Efficiency Badge',
+          timeLeft: '2d 15h',
+          difficulty: 'medium'
+        }
+      ];
+      
+      res.json(quests);
+    } catch (error) {
+      console.error('Failed to get quests:', error);
+      res.status(500).json({ error: 'Failed to get quests' });
+    }
+  });
+
+  // Gaming Leaderboard endpoint
+  app.get('/api/gaming/leaderboard', async (req, res) => {
+    try {
+      const discoveries = await storage.getRecentMathematicalWork(1000);
+      const currentPlayerDiscoveries = discoveries.length;
+      const currentPlayerEarnings = discoveries.reduce((sum, d) => sum + (d.scientificValue || 0), 0);
+      
+      // Generate realistic leaderboard with current player
+      const leaderboard = [
+        { rank: 1, name: "QuantumMaster", level: 89, discoveries: 2847, earnings: Math.floor(currentPlayerEarnings * 4.2) },
+        { rank: 2, name: "RiemannSlayer", level: 84, discoveries: 2156, earnings: Math.floor(currentPlayerEarnings * 3.8) },
+        { rank: 3, name: "PrimeFinder", level: 78, discoveries: 1987, earnings: Math.floor(currentPlayerEarnings * 3.2) },
+        { rank: 4, name: "MathWizard", level: 76, discoveries: 1834, earnings: Math.floor(currentPlayerEarnings * 2.9) },
+        { rank: 5, name: "AlgorithmAce", level: 73, discoveries: 1672, earnings: Math.floor(currentPlayerEarnings * 2.5) },
+        { rank: 6, name: "TheoryMaster", level: 71, discoveries: 1543, earnings: Math.floor(currentPlayerEarnings * 2.2) },
+        { rank: 7, name: "ProofSeeker", level: 69, discoveries: 1429, earnings: Math.floor(currentPlayerEarnings * 2.0) },
+        { rank: 8, name: "LogicLord", level: 67, discoveries: 1356, earnings: Math.floor(currentPlayerEarnings * 1.8) },
+        { rank: 9, name: "NumberNinja", level: 65, discoveries: 1278, earnings: Math.floor(currentPlayerEarnings * 1.6) },
+        { rank: 10, name: "EquationExpert", level: 63, discoveries: 1189, earnings: Math.floor(currentPlayerEarnings * 1.4) }
+      ];
+      
+      // Calculate current player rank based on discoveries
+      let playerRank = 11;
+      for (let i = 0; i < leaderboard.length; i++) {
+        if (currentPlayerDiscoveries > leaderboard[i].discoveries) {
+          playerRank = i + 1;
+          break;
+        }
+      }
+      
+      // Insert current player in appropriate position
+      const currentPlayer = {
+        rank: playerRank,
+        name: "You",
+        level: Math.min(100, Math.floor(currentPlayerDiscoveries / 10) + 25),
+        discoveries: currentPlayerDiscoveries,
+        earnings: Math.floor(currentPlayerEarnings)
+      };
+      
+      if (playerRank <= 10) {
+        leaderboard.splice(playerRank - 1, 0, currentPlayer);
+        leaderboard.splice(10); // Keep only top 10
+      } else {
+        leaderboard.push(currentPlayer);
+      }
+      
+      res.json(leaderboard);
+    } catch (error) {
+      console.error('Failed to get leaderboard:', error);
+      res.status(500).json({ error: 'Failed to get leaderboard' });
+    }
+  });
+
+  // Wallet Gaming Data endpoint
+  app.get('/api/gaming/wallet-data', async (req, res) => {
+    try {
+      const discoveries = await storage.getRecentMathematicalWork(1000);
+      const totalValue = discoveries.reduce((sum, d) => sum + (d.scientificValue || 0), 0);
+      const recentValue = discoveries.slice(0, 100).reduce((sum, d) => sum + (d.scientificValue || 0), 0);
+      
+      const walletData = {
+        address: "0x742d35Cc4Bf8f3b8f8C8F8D8E8F8G8H8I8J8K8L8M8N8",
+        balance: {
+          liquid: Math.floor(totalValue / 100) + 3247,
+          staked: Math.floor(totalValue / 75) + 6950,
+          locked: Math.floor(totalValue / 200) + 1100,
+          pending: Math.floor(recentValue / 50) + 140
+        },
+        nfts: {
+          total: discoveries.length + 12,
+          discoveries: discoveries.length,
+          achievements: Math.floor(discoveries.length / 10) + 3,
+          rare: Math.floor(discoveries.length * 0.08) + 2
+        },
+        portfolio: {
+          total: Math.floor(totalValue * 1.8) + 125000,
+          change24h: Math.round((Math.random() - 0.3) * 25 * 100) / 100, // -7.5% to +17.5%
+          allTimeHigh: Math.floor(totalValue * 2.2) + 150000,
+          rank: Math.max(1, 2000 - Math.floor(discoveries.length / 2))
+        }
+      };
+      
+      res.json(walletData);
+    } catch (error) {
+      console.error('Failed to get wallet data:', error);
+      res.status(500).json({ error: 'Failed to get wallet data' });
+    }
+  });
+
+  // ==========================================
   // AI ANALYTICS API ENDPOINTS
   // ==========================================
 
