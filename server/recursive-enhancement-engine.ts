@@ -320,7 +320,8 @@ export class RecursiveEnhancementEngine {
       console.log('🌀 QUANTUM ENHANCEMENT: Starting advanced self-optimization cycle...');
       
       // Get recent discoveries for analysis
-      const discoveries = await database.getAllDiscoveries();
+      const { storage } = await import('./storage.js');
+      const discoveries = await storage.getMathematicalWork();
       const recentDiscoveries = discoveries.slice(-200); // Last 200 discoveries
       
       // Analyze current network performance
