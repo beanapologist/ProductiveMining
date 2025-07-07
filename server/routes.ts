@@ -687,7 +687,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get recent mathematical discoveries - ONLY REAL MINED DATA
   app.get("/api/discoveries", async (req, res) => {
     try {
-      const limit = parseInt(req.query.limit as string) || 10000; // Reduced to 10000 for memory optimization
+      const limit = parseInt(req.query.limit as string) || 50000; // Full dataset access
       console.log(`🔍 DISCOVERIES API: Fetching ${limit} most recent discoveries...`);
       
       const { db } = await import('./db');
