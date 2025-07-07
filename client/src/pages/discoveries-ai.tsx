@@ -158,6 +158,34 @@ export default function DiscoveriesAIPage() {
     }
   });
 
+  // Recursive Enhancement Efficiency Mutation
+  const recursiveEnhancementMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch('/api/recursive-enhancement/trigger-cycle', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ force: true })
+      });
+      if (!response.ok) throw new Error('Enhancement cycle failed');
+      return response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Recursive Enhancement Triggered",
+        description: "AI efficiency optimization cycle started",
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/recursive-enhancement/status'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/emergent-ai/metrics'] });
+    },
+    onError: () => {
+      toast({
+        title: "Enhancement Failed",
+        description: "Could not trigger recursive enhancement cycle",
+        variant: "destructive",
+      });
+    }
+  });
+
   const getWorkTypeDisplay = (workType: string) => {
     const types: Record<string, string> = {
       'riemann_zero': 'Riemann Hypothesis',
@@ -284,6 +312,40 @@ export default function DiscoveriesAIPage() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Recursive Enhancement Controls */}
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <Brain className="w-5 h-5 text-purple-400" />
+                Recursive Enhancement
+              </CardTitle>
+              <p className="text-slate-400 text-sm">AI self-improvement optimization</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-300">Enhancement Status</span>
+                <Badge className="bg-green-600">Active</Badge>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-slate-300">Current Generation</span>
+                <span className="text-sm text-white">Gen 1</span>
+              </div>
+              <Button
+                onClick={() => recursiveEnhancementMutation.mutate()}
+                disabled={recursiveEnhancementMutation.isPending}
+                className="w-full bg-purple-600 hover:bg-purple-700"
+                size="sm"
+              >
+                {recursiveEnhancementMutation.isPending ? (
+                  <Clock className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Zap className="w-4 h-4 mr-2" />
+                )}
+                Trigger Enhancement Cycle
+              </Button>
+            </CardContent>
+          </Card>
 
           {insights && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
