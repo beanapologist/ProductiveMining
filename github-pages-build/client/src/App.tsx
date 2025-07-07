@@ -8,10 +8,10 @@ import { useState } from "react";
 import { BarChart3, Pickaxe, Database, Brain, Info, Shield, Users, GraduationCap, HardDrive, Coins, Wallet, Copy, Check, FileCode, TrendingUp, Play, Beaker } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
-import Dashboard from "@/pages/dashboard-new";
+import Dashboard from "@/pages/dashboard";
 import BlockExplorer from "@/pages/block-explorer";
-import MiningPage from "@/pages/mining-simple";
-import DiscoveriesPage from "@/pages/discoveries-clean";
+import MiningPage from "@/pages/mining";
+import DiscoveriesPage from "@/pages/discoveries";
 import SecurityDashboard from "@/pages/security-dashboard";
 import ValidatorsPage from "@/pages/validators";
 import { InstitutionalValidation } from "@/pages/institutional-validation";
@@ -37,8 +37,8 @@ function Router() {
         <Route path="/institutional" component={InstitutionalValidation} />
         <Route path="/research" component={ProofOfResearchPage} />
         <Route path="/security" component={SecurityDashboard} />
-        <Route path="/complexity" component={ComplexityAnalysisPage} />
         <Route path="/valuation" component={ScientificValuation} />
+        <Route path="/complexity-analysis" component={ComplexityAnalysisPage} />
 
         <Route path="/blocks" component={BlockExplorer} />
         <Route path="/wallet" component={WalletPage} />
@@ -111,8 +111,8 @@ function Navigation() {
     { path: '/institutional', title: 'Academy', icon: GraduationCap },
     { path: '/research', title: 'Research Lab', icon: Beaker },
     { path: '/security', title: 'Crypto Fortress', icon: Shield },
-    { path: '/complexity', title: 'Complexity Engine', icon: TrendingUp },
     { path: '/valuation', title: 'Value Calculator', icon: Coins },
+    { path: '/complexity-analysis', title: 'Complexity Analysis', icon: TrendingUp },
     { path: '/blocks', title: 'Data Vault', icon: Database },
     { path: '/wallet', title: 'Research Vault', icon: Wallet },
     { path: '/data-management', title: 'Data Center', icon: HardDrive },
