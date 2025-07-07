@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Shield, Lock, Key, Zap, AlertTriangle, CheckCircle, Database, Search, FileText, ExternalLink, Users, Brain, TrendingUp, Target, RefreshCw, Play, GraduationCap, Layers, Calculator, Award, Activity, Eye, BarChart3, X, DollarSign, Cpu, Radar, ShieldAlert, Crosshair, AlertOctagon, Wifi, Bug } from 'lucide-react';
+import { Shield, Lock, Key, Zap, AlertTriangle, CheckCircle, Database, Search, FileText, ExternalLink, Users, Brain, TrendingUp, Target, RefreshCw, Play, GraduationCap, Layers, Calculator, Award, Activity, Eye, BarChart3, X, DollarSign, Cpu, Radar, ShieldAlert, Crosshair, AlertOctagon, Wifi, Bug, History, Settings } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 
@@ -1045,31 +1045,9 @@ export default function SecurityDashboard() {
           {/* Real-time Threat Monitoring */}
           <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
-              <CardTitle className="text-white flex items-center justify-between">
-                <div className="flex items-center">
-                  <Radar className="mr-2 h-5 w-5 text-red-400" />
-                  AI Threat Detection & Mitigation Hub
-                </div>
-                <div className="flex space-x-2">
-                  <Button
-                    onClick={() => threatScanMutation.mutate()}
-                    disabled={isScanning}
-                    className="bg-red-600 hover:bg-red-700 text-white"
-                    size="sm"
-                  >
-                    {isScanning ? (
-                      <>
-                        <Radar className="mr-2 h-4 w-4 animate-spin" />
-                        Scanning...
-                      </>
-                    ) : (
-                      <>
-                        <Crosshair className="mr-2 h-4 w-4" />
-                        Deep Threat Scan
-                      </>
-                    )}
-                  </Button>
-                </div>
+              <CardTitle className="text-white flex items-center">
+                <Radar className="mr-2 h-5 w-5 text-red-400" />
+                Real-time Threat Monitoring Hub
               </CardTitle>
               <CardDescription className="text-gray-400">
                 Advanced AI-powered threat detection using mathematical discovery patterns and network behavior analysis
@@ -1551,38 +1529,45 @@ export default function SecurityDashboard() {
             </CardContent>
           </Card>
 
-          {/* Enhanced AI Threat Detection & Mitigation */}
+          {/* Comprehensive AI Threat Detection & Response */}
           <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
               <CardTitle className="text-white flex items-center justify-between">
                 <div className="flex items-center">
-                  <AlertTriangle className="mr-2 h-5 w-5 text-red-400" />
-                  Enhanced AI Threat Detection & Mitigation
+                  <ShieldAlert className="mr-2 h-5 w-5 text-red-400" />
+                  Comprehensive AI Threat Detection & Response
                 </div>
                 <div className="flex space-x-2">
                   <Button
                     onClick={() => threatScanMutation.mutate()}
                     disabled={isScanning}
-                    variant="outline"
-                    className="border-red-400 text-red-400 hover:bg-red-400 hover:text-white"
+                    className="bg-red-600 hover:bg-red-700 text-white"
                     size="sm"
                   >
                     {isScanning ? (
                       <>
-                        <Search className="mr-2 h-4 w-4 animate-pulse" />
-                        Scanning...
+                        <Radar className="mr-2 h-4 w-4 animate-spin" />
+                        Deep Scanning...
                       </>
                     ) : (
                       <>
-                        <Search className="mr-2 h-4 w-4" />
-                        Threat Scan
+                        <Crosshair className="mr-2 h-4 w-4" />
+                        Full Threat Scan
                       </>
                     )}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="border-blue-400 text-blue-400 hover:bg-blue-400 hover:text-white"
+                    size="sm"
+                  >
+                    <Settings className="mr-2 h-4 w-4" />
+                    Configure
                   </Button>
                 </div>
               </CardTitle>
               <CardDescription className="text-gray-400">
-                Advanced AI-powered threat detection using mathematical discovery patterns
+                AI-powered comprehensive threat detection, analysis, and automated response using mathematical discovery patterns and network behavior analysis
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -1617,12 +1602,34 @@ export default function SecurityDashboard() {
                   </div>
                 )}
 
-                {/* Active Threats */}
+                {/* Threat Intelligence & Analytics */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  <div className="text-center p-4 bg-red-900/20 rounded-lg border border-red-500/20">
+                    <div className="text-3xl font-bold text-red-400">
+                      {threats.filter(t => !t.resolved && t.severity === 'critical').length}
+                    </div>
+                    <div className="text-sm text-gray-400">Critical Threats</div>
+                  </div>
+                  <div className="text-center p-4 bg-orange-900/20 rounded-lg border border-orange-500/20">
+                    <div className="text-3xl font-bold text-orange-400">
+                      {threats.filter(t => !t.resolved && t.severity === 'high').length}
+                    </div>
+                    <div className="text-sm text-gray-400">High Priority</div>
+                  </div>
+                  <div className="text-center p-4 bg-yellow-900/20 rounded-lg border border-yellow-500/20">
+                    <div className="text-3xl font-bold text-yellow-400">
+                      {threats.filter(t => !t.resolved).length}
+                    </div>
+                    <div className="text-sm text-gray-400">Total Active</div>
+                  </div>
+                </div>
+
+                {/* Active Threats Management */}
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <h4 className="text-white font-medium flex items-center">
                       <AlertTriangle className="mr-2 h-4 w-4 text-red-400" />
-                      Active Threats ({threats.filter(t => !t.resolved).length})
+                      Active Threat Detection & Response
                     </h4>
                     <div className="flex space-x-2">
                       <select
@@ -1636,6 +1643,14 @@ export default function SecurityDashboard() {
                         <option value="medium">Medium Priority</option>
                         <option value="low">Low Priority</option>
                       </select>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-white"
+                      >
+                        <Brain className="mr-2 h-4 w-4" />
+                        AI Analysis
+                      </Button>
                     </div>
                   </div>
                   
@@ -1690,29 +1705,71 @@ export default function SecurityDashboard() {
                   )}
                 </div>
 
-                {/* AI Recommendations */}
-                {aiRecommendations.length > 0 && (
-                  <div>
-                    <h4 className="text-white font-medium flex items-center mb-3">
-                      <Brain className="mr-2 h-4 w-4 text-purple-400" />
-                      AI Security Recommendations
-                    </h4>
+                {/* AI Security Recommendations */}
+                <div>
+                  <h4 className="text-white font-medium flex items-center mb-3">
+                    <Brain className="mr-2 h-4 w-4 text-purple-400" />
+                    AI Security Recommendations & Insights
+                  </h4>
+                  {aiRecommendations.length > 0 ? (
                     <div className="space-y-2">
-                      {aiRecommendations.slice(0, 3).map((rec, index) => (
+                      {aiRecommendations.slice(0, 5).map((rec, index) => (
                         <div key={index} className="p-3 bg-purple-900/10 border border-purple-500/20 rounded-lg">
                           <div className="flex items-center justify-between mb-1">
                             <span className="text-purple-400 font-medium text-sm">{rec.type?.replace('_', ' ')}</span>
-                            <Badge variant="outline" className={`text-xs ${
-                              rec.priority === 'high' ? 'text-red-400 border-red-400' :
-                              rec.priority === 'medium' ? 'text-yellow-400 border-yellow-400' :
-                              'text-gray-400 border-gray-400'
-                            }`}>
-                              {rec.priority} priority
-                            </Badge>
+                            <div className="flex space-x-2">
+                              <Badge variant="outline" className={`text-xs ${
+                                rec.priority === 'high' ? 'text-red-400 border-red-400' :
+                                rec.priority === 'medium' ? 'text-yellow-400 border-yellow-400' :
+                                'text-gray-400 border-gray-400'
+                              }`}>
+                                {rec.priority} priority
+                              </Badge>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="h-6 px-2 text-xs border-green-400 text-green-400 hover:bg-green-400 hover:text-white"
+                              >
+                                Apply
+                              </Button>
+                            </div>
                           </div>
                           <div className="text-sm text-gray-300">{rec.description}</div>
                           <div className="text-xs text-gray-400 mt-1">
                             Confidence: {rec.confidence?.toFixed(1)}% • Related Discovery: #{rec.relatedDiscovery}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-6">
+                      <Brain className="h-8 w-8 mx-auto mb-2 text-gray-500" />
+                      <p className="text-gray-400 text-sm">AI analyzing network patterns...</p>
+                      <p className="text-gray-500 text-xs">Recommendations will appear after threat analysis</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Recent Scan History */}
+                {scanHistory.length > 0 && (
+                  <div>
+                    <h4 className="text-white font-medium flex items-center mb-3">
+                      <History className="mr-2 h-4 w-4 text-blue-400" />
+                      Recent Scan History
+                    </h4>
+                    <div className="space-y-2 max-h-32 overflow-y-auto">
+                      {scanHistory.slice(0, 3).map((scan, index) => (
+                        <div key={index} className="p-2 bg-slate-700/30 rounded border border-slate-600/50">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-300">
+                              {scan.threatsDetected} threats detected
+                            </span>
+                            <span className="text-gray-500 text-xs">
+                              {new Date(scan.timestamp).toLocaleTimeString()}
+                            </span>
+                          </div>
+                          <div className="text-xs text-gray-400 mt-1">
+                            Duration: {scan.duration}ms • Health Score: {scan.networkHealthScore}%
                           </div>
                         </div>
                       ))}
