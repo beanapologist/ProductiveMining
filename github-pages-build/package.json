@@ -6,7 +6,11 @@
   "homepage": "https://yourusername.github.io/productive-mining-platform",
   "scripts": {
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "echo 'No tests configured yet'",
+    "test:performance": "echo 'No performance tests configured yet'",
+    "lint": "echo 'No linting configured yet'",
+    "type-check": "tsc"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
