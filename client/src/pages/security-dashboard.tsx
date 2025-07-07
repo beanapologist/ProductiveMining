@@ -512,7 +512,7 @@ export default function SecurityDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-7 bg-slate-800/50">
+        <TabsList className="grid w-full grid-cols-6 bg-slate-800/50">
           <TabsTrigger value="security" className="flex items-center gap-2">
             <Shield className="h-4 w-4" />
             Security
@@ -529,10 +529,7 @@ export default function SecurityDashboard() {
             <GraduationCap className="h-4 w-4" />
             Academic
           </TabsTrigger>
-          <TabsTrigger value="ai-learning" className="flex items-center gap-2">
-            <Brain className="h-4 w-4" />
-            AI Systems
-          </TabsTrigger>
+
           <TabsTrigger value="complexity" className="flex items-center gap-2">
             <TrendingUp className="h-4 w-4" />
             Complexity
