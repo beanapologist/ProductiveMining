@@ -15,6 +15,7 @@ import { adaptiveSecurityEngine } from "./adaptive-security-engine";
 import { adaptiveLearningEngine } from "./adaptive-learning-engine";
 import { hybridMathematicalSystem } from "./hybrid-mathematical-system";
 import { mathMinerEngine } from "./math-miner-engine";
+import { aiStrategicRecommendationsEngine } from "./ai-strategic-recommendations-engine";
 
 // Blockchain utility functions
 function generateSimpleHash(input: string): string {
@@ -124,6 +125,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Error performing threat scan:', error);
       res.status(500).json({ error: 'Failed to perform threat scan' });
+    }
+  });
+
+  // AI Strategic Recommendations API endpoints
+  app.get('/api/strategic-recommendations', async (req, res) => {
+    try {
+      const recommendations = await aiStrategicRecommendationsEngine.getRecommendations();
+      res.json(recommendations);
+    } catch (error) {
+      console.error('Error getting strategic recommendations:', error);
+      res.status(500).json({ error: 'Failed to get strategic recommendations' });
+    }
+  });
+
+  app.get('/api/strategic-recommendations/insights', async (req, res) => {
+    try {
+      const insights = await aiStrategicRecommendationsEngine.generateStrategicInsights();
+      res.json(insights);
+    } catch (error) {
+      console.error('Error generating strategic insights:', error);
+      res.status(500).json({ error: 'Failed to generate strategic insights' });
+    }
+  });
+
+  app.get('/api/strategic-recommendations/optimization', async (req, res) => {
+    try {
+      const optimization = await aiStrategicRecommendationsEngine.analyzeNetworkOptimization();
+      res.json(optimization);
+    } catch (error) {
+      console.error('Error analyzing network optimization:', error);
+      res.status(500).json({ error: 'Failed to analyze network optimization' });
+    }
+  });
+
+  app.get('/api/strategic-recommendations/:id', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const recommendation = await aiStrategicRecommendationsEngine.getRecommendationById(id);
+      if (!recommendation) {
+        return res.status(404).json({ error: 'Recommendation not found' });
+      }
+      res.json(recommendation);
+    } catch (error) {
+      console.error('Error getting recommendation:', error);
+      res.status(500).json({ error: 'Failed to get recommendation' });
+    }
+  });
+
+  app.post('/api/strategic-recommendations/:id/implement', async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const result = await aiStrategicRecommendationsEngine.implementRecommendation(id);
+      res.json(result);
+    } catch (error) {
+      console.error('Error implementing recommendation:', error);
+      res.status(500).json({ error: 'Failed to implement recommendation' });
+    }
+  });
+
+  app.get('/api/strategic-recommendations-status', async (req, res) => {
+    try {
+      const status = aiStrategicRecommendationsEngine.getEngineStatus();
+      res.json(status);
+    } catch (error) {
+      console.error('Error getting strategic recommendations status:', error);
+      res.status(500).json({ error: 'Failed to get status' });
     }
   });
 
