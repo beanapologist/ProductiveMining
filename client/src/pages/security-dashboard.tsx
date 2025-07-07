@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Shield, Lock, Key, Zap, AlertTriangle, CheckCircle, Database, Search, FileText, ExternalLink, Users, Brain, TrendingUp, Target, RefreshCw, Play, GraduationCap, Layers, Calculator, Award, Activity, Eye, BarChart3, X, DollarSign, Cpu } from 'lucide-react';
+import { Shield, Lock, Key, Zap, AlertTriangle, CheckCircle, Database, Search, FileText, ExternalLink, Users, Brain, TrendingUp, Target, RefreshCw, Play, GraduationCap, Layers, Calculator, Award, Activity, Eye, BarChart3, X, DollarSign, Cpu, Radar, ShieldAlert, Crosshair, AlertOctagon, Wifi, Bug } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 
@@ -42,6 +42,63 @@ interface SecurityDiscoveryLink {
     confidence: number;
     securityApplications: string[];
   };
+}
+
+interface ThreatPattern {
+  id: string;
+  name: string;
+  type: 'network' | 'computational' | 'cryptographic' | 'behavioral' | 'quantum';
+  severity: 'low' | 'medium' | 'high' | 'critical';
+  confidence: number;
+  signature: string;
+  description: string;
+  indicators: string[];
+  detectionMethod: string;
+  timestamp: string;
+  mitigationStrategy: string;
+  mathematicalEvidence?: any;
+}
+
+interface ThreatScanResult {
+  scanId: string;
+  timestamp: string;
+  duration: number;
+  threatsDetected: number;
+  criticalThreats: number;
+  highThreats: number;
+  mediumThreats: number;
+  lowThreats: number;
+  threats: ThreatPattern[];
+  networkHealthScore: number;
+  quantumSecurityLevel: number;
+  cryptographicStrength: number;
+  recommendations: string[];
+  nextScanRecommended: string;
+}
+
+interface MonitoringData {
+  timestamp: string;
+  networkStatus: {
+    activeMiners: number;
+    blocksPerHour: number;
+    healthScore: number;
+  };
+  quantumMetrics: {
+    coherenceLevel: number;
+    quantumThreats: number;
+    securityStrength: number;
+  };
+  mathematicalPatterns: {
+    discoveryRate: number;
+    anomalyCount: number;
+    validationAccuracy: number;
+  };
+  cryptographicSecurity: {
+    encryptionStrength: number;
+    keyRotationStatus: string;
+    vulnerabilityCount: number;
+  };
+  alertLevel: 'normal' | 'elevated' | 'high' | 'critical';
 }
 
 interface ThreatAlert {
@@ -194,6 +251,7 @@ export default function SecurityDashboard() {
   const [threatFilter, setThreatFilter] = useState<string>('all');
   const [selectedThreat, setSelectedThreat] = useState<ThreatAlert | null>(null);
   const [isScanning, setIsScanning] = useState(false);
+  const [lastScanResult, setLastScanResult] = useState<ThreatScanResult | null>(null);
   const [integrityResults, setIntegrityResults] = useState<IntegrityResults | null>(null);
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [aiAnalysisRunning, setAiAnalysisRunning] = useState(false);
@@ -204,6 +262,51 @@ export default function SecurityDashboard() {
   const { data: adaptiveSecurityStatus } = useQuery<AdaptiveSecurityStatus>({
     queryKey: ['/api/adaptive-security/status'],
     refetchInterval: 10000,
+  });
+
+  // AI Threat Detection queries
+  const { data: monitoringData } = useQuery<MonitoringData>({
+    queryKey: ['/api/threat-detection/monitoring'],
+    refetchInterval: 5000,
+    staleTime: 2000,
+  });
+
+  const { data: threatStats } = useQuery({
+    queryKey: ['/api/threat-detection/statistics'],
+    refetchInterval: 30000,
+    staleTime: 10000,
+  });
+
+  const { data: scanHistory = [] } = useQuery<ThreatScanResult[]>({
+    queryKey: ['/api/threat-detection/history'],
+    refetchInterval: 60000,
+    staleTime: 30000,
+  });
+
+  const { data: activeMitigations } = useQuery({
+    queryKey: ['/api/threat-detection/mitigations'],
+    refetchInterval: 10000,
+    staleTime: 5000,
+  });
+
+  // Threat scan mutation
+  const threatScanMutation = useMutation({
+    mutationFn: () => apiRequest('/api/threat-detection/scan', { method: 'POST' }),
+    onMutate: () => {
+      setIsScanning(true);
+    },
+    onSuccess: (data) => {
+      setLastScanResult(data);
+      queryClient.invalidateQueries({ queryKey: ['/api/threat-detection/history'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/threat-detection/statistics'] });
+      toast({
+        title: "Threat Scan Completed",
+        description: `Detected ${data.threatsDetected} threats in ${data.duration}ms`,
+      });
+    },
+    onSettled: () => {
+      setIsScanning(false);
+    },
   });
 
   // Trigger security iteration mutation
@@ -319,34 +422,7 @@ export default function SecurityDashboard() {
     },
   });
 
-  // Threat Detection Mutations
-  const threatScanMutation = useMutation({
-    mutationFn: async () => {
-      const response = await fetch('/api/security/threat-scan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-      if (!response.ok) throw new Error('Threat scan failed');
-      return response.json();
-    },
-    onSuccess: (data) => {
-      setIsScanning(false);
-      refetchThreats();
-      toast({
-        title: "Threat Scan Completed",
-        description: `Detected ${data.threatsDetected} potential threats`,
-        variant: data.threatsDetected > 0 ? "destructive" : "default",
-      });
-    },
-    onError: () => {
-      setIsScanning(false);
-      toast({
-        title: "Threat Scan Failed",
-        description: "Could not complete security scan",
-        variant: "destructive",
-      });
-    },
-  });
+
 
   const mitigateThreatMutation = useMutation({
     mutationFn: async (threatId: number) => {
@@ -374,10 +450,7 @@ export default function SecurityDashboard() {
     },
   });
 
-  const runThreatScan = () => {
-    setIsScanning(true);
-    threatScanMutation.mutate();
-  };
+
 
   const handleMitigateThreat = (threatId: number) => {
     mitigateThreatMutation.mutate(threatId);
@@ -439,10 +512,14 @@ export default function SecurityDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-6 bg-slate-800/50">
+        <TabsList className="grid w-full grid-cols-7 bg-slate-800/50">
           <TabsTrigger value="security" className="flex items-center gap-2">
             <Shield className="h-4 w-4" />
             Security
+          </TabsTrigger>
+          <TabsTrigger value="threat-detection" className="flex items-center gap-2">
+            <ShieldAlert className="h-4 w-4" />
+            AI Threat Detection
           </TabsTrigger>
           <TabsTrigger value="validators" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
@@ -1018,7 +1095,7 @@ export default function SecurityDashboard() {
             </div>
             <div className="flex space-x-2">
               <Button
-                onClick={runThreatScan}
+                onClick={() => threatScanMutation.mutate()}
                 disabled={isScanning}
                 variant="outline"
                 className="border-red-400 text-red-400 hover:bg-red-400 hover:text-white"
@@ -1262,6 +1339,388 @@ export default function SecurityDashboard() {
           </CardContent>
         </Card>
       )}
+        </TabsContent>
+
+        <TabsContent value="threat-detection" className="space-y-6">
+          {/* Real-time Threat Monitoring */}
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center justify-between">
+                <div className="flex items-center">
+                  <Radar className="mr-2 h-5 w-5 text-red-400" />
+                  AI Threat Detection & Mitigation Hub
+                </div>
+                <div className="flex space-x-2">
+                  <Button
+                    onClick={() => threatScanMutation.mutate()}
+                    disabled={isScanning}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                    size="sm"
+                  >
+                    {isScanning ? (
+                      <>
+                        <Radar className="mr-2 h-4 w-4 animate-spin" />
+                        Scanning...
+                      </>
+                    ) : (
+                      <>
+                        <Crosshair className="mr-2 h-4 w-4" />
+                        Deep Threat Scan
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Advanced AI-powered threat detection using mathematical discovery patterns and network behavior analysis
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {monitoringData ? (
+                <div className="space-y-6">
+                  {/* Alert Level Status */}
+                  <div className="p-4 rounded-lg border-2" style={{
+                    borderColor: monitoringData.alertLevel === 'critical' ? '#ef4444' : 
+                                monitoringData.alertLevel === 'high' ? '#f97316' :
+                                monitoringData.alertLevel === 'elevated' ? '#eab308' : '#10b981',
+                    backgroundColor: monitoringData.alertLevel === 'critical' ? '#7f1d1d' : 
+                                    monitoringData.alertLevel === 'high' ? '#7c2d12' :
+                                    monitoringData.alertLevel === 'elevated' ? '#713f12' : '#064e3b'
+                  }}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <AlertOctagon className={`h-6 w-6 ${
+                          monitoringData.alertLevel === 'critical' ? 'text-red-400' : 
+                          monitoringData.alertLevel === 'high' ? 'text-orange-400' :
+                          monitoringData.alertLevel === 'elevated' ? 'text-yellow-400' : 'text-green-400'
+                        }`} />
+                        <div>
+                          <div className="text-white font-semibold text-lg">
+                            Alert Level: {monitoringData.alertLevel.toUpperCase()}
+                          </div>
+                          <div className="text-sm text-gray-300">
+                            Network Health Score: {monitoringData.networkStatus.healthScore}%
+                          </div>
+                        </div>
+                      </div>
+                      <Badge className={`text-white text-sm px-3 py-1 ${
+                        monitoringData.alertLevel === 'critical' ? 'bg-red-600' : 
+                        monitoringData.alertLevel === 'high' ? 'bg-orange-600' :
+                        monitoringData.alertLevel === 'elevated' ? 'bg-yellow-600' : 'bg-green-600'
+                      }`}>
+                        {monitoringData.alertLevel === 'normal' ? 'SECURE' : 'MONITORING'}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  {/* Real-time Metrics Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card className="bg-blue-900/20 border-blue-500/30">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-sm text-blue-300">Network Status</div>
+                            <div className="text-2xl font-bold text-blue-400">
+                              {monitoringData.networkStatus.activeMiners}
+                            </div>
+                            <div className="text-xs text-blue-300">
+                              {monitoringData.networkStatus.blocksPerHour} blocks/hr
+                            </div>
+                          </div>
+                          <Wifi className="h-8 w-8 text-blue-400" />
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-purple-900/20 border-purple-500/30">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-sm text-purple-300">Quantum Security</div>
+                            <div className="text-2xl font-bold text-purple-400">
+                              {monitoringData.quantumMetrics.coherenceLevel}%
+                            </div>
+                            <div className="text-xs text-purple-300">
+                              {monitoringData.quantumMetrics.quantumThreats} threats detected
+                            </div>
+                          </div>
+                          <Shield className="h-8 w-8 text-purple-400" />
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-green-900/20 border-green-500/30">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-sm text-green-300">Math Patterns</div>
+                            <div className="text-2xl font-bold text-green-400">
+                              {monitoringData.mathematicalPatterns.discoveryRate}%
+                            </div>
+                            <div className="text-xs text-green-300">
+                              {monitoringData.mathematicalPatterns.anomalyCount} anomalies
+                            </div>
+                          </div>
+                          <Calculator className="h-8 w-8 text-green-400" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Cryptographic Security Status */}
+                  <Card className="bg-slate-700/50 border-slate-600">
+                    <CardHeader>
+                      <CardTitle className="text-white text-sm flex items-center">
+                        <Lock className="mr-2 h-4 w-4 text-yellow-400" />
+                        Cryptographic Security Analysis
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-400">Encryption Strength:</span>
+                            <span className="text-yellow-400 font-bold">
+                              {monitoringData.cryptographicSecurity.encryptionStrength}%
+                            </span>
+                          </div>
+                          <Progress 
+                            value={monitoringData.cryptographicSecurity.encryptionStrength} 
+                            className="h-2"
+                          />
+                        </div>
+                        <div className="text-center">
+                          <div className="text-sm text-gray-400 mb-1">Key Rotation</div>
+                          <Badge className={`${
+                            monitoringData.cryptographicSecurity.keyRotationStatus === 'active' ? 
+                            'bg-green-600 text-white' : 'bg-orange-600 text-white'
+                          }`}>
+                            {monitoringData.cryptographicSecurity.keyRotationStatus}
+                          </Badge>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-sm text-gray-400 mb-1">Vulnerabilities</div>
+                          <div className="text-2xl font-bold text-white">
+                            {monitoringData.cryptographicSecurity.vulnerabilityCount}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Radar className="h-16 w-16 mx-auto mb-4 text-gray-500 animate-pulse" />
+                  <p className="text-gray-400 text-lg">Initializing threat detection systems...</p>
+                  <p className="text-sm text-gray-500 mt-2">
+                    AI monitoring will begin shortly
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Threat Scan Results */}
+          {lastScanResult && (
+            <Card className="bg-slate-800 border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center justify-between">
+                  <div className="flex items-center">
+                    <Search className="mr-2 h-5 w-5 text-blue-400" />
+                    Latest Threat Scan Results
+                  </div>
+                  <Badge className={`text-white ${
+                    lastScanResult.criticalThreats > 0 ? 'bg-red-600' :
+                    lastScanResult.highThreats > 0 ? 'bg-orange-600' :
+                    lastScanResult.mediumThreats > 0 ? 'bg-yellow-600' : 'bg-green-600'
+                  }`}>
+                    {lastScanResult.threatsDetected} Threats Detected
+                  </Badge>
+                </CardTitle>
+                <CardDescription className="text-gray-400">
+                  Scan completed in {lastScanResult.duration}ms • {new Date(lastScanResult.timestamp).toLocaleString()}
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {/* Threat Summary */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="text-center p-3 bg-red-900/20 rounded-lg border border-red-500/20">
+                      <div className="text-2xl font-bold text-red-400">{lastScanResult.criticalThreats}</div>
+                      <div className="text-sm text-gray-400">Critical</div>
+                    </div>
+                    <div className="text-center p-3 bg-orange-900/20 rounded-lg border border-orange-500/20">
+                      <div className="text-2xl font-bold text-orange-400">{lastScanResult.highThreats}</div>
+                      <div className="text-sm text-gray-400">High</div>
+                    </div>
+                    <div className="text-center p-3 bg-yellow-900/20 rounded-lg border border-yellow-500/20">
+                      <div className="text-2xl font-bold text-yellow-400">{lastScanResult.mediumThreats}</div>
+                      <div className="text-sm text-gray-400">Medium</div>
+                    </div>
+                    <div className="text-center p-3 bg-blue-900/20 rounded-lg border border-blue-500/20">
+                      <div className="text-2xl font-bold text-blue-400">{lastScanResult.lowThreats}</div>
+                      <div className="text-sm text-gray-400">Low</div>
+                    </div>
+                  </div>
+
+                  {/* Security Metrics */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-400">Network Health:</span>
+                        <span className="text-green-400 font-bold">{lastScanResult.networkHealthScore}%</span>
+                      </div>
+                      <Progress value={lastScanResult.networkHealthScore} className="h-2" />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-400">Quantum Security:</span>
+                        <span className="text-purple-400 font-bold">{lastScanResult.quantumSecurityLevel}%</span>
+                      </div>
+                      <Progress value={lastScanResult.quantumSecurityLevel} className="h-2" />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-400">Crypto Strength:</span>
+                        <span className="text-blue-400 font-bold">{lastScanResult.cryptographicStrength}%</span>
+                      </div>
+                      <Progress value={lastScanResult.cryptographicStrength} className="h-2" />
+                    </div>
+                  </div>
+
+                  {/* AI Recommendations */}
+                  {lastScanResult.recommendations && lastScanResult.recommendations.length > 0 && (
+                    <div className="space-y-3">
+                      <h4 className="text-white font-medium flex items-center">
+                        <Brain className="mr-2 h-4 w-4 text-purple-400" />
+                        AI Security Recommendations
+                      </h4>
+                      <div className="space-y-2">
+                        {lastScanResult.recommendations.map((recommendation, index) => (
+                          <div key={index} className="p-3 bg-purple-900/20 border border-purple-500/20 rounded-lg">
+                            <div className="flex items-start space-x-3">
+                              <CheckCircle className="h-4 w-4 text-purple-400 mt-0.5 flex-shrink-0" />
+                              <div className="text-sm text-gray-300">{recommendation}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Detected Threats List */}
+                  {lastScanResult.threats && lastScanResult.threats.length > 0 && (
+                    <div className="space-y-3">
+                      <h4 className="text-white font-medium flex items-center">
+                        <Bug className="mr-2 h-4 w-4 text-red-400" />
+                        Detected Threat Patterns
+                      </h4>
+                      <div className="space-y-2 max-h-64 overflow-y-auto">
+                        {lastScanResult.threats.map((threat) => (
+                          <div key={threat.id} className="p-3 bg-slate-700/50 rounded-lg border border-slate-600">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center space-x-2">
+                                <Badge className={`text-white ${
+                                  threat.severity === 'critical' ? 'bg-red-600' :
+                                  threat.severity === 'high' ? 'bg-orange-600' :
+                                  threat.severity === 'medium' ? 'bg-yellow-600' : 'bg-blue-600'
+                                }`}>
+                                  {threat.severity}
+                                </Badge>
+                                <span className="text-white font-medium">{threat.name}</span>
+                              </div>
+                              <div className="text-sm text-gray-400">
+                                {threat.confidence}% confidence
+                              </div>
+                            </div>
+                            <div className="text-sm text-gray-300 mb-2">{threat.description}</div>
+                            <div className="text-xs text-gray-400">
+                              <span className="text-blue-400">Detection:</span> {threat.detectionMethod} • 
+                              <span className="text-green-400 ml-2">Mitigation:</span> {threat.mitigationStrategy}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Threat Statistics & Analytics */}
+          {threatStats && (
+            <Card className="bg-slate-800 border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center">
+                  <BarChart3 className="mr-2 h-5 w-5 text-green-400" />
+                  Threat Intelligence Analytics
+                </CardTitle>
+                <CardDescription className="text-gray-400">
+                  Historical threat patterns and security trends
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                    <div className="text-2xl font-bold text-white">{threatStats.totalScans || 0}</div>
+                    <div className="text-sm text-gray-400">Total Scans</div>
+                  </div>
+                  <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                    <div className="text-2xl font-bold text-red-400">{threatStats.threatsBlocked || 0}</div>
+                    <div className="text-sm text-gray-400">Threats Blocked</div>
+                  </div>
+                  <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                    <div className="text-2xl font-bold text-green-400">{threatStats.successRate || 100}%</div>
+                    <div className="text-sm text-gray-400">Detection Rate</div>
+                  </div>
+                  <div className="text-center p-3 bg-slate-700/50 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-400">{threatStats.avgResponseTime || '<1'}s</div>
+                    <div className="text-sm text-gray-400">Response Time</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Active Mitigations */}
+          {activeMitigations && (
+            <Card className="bg-slate-800 border-slate-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center">
+                  <Shield className="mr-2 h-5 w-5 text-orange-400" />
+                  Active Security Mitigations
+                </CardTitle>
+                <CardDescription className="text-gray-400">
+                  Currently deployed defensive measures and countermeasures
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {activeMitigations.active?.length > 0 ? (
+                    activeMitigations.active.map((mitigation, index) => (
+                      <div key={index} className="p-3 bg-green-900/20 border border-green-500/20 rounded-lg">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <CheckCircle className="h-4 w-4 text-green-400" />
+                            <span className="text-white font-medium">{mitigation.name}</span>
+                          </div>
+                          <Badge className="bg-green-600 text-white">Active</Badge>
+                        </div>
+                        <div className="text-sm text-gray-300 mt-1">{mitigation.description}</div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8">
+                      <Shield className="h-12 w-12 mx-auto mb-3 text-gray-500" />
+                      <p className="text-gray-400">No active mitigations required</p>
+                      <p className="text-sm text-gray-500 mt-1">Network security is optimal</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         <TabsContent value="validators" className="space-y-6">

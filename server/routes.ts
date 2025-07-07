@@ -76,6 +76,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Store active WebSocket connections
   const clients = new Set<WebSocket>();
 
+  // AI Threat Detection API endpoints
+  app.get('/api/threat-detection/monitoring', async (req, res) => {
+    try {
+      const monitoring = await threatDetectionEngine.getMonitoringData();
+      res.json(monitoring);
+    } catch (error) {
+      console.error('Error getting monitoring data:', error);
+      res.status(500).json({ error: 'Failed to get monitoring data' });
+    }
+  });
+
+  app.get('/api/threat-detection/statistics', async (req, res) => {
+    try {
+      const stats = await threatDetectionEngine.getStatistics();
+      res.json(stats);
+    } catch (error) {
+      console.error('Error getting threat statistics:', error);
+      res.status(500).json({ error: 'Failed to get threat statistics' });
+    }
+  });
+
+  app.get('/api/threat-detection/history', async (req, res) => {
+    try {
+      const history = await threatDetectionEngine.getScanHistory();
+      res.json(history);
+    } catch (error) {
+      console.error('Error getting scan history:', error);
+      res.status(500).json({ error: 'Failed to get scan history' });
+    }
+  });
+
+  app.get('/api/threat-detection/mitigations', async (req, res) => {
+    try {
+      const mitigations = await threatDetectionEngine.getActiveMitigations();
+      res.json(mitigations);
+    } catch (error) {
+      console.error('Error getting active mitigations:', error);
+      res.status(500).json({ error: 'Failed to get active mitigations' });
+    }
+  });
+
+  app.post('/api/threat-detection/scan', async (req, res) => {
+    try {
+      const scanResult = await threatDetectionEngine.performThreatScan();
+      res.json(scanResult);
+    } catch (error) {
+      console.error('Error performing threat scan:', error);
+      res.status(500).json({ error: 'Failed to perform threat scan' });
+    }
+  });
+
   wss.on('connection', (ws) => {
     clients.add(ws);
     console.log('Client connected to WebSocket');
