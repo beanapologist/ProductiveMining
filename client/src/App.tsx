@@ -17,6 +17,7 @@ import DataManagementPage from "@/pages/data-management";
 import AIAnalyticsPage from "@/pages/ai-analytics";
 import CommunityCollaborationPage from "@/pages/community-collaboration";
 import Gen2BackupPage from "@/pages/gen2-backup";
+import Gen2AISystemsPage from "@/pages/gen2-ai-systems";
 
 import WalletPage from "@/pages/wallet";
 import ApiPage from "@/pages/about";
@@ -36,6 +37,7 @@ function Router() {
         <Route path="/community" component={CommunityCollaborationPage} />
         <Route path="/collaboration" component={CommunityCollaborationPage} />
         <Route path="/gen2-backup" component={Gen2BackupPage} />
+        <Route path="/gen2-ai" component={Gen2AISystemsPage} />
         <Route path="/security" component={SecurityDashboard} />
         <Route path="/blocks" component={BlockExplorer} />
         <Route path="/block-explorer" component={BlockExplorer} />
@@ -120,6 +122,7 @@ function Navigation() {
     { path: '/ai', title: 'AI Analytics', icon: Brain },
     { path: '/community', title: 'Community', icon: Users },
     { path: '/gen2-backup', title: 'Gen 2 Backup', icon: HardDrive },
+    { path: '/gen2-ai', title: 'Gen 2 AI', icon: Sparkles },
     { path: '/security', title: 'Security', icon: Shield },
     { path: '/blocks', title: 'Explorer', icon: Layers },
     { path: '/database', title: 'Database', icon: Database },

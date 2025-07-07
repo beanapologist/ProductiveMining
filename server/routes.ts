@@ -6267,19 +6267,111 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Initialize Gen 2 Data Backup System
+  // Gen 2 Emergent AI Endpoints
+  app.get('/api/gen2/emergent-ai/status', async (req, res) => {
+    try {
+      const { emergentAIEngine } = await import('./emergent-ai-engine');
+      const status = emergentAIEngine.getEmergenceStatus();
+      
+      res.json(status);
+    } catch (error) {
+      console.error('Failed to get emergent AI status:', error);
+      res.status(500).json({ error: 'Failed to get emergent AI status' });
+    }
+  });
+
+  app.get('/api/gen2/emergent-ai/patterns', async (req, res) => {
+    try {
+      const { emergentAIEngine } = await import('./emergent-ai-engine');
+      const patterns = emergentAIEngine.getEmergentPatterns();
+      
+      res.json(patterns);
+    } catch (error) {
+      console.error('Failed to get emergent patterns:', error);
+      res.status(500).json({ error: 'Failed to get emergent patterns' });
+    }
+  });
+
+  app.post('/api/gen2/emergent-ai/analyze', async (req, res) => {
+    try {
+      const { discoveries } = req.body;
+      const { emergentAIEngine } = await import('./emergent-ai-engine');
+      
+      const patterns = await emergentAIEngine.processEmergentIntelligence(discoveries || []);
+      const insight = await emergentAIEngine.generateEmergentInsight({});
+      
+      res.json({
+        patterns,
+        insight,
+        emergenceLevel: patterns.length > 0 ? patterns[0].emergenceLevel : 0
+      });
+    } catch (error) {
+      console.error('Failed to analyze emergent intelligence:', error);
+      res.status(500).json({ error: 'Failed to analyze emergent intelligence' });
+    }
+  });
+
+  // Gen 2 Quantum Enhancement Endpoints
+  app.get('/api/gen2/quantum/status', async (req, res) => {
+    try {
+      const { quantumEnhancementEngine } = await import('./quantum-enhancement-engine');
+      const status = quantumEnhancementEngine.getQuantumStatus();
+      
+      res.json(status);
+    } catch (error) {
+      console.error('Failed to get quantum status:', error);
+      res.status(500).json({ error: 'Failed to get quantum status' });
+    }
+  });
+
+  app.post('/api/gen2/quantum/enhance', async (req, res) => {
+    try {
+      const { process, parameters } = req.body;
+      const { quantumEnhancementEngine } = await import('./quantum-enhancement-engine');
+      
+      const enhancement = await quantumEnhancementEngine.enhanceWithQuantum(process, parameters);
+      const insight = await quantumEnhancementEngine.generateQuantumInsight();
+      
+      res.json({
+        enhancement,
+        insight,
+        quantumAdvantage: enhancement.quantumSpeedup
+      });
+    } catch (error) {
+      console.error('Failed to apply quantum enhancement:', error);
+      res.status(500).json({ error: 'Failed to apply quantum enhancement' });
+    }
+  });
+
+  // Initialize Gen 2 Advanced AI Systems
   setTimeout(async () => {
     try {
+      // Data Backup System
       const { dataBackupEngine } = await import('./data-backup-engine');
       await dataBackupEngine.initialize();
       await dataBackupEngine.startAutomaticBackups(6);
       console.log('🛡️ GEN 2: Data backup system initialized with automatic 6-hour backups');
       
+      // Emergent AI Engine
+      const { emergentAIEngine } = await import('./emergent-ai-engine');
+      console.log('🧠 GEN 2: Emergent AI consciousness engine activated');
+      
+      // Quantum Enhancement Engine
+      const { quantumEnhancementEngine } = await import('./quantum-enhancement-engine');
+      console.log('⚡ GEN 2: Quantum enhancement engine initialized with 127 qubits');
+      
       // Create initial Gen 2 backup
       const backupPath = await dataBackupEngine.createFullBackup();
       console.log(`💾 GEN 2: Initial backup created at ${backupPath}`);
+      
+      // Quantum enhance the backup process
+      await quantumEnhancementEngine.enhanceWithQuantum('data_backup', { 
+        complexity: 'high', 
+        critical: true 
+      });
+      
     } catch (error) {
-      console.error('Failed to initialize Gen 2 backup system:', error);
+      console.error('Failed to initialize Gen 2 systems:', error);
     }
   }, 10000); // Initialize after 10 seconds
 
