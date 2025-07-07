@@ -687,18 +687,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get recent mathematical discoveries - ONLY REAL MINED DATA
   app.get("/api/discoveries", async (req, res) => {
     try {
-      const limit = parseInt(req.query.limit as string) || 50000; // Full dataset access
-      console.log(`🔍 DISCOVERIES API: Fetching ${limit} most recent discoveries...`);
+      // No limit - return all discoveries
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
       
       const { db } = await import('./db');
       const { mathematicalWork } = await import('@shared/schema');
       const { desc } = await import('drizzle-orm');
       
-      // Return limited discoveries from productive mining blockchain (newest first)
-      const realMinedDiscoveries = await db.select()
+      // Return all discoveries from productive mining blockchain (newest first)
+      const query = db.select()
         .from(mathematicalWork)
-        .orderBy(desc(mathematicalWork.timestamp))
-        .limit(limit);
+        .orderBy(desc(mathematicalWork.timestamp));
+      
+      const realMinedDiscoveries = limit ? await query.limit(limit) : await query;
       
       console.log(`🔍 DISCOVERIES API: Found ${realMinedDiscoveries.length} discoveries`);
       

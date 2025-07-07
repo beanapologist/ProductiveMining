@@ -33,7 +33,7 @@ export default function MiningPage() {
 
   const { data: currentDiscoveries = [] } = useQuery({
     queryKey: ['/api/discoveries'],
-    queryFn: () => fetch('/api/discoveries?limit=1000').then(res => res.json()),
+    queryFn: () => fetch('/api/discoveries').then(res => res.json()),
   });
 
   const startMining = useMutation({

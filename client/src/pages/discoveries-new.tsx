@@ -56,7 +56,7 @@ export default function DiscoveriesPage() {
 
   const { data: allDiscoveries = [] } = useQuery({
     queryKey: ["/api/discoveries"],
-    queryFn: () => fetch("/api/discoveries?limit=1000").then(res => res.json()),
+    queryFn: () => fetch("/api/discoveries").then(res => res.json()),
     refetchInterval: 30000, // Reduced from 10s to 30s
   });
 

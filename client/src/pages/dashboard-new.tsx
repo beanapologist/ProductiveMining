@@ -73,8 +73,8 @@ export default function Dashboard() {
   });
 
   const { data: discoveries = [] } = useQuery<MathematicalWork[]>({
-    queryKey: ['/api/discoveries', 'limit-50000'],
-    queryFn: () => fetch('/api/discoveries?limit=50000').then(res => res.json()),
+    queryKey: ['/api/discoveries'],
+    queryFn: () => fetch('/api/discoveries').then(res => res.json()),
     refetchInterval: 25000, // Reduced from 5s to 25s
     staleTime: 10000, // Allow some staleness
   });
