@@ -98,11 +98,13 @@ export default function AIAnalyticsPage() {
   });
 
   // Fetch Emergent Patterns
-  const { data: emergentPatterns = [], isLoading: patternsLoading } = useQuery<EmergentPattern[]>({
-    queryKey: ['/api/emergent-ai/patterns'],
-    queryFn: () => fetch('/api/emergent-ai/patterns').then(res => res.json()),
+  const { data: emergentAnalysisData, isLoading: patternsLoading } = useQuery({
+    queryKey: ['/api/emergent-ai/analysis'],
+    queryFn: () => fetch('/api/emergent-ai/analysis').then(res => res.json()),
     refetchInterval: 20000,
   });
+
+  const emergentPatterns = emergentAnalysisData?.patterns || [];
 
   // Recursive Enhancement Mutation
   const recursiveEnhancementMutation = useMutation({
@@ -476,8 +478,8 @@ export default function AIAnalyticsPage() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {emergentAnalysis.data?.patterns && emergentAnalysis.data.patterns.length > 0 ? 
-                  emergentAnalysis.data.patterns.slice(0, 6).map((pattern: any, index: number) => (
+                {emergentPatterns && emergentPatterns.length > 0 ? 
+                  emergentPatterns.slice(0, 6).map((pattern: any, index: number) => (
                   <div key={pattern.id || index} className="p-4 bg-slate-700 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium text-slate-200 capitalize">

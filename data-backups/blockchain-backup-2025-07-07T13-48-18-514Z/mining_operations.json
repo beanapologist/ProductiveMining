@@ -1,0 +1,557 @@
+[
+  {
+    "id": 6889,
+    "operationType": "prime_gap_analysis",
+    "minerId": "balanced_miner_prime_gap_analysis_1751896098628_1",
+    "startTime": "2025-07-07T13:48:18.628Z",
+    "estimatedCompletion": "2025-07-07T13:51:18.628Z",
+    "progress": 0.30409437,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "prime_gap_analysis"
+    },
+    "difficulty": 98,
+    "status": "active"
+  },
+  {
+    "id": 6888,
+    "operationType": "prime_gap_analysis",
+    "minerId": "balanced_miner_prime_gap_analysis_1751896098429_0",
+    "startTime": "2025-07-07T13:48:18.429Z",
+    "estimatedCompletion": "2025-07-07T13:51:18.429Z",
+    "progress": 0.2034192,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "prime_gap_analysis"
+    },
+    "difficulty": 82,
+    "status": "active"
+  },
+  {
+    "id": 6887,
+    "operationType": "fibonacci_patterns",
+    "minerId": "balanced_miner_fibonacci_patterns_1751896097624_1",
+    "startTime": "2025-07-07T13:48:17.624Z",
+    "estimatedCompletion": "2025-07-07T13:51:17.624Z",
+    "progress": 0.27609,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "fibonacci_patterns"
+    },
+    "difficulty": 64,
+    "status": "active"
+  },
+  {
+    "id": 6886,
+    "operationType": "fibonacci_patterns",
+    "minerId": "balanced_miner_fibonacci_patterns_1751896097253_0",
+    "startTime": "2025-07-07T13:48:17.253Z",
+    "estimatedCompletion": "2025-07-07T13:51:17.253Z",
+    "progress": 0.3941707,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "fibonacci_patterns"
+    },
+    "difficulty": 78,
+    "status": "active"
+  },
+  {
+    "id": 6885,
+    "operationType": "collatz_verification",
+    "minerId": "balanced_miner_collatz_verification_1751896096870_1",
+    "startTime": "2025-07-07T13:48:16.870Z",
+    "estimatedCompletion": "2025-07-07T13:51:16.870Z",
+    "progress": 0.32204,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "collatz_verification"
+    },
+    "difficulty": 87,
+    "status": "active"
+  },
+  {
+    "id": 6884,
+    "operationType": "collatz_verification",
+    "minerId": "balanced_miner_collatz_verification_1751896096793_0",
+    "startTime": "2025-07-07T13:48:16.793Z",
+    "estimatedCompletion": "2025-07-07T13:51:16.793Z",
+    "progress": 0.21196242,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "collatz_verification"
+    },
+    "difficulty": 88,
+    "status": "active"
+  },
+  {
+    "id": 6883,
+    "operationType": "prime_pattern",
+    "minerId": "balanced_miner_prime_pattern_1751896096706_1",
+    "startTime": "2025-07-07T13:48:16.706Z",
+    "estimatedCompletion": "2025-07-07T13:51:16.706Z",
+    "progress": 0.35742122,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "prime_pattern"
+    },
+    "difficulty": 87,
+    "status": "active"
+  },
+  {
+    "id": 6882,
+    "operationType": "prime_pattern",
+    "minerId": "balanced_miner_prime_pattern_1751896096569_0",
+    "startTime": "2025-07-07T13:48:16.569Z",
+    "estimatedCompletion": "2025-07-07T13:51:16.569Z",
+    "progress": 0.17463814,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "prime_pattern"
+    },
+    "difficulty": 85,
+    "status": "active"
+  },
+  {
+    "id": 6881,
+    "operationType": "lattice_crypto",
+    "minerId": "balanced_miner_lattice_crypto_1751896096496_1",
+    "startTime": "2025-07-07T13:48:16.496Z",
+    "estimatedCompletion": "2025-07-07T13:51:16.496Z",
+    "progress": 0.30434605,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "lattice_crypto"
+    },
+    "difficulty": 80,
+    "status": "active"
+  },
+  {
+    "id": 6880,
+    "operationType": "lattice_crypto",
+    "minerId": "balanced_miner_lattice_crypto_1751896096428_0",
+    "startTime": "2025-07-07T13:48:16.428Z",
+    "estimatedCompletion": "2025-07-07T13:51:16.428Z",
+    "progress": 0.44292587,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "lattice_crypto"
+    },
+    "difficulty": 61,
+    "status": "active"
+  },
+  {
+    "id": 6879,
+    "operationType": "goldbach_verification",
+    "minerId": "balanced_miner_goldbach_verification_1751896096361_1",
+    "startTime": "2025-07-07T13:48:16.361Z",
+    "estimatedCompletion": "2025-07-07T13:51:16.361Z",
+    "progress": 0.28336757,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "goldbach_verification"
+    },
+    "difficulty": 92,
+    "status": "active"
+  },
+  {
+    "id": 6878,
+    "operationType": "goldbach_verification",
+    "minerId": "balanced_miner_goldbach_verification_1751896096295_0",
+    "startTime": "2025-07-07T13:48:16.295Z",
+    "estimatedCompletion": "2025-07-07T13:51:16.295Z",
+    "progress": 0.28817123,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "goldbach_verification"
+    },
+    "difficulty": 83,
+    "status": "active"
+  },
+  {
+    "id": 6877,
+    "operationType": "elliptic_curve_crypto",
+    "minerId": "balanced_miner_elliptic_curve_crypto_1751896096222_1",
+    "startTime": "2025-07-07T13:48:16.222Z",
+    "estimatedCompletion": "2025-07-07T13:51:16.222Z",
+    "progress": 0.4651472,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "elliptic_curve_crypto"
+    },
+    "difficulty": 88,
+    "status": "active"
+  },
+  {
+    "id": 6876,
+    "operationType": "elliptic_curve_crypto",
+    "minerId": "balanced_miner_elliptic_curve_crypto_1751896096152_0",
+    "startTime": "2025-07-07T13:48:16.152Z",
+    "estimatedCompletion": "2025-07-07T13:51:16.152Z",
+    "progress": 0.31356117,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "elliptic_curve_crypto"
+    },
+    "difficulty": 68,
+    "status": "active"
+  },
+  {
+    "id": 6875,
+    "operationType": "birch_swinnerton_dyer",
+    "minerId": "balanced_miner_birch_swinnerton_dyer_1751896096084_1",
+    "startTime": "2025-07-07T13:48:16.084Z",
+    "estimatedCompletion": "2025-07-07T13:51:16.084Z",
+    "progress": 0.28775766,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "birch_swinnerton_dyer"
+    },
+    "difficulty": 92,
+    "status": "active"
+  },
+  {
+    "id": 6874,
+    "operationType": "birch_swinnerton_dyer",
+    "minerId": "balanced_miner_birch_swinnerton_dyer_1751896096018_0",
+    "startTime": "2025-07-07T13:48:16.018Z",
+    "estimatedCompletion": "2025-07-07T13:51:16.018Z",
+    "progress": 0.13622758,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "birch_swinnerton_dyer"
+    },
+    "difficulty": 95,
+    "status": "active"
+  },
+  {
+    "id": 6873,
+    "operationType": "poincare_conjecture",
+    "minerId": "balanced_miner_poincare_conjecture_1751896095953_1",
+    "startTime": "2025-07-07T13:48:15.953Z",
+    "estimatedCompletion": "2025-07-07T13:51:15.953Z",
+    "progress": 0.16426812,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "poincare_conjecture"
+    },
+    "difficulty": 61,
+    "status": "active"
+  },
+  {
+    "id": 6872,
+    "operationType": "poincare_conjecture",
+    "minerId": "balanced_miner_poincare_conjecture_1751896095879_0",
+    "startTime": "2025-07-07T13:48:15.880Z",
+    "estimatedCompletion": "2025-07-07T13:51:15.880Z",
+    "progress": 0.16888197,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "poincare_conjecture"
+    },
+    "difficulty": 61,
+    "status": "active"
+  },
+  {
+    "id": 6871,
+    "operationType": "navier_stokes",
+    "minerId": "balanced_miner_navier_stokes_1751896095633_1",
+    "startTime": "2025-07-07T13:48:15.633Z",
+    "estimatedCompletion": "2025-07-07T13:51:15.633Z",
+    "progress": 0.097050905,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "navier_stokes"
+    },
+    "difficulty": 98,
+    "status": "active"
+  },
+  {
+    "id": 6870,
+    "operationType": "navier_stokes",
+    "minerId": "balanced_miner_navier_stokes_1751896095480_0",
+    "startTime": "2025-07-07T13:48:15.480Z",
+    "estimatedCompletion": "2025-07-07T13:51:15.480Z",
+    "progress": 0.27115378,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "navier_stokes"
+    },
+    "difficulty": 92,
+    "status": "active"
+  },
+  {
+    "id": 6869,
+    "operationType": "yang_mills",
+    "minerId": "balanced_miner_yang_mills_1751896095407_1",
+    "startTime": "2025-07-07T13:48:15.407Z",
+    "estimatedCompletion": "2025-07-07T13:51:15.407Z",
+    "progress": 0.22337474,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "yang_mills"
+    },
+    "difficulty": 67,
+    "status": "active"
+  },
+  {
+    "id": 6868,
+    "operationType": "yang_mills",
+    "minerId": "balanced_miner_yang_mills_1751896095341_0",
+    "startTime": "2025-07-07T13:48:15.341Z",
+    "estimatedCompletion": "2025-07-07T13:51:15.341Z",
+    "progress": 0.28031915,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "yang_mills"
+    },
+    "difficulty": 91,
+    "status": "active"
+  },
+  {
+    "id": 6867,
+    "operationType": "riemann_zero",
+    "minerId": "balanced_miner_riemann_zero_1751896095275_1",
+    "startTime": "2025-07-07T13:48:15.275Z",
+    "estimatedCompletion": "2025-07-07T13:51:15.275Z",
+    "progress": 0.30719677,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "riemann_zero"
+    },
+    "difficulty": 64,
+    "status": "active"
+  },
+  {
+    "id": 6866,
+    "operationType": "riemann_zero",
+    "minerId": "balanced_miner_riemann_zero_1751896095204_0",
+    "startTime": "2025-07-07T13:48:15.204Z",
+    "estimatedCompletion": "2025-07-07T13:51:15.204Z",
+    "progress": 0.3367637,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "riemann_zero"
+    },
+    "difficulty": 87,
+    "status": "active"
+  },
+  {
+    "id": 6865,
+    "operationType": "goldbach_verification",
+    "minerId": "continuous_miner_1751896094876_4",
+    "startTime": "2025-07-07T13:48:14.876Z",
+    "estimatedCompletion": "2025-07-07T13:50:54.876Z",
+    "progress": 0.18,
+    "currentResult": {
+      "stage": "computation_1",
+      "status": "computing",
+      "progress": 18,
+      "workType": "goldbach_verification"
+    },
+    "difficulty": 76,
+    "status": "active"
+  },
+  {
+    "id": 6864,
+    "operationType": "goldbach_verification",
+    "minerId": "continuous_miner_1751896094810_3",
+    "startTime": "2025-07-07T13:48:14.810Z",
+    "estimatedCompletion": "2025-07-07T13:50:44.810Z",
+    "progress": 0.18,
+    "currentResult": {
+      "stage": "computation_1",
+      "status": "computing",
+      "progress": 18,
+      "workType": "goldbach_verification"
+    },
+    "difficulty": 70,
+    "status": "active"
+  },
+  {
+    "id": 6863,
+    "operationType": "poincare_conjecture",
+    "minerId": "continuous_miner_1751896094739_2",
+    "startTime": "2025-07-07T13:48:14.739Z",
+    "estimatedCompletion": "2025-07-07T13:50:34.739Z",
+    "progress": 0.22687297,
+    "currentResult": {
+      "stage": "computation_1",
+      "status": "computing",
+      "progress": 18,
+      "workType": "poincare_conjecture"
+    },
+    "difficulty": 53,
+    "status": "active"
+  },
+  {
+    "id": 6862,
+    "operationType": "navier_stokes",
+    "minerId": "continuous_miner_1751896094671_1",
+    "startTime": "2025-07-07T13:48:14.671Z",
+    "estimatedCompletion": "2025-07-07T13:50:24.671Z",
+    "progress": 0.26114315,
+    "currentResult": {
+      "stage": "computation_1",
+      "status": "computing",
+      "progress": 18,
+      "workType": "navier_stokes"
+    },
+    "difficulty": 47,
+    "status": "active"
+  },
+  {
+    "id": 6861,
+    "operationType": "goldbach_verification",
+    "minerId": "continuous_miner_1751896094603_0",
+    "startTime": "2025-07-07T13:48:14.603Z",
+    "estimatedCompletion": "2025-07-07T13:50:14.603Z",
+    "progress": 0.22282436,
+    "currentResult": {
+      "stage": "computation_2",
+      "status": "computing",
+      "progress": 26,
+      "workType": "goldbach_verification"
+    },
+    "difficulty": 71,
+    "status": "active"
+  },
+  {
+    "id": 6859,
+    "operationType": "prime_gap_analysis",
+    "minerId": "balanced_miner_prime_gap_analysis_1751896029476_0",
+    "startTime": "2025-07-07T13:47:09.476Z",
+    "estimatedCompletion": "2025-07-07T13:50:09.476Z",
+    "progress": 0.88988155,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "prime_gap_analysis"
+    },
+    "difficulty": 77,
+    "status": "active"
+  },
+  {
+    "id": 6858,
+    "operationType": "fibonacci_patterns",
+    "minerId": "balanced_miner_fibonacci_patterns_1751896028739_1",
+    "startTime": "2025-07-07T13:47:08.739Z",
+    "estimatedCompletion": "2025-07-07T13:50:08.739Z",
+    "progress": 0.70836425,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "fibonacci_patterns"
+    },
+    "difficulty": 99,
+    "status": "active"
+  },
+  {
+    "id": 6853,
+    "operationType": "prime_pattern",
+    "minerId": "balanced_miner_prime_pattern_1751896025872_0",
+    "startTime": "2025-07-07T13:47:05.872Z",
+    "estimatedCompletion": "2025-07-07T13:50:05.872Z",
+    "progress": 0.97185755,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "prime_pattern"
+    },
+    "difficulty": 99,
+    "status": "active"
+  },
+  {
+    "id": 6850,
+    "operationType": "goldbach_verification",
+    "minerId": "balanced_miner_goldbach_verification_1751896024051_1",
+    "startTime": "2025-07-07T13:47:04.051Z",
+    "estimatedCompletion": "2025-07-07T13:50:04.051Z",
+    "progress": 0.9838392,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "goldbach_verification"
+    },
+    "difficulty": 75,
+    "status": "active"
+  },
+  {
+    "id": 6849,
+    "operationType": "goldbach_verification",
+    "minerId": "balanced_miner_goldbach_verification_1751896023643_0",
+    "startTime": "2025-07-07T13:47:03.643Z",
+    "estimatedCompletion": "2025-07-07T13:50:03.643Z",
+    "progress": 0.9585182,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "goldbach_verification"
+    },
+    "difficulty": 74,
+    "status": "active"
+  },
+  {
+    "id": 6848,
+    "operationType": "elliptic_curve_crypto",
+    "minerId": "balanced_miner_elliptic_curve_crypto_1751896023074_1",
+    "startTime": "2025-07-07T13:47:03.074Z",
+    "estimatedCompletion": "2025-07-07T13:50:03.074Z",
+    "progress": 0.95054114,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "elliptic_curve_crypto"
+    },
+    "difficulty": 60,
+    "status": "active"
+  },
+  {
+    "id": 6844,
+    "operationType": "poincare_conjecture",
+    "minerId": "balanced_miner_poincare_conjecture_1751895887719_1",
+    "startTime": "2025-07-07T13:44:47.719Z",
+    "estimatedCompletion": "2025-07-07T13:47:47.719Z",
+    "progress": 0.89973027,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "poincare_conjecture"
+    },
+    "difficulty": 75,
+    "status": "active"
+  },
+  {
+    "id": 6843,
+    "operationType": "poincare_conjecture",
+    "minerId": "balanced_miner_poincare_conjecture_1751895869118_0",
+    "startTime": "2025-07-07T13:44:29.118Z",
+    "estimatedCompletion": "2025-07-07T13:47:29.118Z",
+    "progress": 0.70210636,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "poincare_conjecture"
+    },
+    "difficulty": 67,
+    "status": "active"
+  },
+  {
+    "id": 6842,
+    "operationType": "navier_stokes",
+    "minerId": "balanced_miner_navier_stokes_1751895838018_1",
+    "startTime": "2025-07-07T13:43:58.018Z",
+    "estimatedCompletion": "2025-07-07T13:46:58.018Z",
+    "progress": 0.86638826,
+    "currentResult": {
+      "status": "spawning",
+      "workType": "navier_stokes"
+    },
+    "difficulty": 60,
+    "status": "active"
+  },
+  {
+    "id": 6838,
+    "operationType": "riemann_zero",
+    "minerId": "balanced_miner_riemann_zero_1751895756619_1",
+    "startTime": "2025-07-07T13:42:36.619Z",
+    "estimatedCompletion": "2025-07-07T13:45:36.619Z",
+    "progress": 0.8782805,
+    "currentResult": {
+      "error": "Operation timeout"
+    },
+    "difficulty": 66,
+    "status": "active"
+  }
+]
