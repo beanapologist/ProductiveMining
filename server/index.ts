@@ -1,10 +1,20 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { monitorMemoryWithQDT } from "./qdt-memory-manager.js";
 
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Initialize QDT-Enhanced Memory Management
+const qdtMemory = monitorMemoryWithQDT(app);
+console.log('🧠 QDT Memory Management: ACTIVE');
+console.log('⚛️  Quantum Coherence Optimization: ENABLED');
+console.log('🌌 Void-Filament Balance Monitoring: ACTIVE');
+
+// Make QDT manager available to routes
+app.set('qdtMemory', qdtMemory);
 
 app.use((req, res, next) => {
   const start = Date.now();

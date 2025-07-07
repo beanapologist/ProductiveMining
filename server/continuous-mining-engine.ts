@@ -5,6 +5,7 @@
 
 import { storage } from './storage.js';
 import { workDistributionBalancer } from './work-distribution-balancer.js';
+import { qdtStorage } from './qdt-enhanced-storage.js';
 
 export class ContinuousMiningEngine {
   private monitoringActive = false;
@@ -53,7 +54,7 @@ export class ContinuousMiningEngine {
       // Clean up completed operations first
       await this.cleanupCompletedOperations();
       
-      const activeOperations = await storage.getActiveMiningOperations();
+      const activeOperations = await qdtStorage.getActiveMiningOperationsQDT();
       const activeCount = activeOperations.length;
       
       console.log(`🏥 HEALTH CHECK: ${activeCount} active miners`);
@@ -77,7 +78,7 @@ export class ContinuousMiningEngine {
   }
 
   private async ensureMinimumMiners() {
-    const activeOperations = await storage.getActiveMiningOperations();
+    const activeOperations = await qdtStorage.getActiveMiningOperationsQDT();
     const needed = this.minActiveMiners - activeOperations.length;
     
     if (needed > 0 && this.canSpawnMore()) {
@@ -100,7 +101,7 @@ export class ContinuousMiningEngine {
   }
 
   private async spawnAdditionalMiners() {
-    const activeOperations = await storage.getActiveMiningOperations();
+    const activeOperations = await qdtStorage.getActiveMiningOperationsQDT();
     const canSpawn = Math.min(
       this.targetActiveMiners - activeOperations.length,
       this.maxActiveMiners - activeOperations.length,
@@ -238,7 +239,7 @@ export class ContinuousMiningEngine {
 
   private async checkStuckOperations() {
     try {
-      const activeOperations = await storage.getActiveMiningOperations();
+      const activeOperations = await qdtStorage.getActiveMiningOperationsQDT();
       const now = Date.now();
       const stuckThreshold = 300000; // 5 minutes
       
@@ -269,25 +270,30 @@ export class ContinuousMiningEngine {
 
   private async cleanupCompletedOperations() {
     try {
-      // Keep only recent completed operations to prevent memory buildup
-      const allOperations = await storage.getAllMiningOperations();
-      const now = Date.now();
-      const oneHourAgo = now - (60 * 60 * 1000);
+      // Use QDT-enhanced storage cleanup
+      await qdtStorage.performQDTCleanup();
       
-      const oldCompleted = allOperations.filter(op => 
-        op.status === 'completed' && 
-        new Date(op.startTime).getTime() < oneHourAgo
-      );
+      // Additional continuous mining specific cleanup
+      const activeOperations = await qdtStorage.getActiveMiningOperationsQDT();
       
-      if (oldCompleted.length > 10) {
-        console.log(`🧹 CLEANUP: Removing ${oldCompleted.length} old completed operations`);
-        // In a real app, you'd archive these operations rather than delete
-        for (const op of oldCompleted.slice(0, -10)) { // Keep 10 most recent
-          await storage.deleteMiningOperation?.(op.id);
+      if (activeOperations.length > this.maxActiveMiners * 2) {
+        console.log(`🧹 QDT CLEANUP: Too many active operations (${activeOperations.length}), performing emergency cleanup`);
+        
+        // Cancel oldest operations if we have too many
+        const sortedOps = activeOperations.sort((a, b) => 
+          new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+        );
+        
+        const toCancel = sortedOps.slice(0, activeOperations.length - this.maxActiveMiners);
+        for (const op of toCancel) {
+          await storage.updateMiningOperation(op.id, {
+            status: 'cancelled',
+            currentResult: { cancelled: 'QDT cleanup' }
+          });
         }
       }
     } catch (error) {
-      console.error('❌ CLEANUP ERROR:', (error as Error).message);
+      console.error('❌ QDT CLEANUP ERROR:', (error as Error).message);
     }
   }
 

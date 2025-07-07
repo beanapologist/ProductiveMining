@@ -16,6 +16,8 @@ import { adaptiveLearningEngine } from "./adaptive-learning-engine";
 import { hybridMathematicalSystem } from "./hybrid-mathematical-system";
 import { mathMinerEngine } from "./math-miner-engine";
 import { aiStrategicRecommendationsEngine } from "./ai-strategic-recommendations-engine";
+import qdtRoutes, { setQDTManager } from "./qdt-api-routes.js";
+import { qdtStorage } from "./qdt-enhanced-storage.js";
 
 // Blockchain utility functions
 function generateSimpleHash(input: string): string {
@@ -76,6 +78,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Store active WebSocket connections
   const clients = new Set<WebSocket>();
+
+  // Register QDT Memory Management API routes
+  app.use('/api', qdtRoutes);
+  
+  // Set QDT manager for API routes
+  const qdtMemory = app.get('qdtMemory');
+  if (qdtMemory) {
+    setQDTManager(qdtMemory);
+  }
 
   // AI Threat Detection API endpoints
   app.get('/api/threat-detection/monitoring', async (req, res) => {
