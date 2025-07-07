@@ -5,7 +5,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useState } from "react";
-import { BarChart3, Pickaxe, Database, Brain, Info, Shield, Users, User, GraduationCap, HardDrive, Coins, Wallet, Copy, Check, FileCode, TrendingUp, Play, Beaker, Layers, Sparkles } from "lucide-react";
+import { BarChart3, Pickaxe, Database, Brain, Info, Shield, Users, User, GraduationCap, HardDrive, Coins, Wallet, Copy, Check, FileCode, TrendingUp, Play, Beaker, Layers, Sparkles, ShieldCheck } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import Dashboard from "@/pages/dashboard-new";
@@ -126,7 +126,7 @@ function Navigation() {
     { path: '/gen2-backup', title: 'Gen 2 Backup', icon: HardDrive },
 
     { path: '/security', title: 'Security', icon: Shield },
-    { path: '/fault-tolerance', title: 'Fault Tolerance', icon: Shield },
+    { path: '/fault-tolerance', title: 'Fault Tolerance', icon: ShieldCheck },
     { path: '/blocks', title: 'Explorer', icon: Layers },
     { path: '/database', title: 'Database', icon: Database },
     { path: '/wallet', title: 'Wallet', icon: Wallet },
