@@ -463,7 +463,7 @@ export default function DiscoveriesPage() {
   const { data: discoveryData, isLoading: discoveryLoading } = useQuery({
     queryKey: ['/api/discoveries'],
     queryFn: async () => {
-      const response = await fetch('/api/discoveries?limit=50000'); // Show full dataset
+      const response = await fetch('/api/discoveries?limit=10000'); // Memory-optimized dataset
       return response.json();
     },
     staleTime: 120000, // Cache for 2 minutes since it's a large dataset
