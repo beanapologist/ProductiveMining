@@ -119,6 +119,7 @@ function Navigation() {
     { path: '/discoveries', title: 'Discoveries', icon: Beaker },
     { path: '/ai', title: 'AI Analytics', icon: Brain },
     { path: '/community', title: 'Community', icon: Users },
+    { path: '/gen2-backup', title: 'Gen 2 Backup', icon: HardDrive },
     { path: '/security', title: 'Security', icon: Shield },
     { path: '/blocks', title: 'Explorer', icon: Layers },
     { path: '/database', title: 'Database', icon: Database },

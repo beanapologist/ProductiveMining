@@ -6202,6 +6202,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Gen 2 Backup System API Endpoints
+  app.post('/api/gen2/backup/create', async (req, res) => {
+    try {
+      const { dataBackupEngine } = await import('./data-backup-engine');
+      const backupPath = await dataBackupEngine.createFullBackup();
+      const stats = await dataBackupEngine.getBackupStatistics();
+      
+      res.json({
+        success: true,
+        backupPath,
+        statistics: stats,
+        message: 'Gen 2 backup created successfully'
+      });
+    } catch (error) {
+      console.error('Gen 2 backup creation failed:', error);
+      res.status(500).json({ error: 'Failed to create Gen 2 backup' });
+    }
+  });
+
+  app.get('/api/gen2/backup/list', async (req, res) => {
+    try {
+      const { dataBackupEngine } = await import('./data-backup-engine');
+      const backups = await dataBackupEngine.listBackups();
+      const stats = await dataBackupEngine.getBackupStatistics();
+      
+      res.json({
+        backups,
+        statistics: stats,
+        totalBackups: backups.length
+      });
+    } catch (error) {
+      console.error('Failed to list Gen 2 backups:', error);
+      res.status(500).json({ error: 'Failed to list backups' });
+    }
+  });
+
+  app.get('/api/gen2/backup/statistics', async (req, res) => {
+    try {
+      const { dataBackupEngine } = await import('./data-backup-engine');
+      const stats = await dataBackupEngine.getBackupStatistics();
+      
+      res.json(stats);
+    } catch (error) {
+      console.error('Failed to get backup statistics:', error);
+      res.status(500).json({ error: 'Failed to get backup statistics' });
+    }
+  });
+
+  app.post('/api/gen2/backup/recover', async (req, res) => {
+    try {
+      const { backupTimestamp, options } = req.body;
+      const { dataBackupEngine } = await import('./data-backup-engine');
+      
+      await dataBackupEngine.recoverFromBackup(backupTimestamp, options);
+      
+      res.json({
+        success: true,
+        message: `Data recovered from backup ${backupTimestamp}`
+      });
+    } catch (error) {
+      console.error('Gen 2 data recovery failed:', error);
+      res.status(500).json({ error: 'Failed to recover data from backup' });
+    }
+  });
+
+  // Initialize Gen 2 Data Backup System
+  setTimeout(async () => {
+    try {
+      const { dataBackupEngine } = await import('./data-backup-engine');
+      await dataBackupEngine.initialize();
+      await dataBackupEngine.startAutomaticBackups(6);
+      console.log('🛡️ GEN 2: Data backup system initialized with automatic 6-hour backups');
+      
+      // Create initial Gen 2 backup
+      const backupPath = await dataBackupEngine.createFullBackup();
+      console.log(`💾 GEN 2: Initial backup created at ${backupPath}`);
+    } catch (error) {
+      console.error('Failed to initialize Gen 2 backup system:', error);
+    }
+  }, 10000); // Initialize after 10 seconds
+
   return httpServer;
 }
 
