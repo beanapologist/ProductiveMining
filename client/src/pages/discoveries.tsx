@@ -138,8 +138,6 @@ export default function DiscoveriesPage() {
     
       return matchesSearch && matchesType && matchesDifficulty && matchesValue;
     })
-    
-  console.log(`🔍 filteredDiscoveries length: ${filteredDiscoveries.length}`);
     .sort((a, b) => {
       let aValue, bValue;
       
@@ -169,6 +167,8 @@ export default function DiscoveriesPage() {
         (aValue > bValue ? 1 : -1) : 
         (aValue < bValue ? 1 : -1);
     });
+
+  console.log(`🔍 filteredDiscoveries length: ${filteredDiscoveries.length}`);
 
   const formatTimestamp = (timestamp: Date | string) => {
     const date = typeof timestamp === 'string' ? new Date(timestamp) : timestamp;
