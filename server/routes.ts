@@ -80,7 +80,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // AI Threat Detection API endpoints
   app.get('/api/threat-detection/monitoring', async (req, res) => {
     try {
-      const monitoring = await threatDetectionEngine.getMonitoringData();
+      const { aiThreatDetectionEngine } = await import('./ai-threat-detection-engine');
+      const monitoring = await aiThreatDetectionEngine.getMonitoringData();
       res.json(monitoring);
     } catch (error) {
       console.error('Error getting monitoring data:', error);
