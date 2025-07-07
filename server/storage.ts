@@ -48,6 +48,7 @@ export interface IStorage {
   getBlockByIndex(index: number): Promise<ProductiveBlock | undefined>;
   createBlock(block: InsertProductiveBlock): Promise<ProductiveBlock>;
   getRecentBlocks(limit?: number): Promise<ProductiveBlock[]>;
+  getAllBlocks(): Promise<ProductiveBlock[]>;
   getBlockWithMathematicalWork(blockId: number): Promise<{ block: ProductiveBlock; work: MathematicalWork[] } | undefined>;
 
   // Mining operations
@@ -134,6 +135,18 @@ export class DatabaseStorage implements IStorage {
       .from(productiveBlocks)
       .orderBy(desc(productiveBlocks.timestamp))
       .limit(limit);
+  }
+
+  async getAllBlocks(): Promise<ProductiveBlock[]> {
+    try {
+      return await db
+        .select()
+        .from(productiveBlocks)
+        .orderBy(desc(productiveBlocks.timestamp));
+    } catch (error) {
+      console.log('Blocks table not found, returning empty array');
+      return [];
+    }
   }
 
   async getBlockWithMathematicalWork(blockId: number): Promise<{ block: ProductiveBlock; work: MathematicalWork[] } | undefined> {

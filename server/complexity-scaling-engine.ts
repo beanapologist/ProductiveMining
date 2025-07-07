@@ -88,8 +88,8 @@ export class ComplexityScalingEngine {
     const { storage } = await import('./storage.js');
     
     // Get recent blocks for analysis
-    const recentBlocks = await storage.getAllBlocks();
-    const recentDiscoveries = await storage.getMathematicalWork();
+    const recentBlocks = await storage.getRecentBlocks(100);
+    const recentDiscoveries = await storage.getRecentMathematicalWork(100);
     
     // Calculate current network state
     const currentDifficulty = recentBlocks.length > 0 

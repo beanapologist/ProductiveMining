@@ -247,11 +247,11 @@ export default function AIAnalyticsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-white">{aiMetrics?.patternRecognition.accuracy || 94}%</div>
+                <div className="text-3xl font-bold text-white">{aiMetrics?.patternRecognition?.accuracy || 94}%</div>
                 <div className="text-sm text-slate-400">Recognition accuracy</div>
                 <div className="mt-2">
                   <Progress 
-                    value={aiMetrics?.patternRecognition.accuracy || 94} 
+                    value={aiMetrics?.patternRecognition?.accuracy || 94} 
                     className="h-2" 
                   />
                 </div>
@@ -282,10 +282,10 @@ export default function AIAnalyticsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-white">{aiMetrics?.discoveryAnalysis.totalReports || analysisReports.length}</div>
+                <div className="text-3xl font-bold text-white">{aiMetrics?.discoveryAnalysis?.totalReports || analysisReports.length}</div>
                 <div className="text-sm text-slate-400">Generated reports</div>
                 <div className="text-xs text-blue-400 mt-1">
-                  {aiMetrics?.discoveryAnalysis.accuracyRate || 88}% accuracy rate
+                  {aiMetrics?.discoveryAnalysis?.accuracyRate || 88}% accuracy rate
                 </div>
               </CardContent>
             </Card>
@@ -535,7 +535,7 @@ export default function AIAnalyticsPage() {
                 <CardTitle className="text-sm font-medium text-slate-300">Accuracy Rate</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-white">{aiMetrics?.discoveryAnalysis.accuracyRate || 88}%</div>
+                <div className="text-3xl font-bold text-white">{aiMetrics?.discoveryAnalysis?.accuracyRate || 88}%</div>
                 <div className="text-sm text-slate-400">Prediction accuracy</div>
               </CardContent>
             </Card>
