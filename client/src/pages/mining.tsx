@@ -39,6 +39,7 @@ export default function MiningPage() {
 
   const { data: initialDiscoveries = [] } = useQuery({
     queryKey: ["/api/discoveries"],
+    queryFn: () => fetch('/api/discoveries?limit=100000').then(res => res.json()),
     enabled: !discoveries
   });
 

@@ -70,6 +70,7 @@ export function InstitutionalValidation() {
   // Fetch discoveries for validation submission
   const { data: discoveries, isLoading: discoveriesLoading } = useQuery({
     queryKey: ['/api/discoveries'],
+    queryFn: () => fetch('/api/discoveries?limit=100000').then(res => res.json()),
     staleTime: 2 * 60 * 1000,
   });
 

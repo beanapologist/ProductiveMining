@@ -71,6 +71,7 @@ export default function AIAnalysisPage() {
   // Get recent discoveries for analysis
   const { data: discoveries } = useQuery({
     queryKey: ['/api/discoveries'],
+    queryFn: () => fetch('/api/discoveries?limit=100000').then(res => res.json()),
   });
 
   // Auto-analyze mutation

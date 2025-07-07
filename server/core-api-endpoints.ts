@@ -19,7 +19,7 @@ export function registerCoreEndpoints(app: Express, apiRegistry: APIRegistry, br
     category: 'core',
     description: 'Get mathematical discoveries with optional pagination',
     handler: async (req: Request, res: Response) => {
-      const limit = Math.min(parseInt(req.query.limit as string) || 1000, 10000);
+      const limit = Math.min(parseInt(req.query.limit as string) || 100000, 100000);
       const offset = parseInt(req.query.offset as string) || 0;
       const workType = req.query.workType as string;
       

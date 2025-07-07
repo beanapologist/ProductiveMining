@@ -61,7 +61,7 @@ export default function DiscoveriesPage() {
   const { data: allDiscoveries = [], isLoading: discoveriesLoading, error: discoveriesError } = useQuery({
     queryKey: ["/api/discoveries", "all-discoveries"],
     queryFn: async () => {
-      const response = await fetch("/api/discoveries");
+      const response = await fetch("/api/discoveries?limit=100000");
       const data = await response.json();
       console.log(`🔍 Frontend received ${data.length} discoveries`);
       return data;
