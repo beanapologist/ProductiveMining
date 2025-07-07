@@ -18,6 +18,7 @@ import { mathMinerEngine } from "./math-miner-engine";
 import { aiStrategicRecommendationsEngine } from "./ai-strategic-recommendations-engine";
 import qdtRoutes, { setQDTManager } from "./qdt-api-routes.js";
 import { qdtStorage } from "./qdt-enhanced-storage.js";
+import { performanceOptimizer } from "./performance-optimizer";
 
 // Blockchain utility functions
 function generateSimpleHash(input: string): string {
@@ -87,6 +88,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
   if (qdtMemory) {
     setQDTManager(qdtMemory);
   }
+
+  // Performance Monitoring API
+  app.get('/api/performance/report', async (req, res) => {
+    try {
+      const report = performanceOptimizer.getPerformanceReport();
+      res.json(report);
+    } catch (error) {
+      console.error('Error getting performance report:', error);
+      res.status(500).json({ error: 'Failed to get performance report' });
+    }
+  });
+
+  app.post('/api/performance/optimize', async (req, res) => {
+    try {
+      const result = performanceOptimizer.forceOptimization();
+      res.json(result);
+    } catch (error) {
+      console.error('Error forcing optimization:', error);
+      res.status(500).json({ error: 'Failed to optimize system' });
+    }
+  });
+
+  app.get('/api/system/health', (req, res) => {
+    const memUsage = process.memoryUsage();
+    const memUsageMB = {
+      heapUsed: Math.round(memUsage.heapUsed / 1024 / 1024),
+      heapTotal: Math.round(memUsage.heapTotal / 1024 / 1024),
+      external: Math.round(memUsage.external / 1024 / 1024),
+      rss: Math.round(memUsage.rss / 1024 / 1024)
+    };
+
+    res.json({
+      status: memUsageMB.heapUsed < 300 ? 'healthy' : memUsageMB.heapUsed < 500 ? 'warning' : 'critical',
+      memory: memUsageMB,
+      uptime: Math.round(process.uptime()),
+      nodeVersion: process.version,
+      timestamp: new Date().toISOString()
+    });
+  });
 
   // AI Threat Detection API endpoints
   app.get('/api/threat-detection/monitoring', async (req, res) => {

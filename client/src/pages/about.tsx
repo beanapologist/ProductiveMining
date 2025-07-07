@@ -32,14 +32,14 @@ export default function About() {
 
   const { data: apiOverview, isLoading } = useQuery<ApiOverview>({
     queryKey: ['/api/overview'],
-    refetchInterval: 30000,
-    staleTime: 15000,
+    refetchInterval: 120000,
+    staleTime: 60000,
   });
 
   const { data: systemHealth, isLoading: healthLoading } = useQuery({
     queryKey: ['/api/health'],
-    refetchInterval: 10000,
-    staleTime: 5000,
+    refetchInterval: 60000,
+    staleTime: 30000,
   });
 
   const copyEndpoint = (endpoint: string | any) => {

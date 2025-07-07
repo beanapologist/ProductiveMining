@@ -80,28 +80,28 @@ export default function AIAnalyticsPage() {
   const { data: aiMetrics, isLoading: metricsLoading } = useQuery<AIMetrics>({
     queryKey: ['/api/ai/metrics'],
     queryFn: () => fetch('/api/ai/metrics').then(res => res.json()),
-    refetchInterval: 15000, // Reduced from 5s to 15s
+    refetchInterval: 30000, // Reduced from 15s to 30s
   });
 
   // Fetch Analysis Reports
   const { data: analysisReports = [], isLoading: reportsLoading } = useQuery<AnalysisReport[]>({
     queryKey: ['/api/ai/analysis-reports'],
     queryFn: () => fetch('/api/ai/analysis-reports').then(res => res.json()),
-    refetchInterval: 30000, // Reduced from 10s to 30s
+    refetchInterval: 60000, // Reduced from 30s to 60s
   });
 
   // Fetch Enhancement History
   const { data: enhancements = [], isLoading: enhancementsLoading } = useQuery<Enhancement[]>({
     queryKey: ['/api/recursive-enhancement/history'],
     queryFn: () => fetch('/api/recursive-enhancement/history').then(res => res.json()),
-    refetchInterval: 15000,
+    refetchInterval: 45000,
   });
 
   // Fetch Emergent Patterns
   const { data: emergentAnalysisData, isLoading: patternsLoading } = useQuery({
     queryKey: ['/api/emergent-ai/analysis'],
     queryFn: () => fetch('/api/emergent-ai/analysis').then(res => res.json()),
-    refetchInterval: 20000,
+    refetchInterval: 60000,
   });
 
   const emergentPatterns = emergentAnalysisData?.patterns || [];
@@ -110,7 +110,7 @@ export default function AIAnalyticsPage() {
   const { data: strategicRecommendations = [], isLoading: recommendationsLoading } = useQuery({
     queryKey: ['/api/ai-strategic-recommendations/insights'],
     queryFn: () => fetch('/api/ai-strategic-recommendations/insights').then(res => res.json()),
-    refetchInterval: 30000,
+    refetchInterval: 120000,
   });
 
   // Fetch Adaptive Security Status (Gen 2)

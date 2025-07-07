@@ -95,7 +95,7 @@ export default function Dashboard() {
   const { data: allDiscoveries = [] } = useQuery({
     queryKey: ["/api/discoveries"],
     queryFn: () => fetch("/api/discoveries?limit=1000").then(res => res.json()),
-    refetchInterval: 20000, // Reduced from 5s to 20s for discoveries
+    refetchInterval: 60000, // Reduced from 20s to 60s for discoveries
   });
 
   const { data: allBlocks = [] } = useQuery({
