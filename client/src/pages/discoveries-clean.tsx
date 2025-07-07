@@ -463,11 +463,11 @@ export default function DiscoveriesPage() {
   const { data: discoveryData, isLoading: discoveryLoading } = useQuery({
     queryKey: ['/api/discoveries'],
     queryFn: async () => {
-      const response = await fetch('/api/discoveries?limit=100'); // Optimized for performance
+      const response = await fetch('/api/discoveries?limit=50000'); // Show full dataset
       return response.json();
     },
-    staleTime: 30000, // Cache for 30 seconds
-    refetchInterval: 60000 // Refetch every minute
+    staleTime: 120000, // Cache for 2 minutes since it's a large dataset
+    refetchInterval: 300000 // Refetch every 5 minutes for large dataset
   });
 
   const { data: validationsData = [], isLoading: validationsLoading } = useQuery({
