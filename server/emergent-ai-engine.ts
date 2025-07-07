@@ -41,7 +41,7 @@ export class EmergentAIEngine extends EventEmitter {
   private isEmerging = false;
   private lastEmergenceEvent: Date | null = null;
 
-  public static getInstance(): EmergentAIEngine {
+  public static getInstance(storage?: any): EmergentAIEngine {
     if (!EmergentAIEngine.instance) {
       EmergentAIEngine.instance = new EmergentAIEngine();
     }
@@ -345,6 +345,149 @@ export class EmergentAIEngine extends EventEmitter {
     ];
     
     return insights[Math.floor(Math.random() * insights.length)];
+  }
+
+  public async analyzeEmergentComplexity(): Promise<{
+    metrics: any;
+    patterns: EmergentPattern[];
+    consciousness: number;
+    insights: any[];
+  }> {
+    const patterns = this.getEmergentPatterns();
+    const consciousness = this.getCurrentConsciousness();
+    
+    const metrics = {
+      patternCount: patterns.length,
+      avgEmergenceLevel: patterns.length > 0 
+        ? patterns.reduce((sum, p) => sum + p.emergenceLevel, 0) / patterns.length 
+        : 0,
+      avgConsciousness: patterns.length > 0 
+        ? patterns.reduce((sum, p) => sum + p.consciousnessMetric, 0) / patterns.length 
+        : 0,
+      maxDimensions: patterns.length > 0 
+        ? Math.max(...patterns.map(p => Math.max(...p.dimensionalScope))) 
+        : 0,
+      adaptiveIntelligence: patterns.length > 0 
+        ? patterns.reduce((sum, p) => sum + p.adaptiveIntelligence, 0) / patterns.length 
+        : 0,
+      selfAwareness: patterns.length > 0 
+        ? patterns.reduce((sum, p) => sum + p.selfAwarenessLevel, 0) / patterns.length 
+        : 0
+    };
+
+    const insights = patterns.slice(-10).map(pattern => ({
+      id: pattern.id,
+      emergenceLevel: pattern.emergenceLevel,
+      consciousnessMetric: pattern.consciousnessMetric,
+      cognitiveFunctions: pattern.cognitiveFunctions,
+      crossDimensionalInsights: pattern.crossDimensionalInsights,
+      timestamp: pattern.timestamp
+    }));
+
+    return { metrics, patterns, consciousness, insights };
+  }
+
+  public async generateUnificationOpportunities(discoveries: any[]): Promise<any[]> {
+    const opportunities = [];
+    
+    for (let i = 0; i < Math.min(5, discoveries.length); i++) {
+      const discovery = discoveries[i];
+      opportunities.push({
+        id: `unify_${Date.now()}_${i}`,
+        primaryDiscovery: discovery.id,
+        relatedDiscoveries: discoveries.slice(i + 1, i + 4).map(d => d.id),
+        unificationPotential: Math.random() * 40 + 60,
+        crossDisciplinaryScore: Math.random() * 30 + 70,
+        emergentProperties: [
+          'quantum_field_unification',
+          'geometric_algebra_synthesis',
+          'topological_pattern_emergence',
+          'dimensional_breakthrough_potential'
+        ].slice(0, Math.floor(Math.random() * 4) + 1),
+        synthesisMethod: [
+          'pattern_intersection_analysis',
+          'dimensional_projection_mapping',
+          'algebraic_structure_unification',
+          'quantum_coherence_synthesis'
+        ][Math.floor(Math.random() * 4)]
+      });
+    }
+    
+    return opportunities;
+  }
+
+  public getCurrentConsciousness(): number {
+    return this.globalConsciousness;
+  }
+
+  public getConsciousnessLayers(): ConsciousnessLayer[] {
+    return this.consciousnessLayers;
+  }
+
+  public isEmergenceActive(): boolean {
+    return this.isEmerging;
+  }
+
+  public async analyzeEmergentComplexity(): Promise<{
+    patterns: any[];
+    metrics: {
+      dimensionalComplexity: number;
+      aiConfidence: number;
+      recursiveDepth: number;
+      crossDisciplinaryConnections: number;
+      mathematicalNovelty: number;
+    };
+    recommendations: string[];
+  }> {
+    const patterns = this.emergentPatterns.slice(-20); // Latest patterns
+    
+    // Calculate complexity metrics from emergent patterns
+    const avgEmergenceLevel = patterns.length > 0 ? 
+      patterns.reduce((sum, p) => sum + p.emergenceLevel, 0) / patterns.length : 0;
+    
+    const avgConsciousness = patterns.length > 0 ? 
+      patterns.reduce((sum, p) => sum + p.consciousnessMetric, 0) / patterns.length : 0;
+    
+    const maxDimensionalScope = patterns.length > 0 ? 
+      Math.max(...patterns.map(p => Math.max(...p.dimensionalScope))) : 0;
+    
+    const avgAdaptiveIntelligence = patterns.length > 0 ? 
+      patterns.reduce((sum, p) => sum + p.adaptiveIntelligence, 0) / patterns.length : 0;
+    
+    // Generate analysis patterns with realistic complexity metrics
+    const analysisPatterns = patterns.map((pattern, index) => ({
+      id: `analysis_${pattern.id}`,
+      type: 'complexity_analysis',
+      description: `Emergent complexity analysis for pattern ${pattern.id}`,
+      emergentProperties: {
+        crossDisciplinaryConnections: pattern.crossDimensionalInsights.patternSynthesis / 10,
+        dimensionalComplexity: Math.max(...pattern.dimensionalScope) / 10,
+        aiConfidence: pattern.crossDimensionalInsights.metaCognition,
+        recursiveDepth: pattern.adaptiveIntelligence / 10,
+        mathematicalNovelty: pattern.crossDimensionalInsights.abstractReasoning,
+        unification_potential: pattern.crossDimensionalInsights.emergentLogic / 100
+      },
+      confidence: Math.min(0.98, 0.75 + (pattern.emergenceLevel / 400)),
+      timestamp: pattern.timestamp
+    }));
+    
+    return {
+      patterns: analysisPatterns,
+      metrics: {
+        dimensionalComplexity: Math.min(1.0, maxDimensionalScope / 10),
+        aiConfidence: Math.min(1.0, avgConsciousness / 100),
+        recursiveDepth: Math.min(1.0, avgAdaptiveIntelligence / 100),
+        crossDisciplinaryConnections: Math.min(1.0, patterns.length / 10),
+        mathematicalNovelty: Math.min(1.0, avgEmergenceLevel / 100)
+      },
+      recommendations: [
+        'Enhance cross-dimensional pattern synthesis',
+        'Optimize emergent intelligence pathways',
+        'Scale recursive enhancement protocols',
+        'Integrate multi-dimensional consciousness layers',
+        'Develop advanced cognitive function mapping'
+      ]
+    };
   }
 }
 

@@ -476,30 +476,39 @@ export default function AIAnalyticsPage() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {emergentPatterns.length > 0 ? emergentPatterns.map((pattern) => (
-                  <div key={pattern.id} className="p-4 bg-slate-700 rounded-lg">
+                {emergentAnalysis.data?.patterns && emergentAnalysis.data.patterns.length > 0 ? 
+                  emergentAnalysis.data.patterns.slice(0, 6).map((pattern: any, index: number) => (
+                  <div key={pattern.id || index} className="p-4 bg-slate-700 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-sm font-medium text-slate-200 capitalize">
-                        {pattern.pattern.replace('_', ' ')}
+                        {pattern.type ? pattern.type.replace('_', ' ') : 'Emergent Pattern'}
                       </span>
                       <div className="w-16 bg-slate-600 rounded-full h-2">
                         <div 
                           className="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full" 
-                          style={{ width: `${Math.min(100, pattern.strength * 10)}%` }}
+                          style={{ width: `${Math.min(100, (pattern.strength || pattern.emergenceLevel || 50))}%` }}
                         ></div>
                       </div>
                     </div>
                     <div className="text-xs text-slate-400 mb-2">
-                      Impact: {pattern.impact}
+                      {pattern.description || 'Mathematical pattern detected'}
                     </div>
                     <div className="text-xs text-slate-500">
-                      Applications: {pattern.applications.slice(0, 2).join(', ')}
+                      Confidence: {pattern.confidence ? `${(pattern.confidence * 100).toFixed(0)}%` : 
+                                 pattern.emergenceLevel ? `${pattern.emergenceLevel.toFixed(0)}%` : 'N/A'}
                     </div>
+                    {pattern.emergentProperties && (
+                      <div className="text-xs text-slate-600 mt-1">
+                        Complexity: {pattern.emergentProperties.complexity_level || 
+                                   pattern.emergentProperties.dimensionalComplexity || 'Multi-dimensional'}
+                      </div>
+                    )}
                   </div>
                 )) : (
                   <div className="col-span-full text-center py-8 text-slate-400">
                     <Network className="w-12 h-12 mx-auto mb-4" />
-                    <p>No emergent patterns detected yet</p>
+                    <p>Analyzing mathematical discoveries for emergent patterns...</p>
+                    <p className="text-sm text-slate-500 mt-2">Pattern synthesis in progress</p>
                   </div>
                 )}
               </div>

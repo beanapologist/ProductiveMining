@@ -5087,7 +5087,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { EmergentAIEngine } = await import('./emergent-ai-engine');
       const emergentAIEngine = EmergentAIEngine.getInstance(storage);
-      const analysis = await emergentAIEngine.analyzeEmergentComplexity();
+      
+      // Get recent discoveries for unification analysis
+      const discoveries = await storage.getMathematicalWork(100);
+      const opportunities = await emergentAIEngine.generateUnificationOpportunities(discoveries);
       
       const unificationPatterns = analysis.patterns.filter(p => 
         p.type === 'cross_disciplinary' && 
@@ -5132,6 +5135,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { EmergentAIEngine } = await import('./emergent-ai-engine');
       const emergentAIEngine = EmergentAIEngine.getInstance(storage);
+      
+      // Get discoveries for pattern analysis
+      const discoveries = await storage.getMathematicalWork(500);
+      await emergentAIEngine.processEmergentIntelligence(discoveries);
+      
       const analysis = await emergentAIEngine.analyzeEmergentComplexity();
       
       const trendData = {
