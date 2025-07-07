@@ -16,6 +16,7 @@ import SecurityDashboard from "@/pages/security-dashboard";
 import DataManagementPage from "@/pages/data-management";
 import AIAnalyticsPage from "@/pages/ai-analytics";
 import CommunityCollaborationPage from "@/pages/community-collaboration";
+import Gen2BackupPage from "@/pages/gen2-backup";
 
 import WalletPage from "@/pages/wallet";
 import ApiPage from "@/pages/about";
@@ -34,6 +35,7 @@ function Router() {
         <Route path="/ai-analytics" component={AIAnalyticsPage} />
         <Route path="/community" component={CommunityCollaborationPage} />
         <Route path="/collaboration" component={CommunityCollaborationPage} />
+        <Route path="/gen2-backup" component={Gen2BackupPage} />
         <Route path="/security" component={SecurityDashboard} />
         <Route path="/blocks" component={BlockExplorer} />
         <Route path="/block-explorer" component={BlockExplorer} />

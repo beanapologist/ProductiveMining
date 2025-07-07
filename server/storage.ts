@@ -380,7 +380,7 @@ export class DatabaseStorage implements IStorage {
     
     // Verify cryptographic hash integrity
     const { cryptoEngine } = await import('./crypto-engine');
-    const activityHash = cryptoEngine.generateSecurityHash([record.activityData]);
+    const activityHash = cryptoEngine.generateSecurityHash([record.activityData as any]);
     
     return activityHash.hash === record.activityHash;
   }

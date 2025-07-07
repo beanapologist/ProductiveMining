@@ -242,7 +242,7 @@ export class ComplexityScalingEngine {
     const workTypePerformance: Record<string, number> = {};
     const workTypeCounts: Record<string, number> = {};
     
-    discoveries.forEach(d => {
+    discoveries?.forEach(d => {
       if (!workTypePerformance[d.workType]) {
         workTypePerformance[d.workType] = 0;
         workTypeCounts[d.workType] = 0;
