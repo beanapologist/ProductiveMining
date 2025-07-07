@@ -90,8 +90,9 @@ jobs:
           curl -f http://localhost:5000/api/system/health || exit 1
     
     - name: Notify deployment status
-      if: always() && secrets.SLACK_WEBHOOK != ''
+      if: always()
       uses: 8398a7/action-slack@v3
+      continue-on-error: true
       with:
         status: ${{ job.status }}
         channel: '#deployments'
