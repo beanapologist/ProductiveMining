@@ -322,7 +322,7 @@ export class RecursiveEnhancementEngine {
       // Get recent discoveries for analysis
       const { storage } = await import('./storage.js');
       const discoveries = await storage.getMathematicalWork();
-      const recentDiscoveries = discoveries.slice(-200); // Last 200 discoveries
+      const recentDiscoveries = discoveries ? discoveries.slice(-200) : []; // Last 200 discoveries
       
       // Analyze current network performance
       const performanceMetrics = await this.analyzeQuantumNetworkPerformance(recentDiscoveries);
@@ -501,7 +501,7 @@ export class RecursiveEnhancementEngine {
     console.log('🧬 RECURSIVE ENGINE: Starting enhancement cycle...');
 
     try {
-      const discoveries = await database.getAllDiscoveries();
+      const discoveries = await storage.getMathematicalWork(1000);
       const currentComplexity = await this.getCurrentComplexity();
       
       let enhancementsApplied = 0;

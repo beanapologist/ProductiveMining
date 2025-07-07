@@ -360,7 +360,7 @@ export class AdaptiveSecurityEngine {
   private async getEmergentAIFindings(): Promise<any> {
     try {
       // Get emergent patterns and metrics
-      const emergentMetrics = await emergentAIEngine.getMetrics();
+      const emergentMetrics = await emergentAIEngine.getAIFindings();
       return emergentMetrics;
     } catch (error) {
       console.error('⚠️ ADAPTIVE SECURITY: Could not fetch emergent AI findings:', error);

@@ -64,14 +64,16 @@ export class WorkDistributionBalancer {
     try {
       // Get work type distribution from database
       const discoveries = await storage.getMathematicalWork(50000); // Large sample
-      const totalCount = discoveries.length;
+      const totalCount = discoveries?.length || 0;
       
       // Count occurrences of each work type
       const workTypeCounts: Record<string, number> = {};
-      discoveries.forEach(discovery => {
-        const workType = discovery.workType;
-        workTypeCounts[workType] = (workTypeCounts[workType] || 0) + 1;
-      });
+      if (discoveries && discoveries.length > 0) {
+        discoveries.forEach(discovery => {
+          const workType = discovery.workType;
+          workTypeCounts[workType] = (workTypeCounts[workType] || 0) + 1;
+        });
+      }
 
       // Calculate statistics for each work type
       const stats: WorkTypeStats[] = Object.entries(this.targetDistribution).map(([workType, targetPercentage]) => {

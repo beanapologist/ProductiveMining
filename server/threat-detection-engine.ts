@@ -102,9 +102,11 @@ class ThreatDetectionEngine {
    * Continuous threat scanning of the network
    */
   async performThreatScan(): Promise<ThreatAlert[]> {
-    const discoveries = await database.getAllDiscoveries();
-    const blocks = await database.getAllBlocks();
-    const validations = await database.getAllValidations();
+    const { storage } = await import('./storage.js');
+    
+    const discoveries = await storage.getMathematicalWork();
+    const blocks = await storage.getAllBlocks();
+    const validations = await storage.getAllValidations();
 
     const threats: ThreatAlert[] = [];
 

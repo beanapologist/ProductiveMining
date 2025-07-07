@@ -85,11 +85,11 @@ export class ComplexityScalingEngine {
    * Collect comprehensive network performance metrics
    */
   private async collectNetworkMetrics(): Promise<NetworkMetrics> {
-    const { database } = await import('./database');
+    const { storage } = await import('./storage.js');
     
     // Get recent blocks for analysis
-    const recentBlocks = await database.getAllBlocks();
-    const recentDiscoveries = await database.getAllDiscoveries();
+    const recentBlocks = await storage.getAllBlocks();
+    const recentDiscoveries = await storage.getMathematicalWork();
     
     // Calculate current network state
     const currentDifficulty = recentBlocks.length > 0 
@@ -236,8 +236,8 @@ export class ComplexityScalingEngine {
    * Analyze performance by mathematical work type
    */
   private async analyzeWorkTypePerformance(): Promise<Record<string, number>> {
-    const { database } = await import('./database');
-    const discoveries = await database.getAllDiscoveries();
+    const { storage } = await import('./storage.js');
+    const discoveries = await storage.getMathematicalWork();
     
     const workTypePerformance: Record<string, number> = {};
     const workTypeCounts: Record<string, number> = {};

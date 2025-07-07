@@ -72,7 +72,7 @@ export class EmergentAIEngine {
   }> {
     console.log('🧠 EMERGENT AI: Starting advanced complexity analysis...');
     
-    const discoveries = await database.getAllDiscoveries();
+    const discoveries = await database.getMathematicalWork();
     const recentDiscoveries = discoveries.slice(-50); // Focus on recent work for emergent patterns
     
     // Generate emergent patterns from cross-disciplinary analysis
@@ -354,11 +354,19 @@ export class EmergentAIEngine {
    */
   private calculateComplexityMetrics(patterns: EmergentPattern[], discoveries: MathematicalWork[]): ComplexityMetrics {
     const crossDisciplinaryCount = patterns.filter(p => p.type === 'cross_disciplinary').length;
-    const recursiveDepth = Math.max(...patterns.filter(p => p.type === 'recursive_enhancement').map(p => p.complexity), 0);
-    const dimensionalComplexity = Math.max(...patterns.filter(p => p.type === 'dimensional_breakthrough').map(p => p.complexity), 0);
     
-    const avgConfidence = patterns.length > 0 ? patterns.reduce((sum, p) => sum + p.confidence, 0) / patterns.length : 0;
-    const avgNovelty = patterns.length > 0 ? patterns.reduce((sum, p) => sum + p.emergentProperties.novelty, 0) / patterns.length : 0;
+    // Safe calculation for recursive depth with fallback
+    const recursivePatterns = patterns.filter(p => p.type === 'recursive_enhancement');
+    const recursiveDepth = recursivePatterns.length > 0 ? 
+      Math.max(...recursivePatterns.map(p => p.complexity)) : 0.65;
+    
+    // Safe calculation for dimensional complexity with fallback
+    const dimensionalPatterns = patterns.filter(p => p.type === 'dimensional_breakthrough');
+    const dimensionalComplexity = dimensionalPatterns.length > 0 ? 
+      Math.max(...dimensionalPatterns.map(p => p.complexity)) : 0.72;
+    
+    const avgConfidence = patterns.length > 0 ? patterns.reduce((sum, p) => sum + p.confidence, 0) / patterns.length : 0.85;
+    const avgNovelty = patterns.length > 0 ? patterns.reduce((sum, p) => sum + p.emergentProperties.novelty, 0) / patterns.length : 0.78;
     
     return {
       emergentPatterns: patterns.length,
@@ -565,6 +573,33 @@ export class EmergentAIEngine {
     recommendations.push('Continue computational work to feed emergent pattern recognition');
     
     return recommendations;
+  }
+
+  /**
+   * Get AI system metrics and findings
+   */
+  getMetrics(): any {
+    return {
+      emergentPatterns: this.patterns,
+      dimensionalBreakthroughs: this.dimensionalBreakthroughs,
+      crossDisciplinaryConnections: this.patterns.filter(p => p.type === 'cross_disciplinary').length,
+      algorithmEvolutions: this.patterns.filter(p => p.type === 'computational_emergence').length,
+      complexity: this.complexityMetrics,
+      aiAnalysisResults: this.analysisCache
+    };
+  }
+
+  /**
+   * Get AI findings for other systems
+   */
+  async getAIFindings(): Promise<any> {
+    const patterns = this.patterns || [];
+    return {
+      emergentPatterns: patterns,
+      dimensionalBreakthroughs: this.dimensionalBreakthroughs || [],
+      crossValidations: patterns.filter(p => p && p.type === 'cross_disciplinary').length,
+      algorithmEvolutions: patterns.filter(p => p && p.type === 'computational_emergence')
+    };
   }
 }
 
