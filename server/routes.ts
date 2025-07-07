@@ -65,11 +65,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const { continuousMiningEngine } = await import('./continuous-mining-engine');
   const { adaptiveLearningEngine } = await import('./adaptive-learning-engine');
   
-  // Start continuous mining monitoring and adaptive learning
-  setTimeout(() => {
-    continuousMiningEngine.startContinuousMonitoring();
-    adaptiveLearningEngine.startAdaptiveLearning();
-  }, 5000); // Start after 5 seconds to let system initialize
+  // Start continuous mining monitoring and adaptive learning (disabled initially to prevent memory issues)
+  // setTimeout(() => {
+  //   continuousMiningEngine.startContinuousMonitoring();
+  //   adaptiveLearningEngine.startAdaptiveLearning();
+  // }, 5000); // Start after 5 seconds to let system initialize
 
   // WebSocket server for real-time updates
   const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
@@ -4134,37 +4134,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
               while (retries < maxRetries) {
                 try {
                   // Get fresh block index to handle race conditions
-                  if (retries > 0) {
-                    const freshBlocks = await storage.getAllBlocks();
-                    const freshMaxIndex = freshBlocks.length > 0 ? Math.max(...freshBlocks.map(b => b.index)) : 1;
-                    const freshBlockIndex = freshMaxIndex + 1 + retries; // Add retries to avoid conflicts
-                    
-                    newBlock = await storage.createBlock({
-                      index: freshBlockIndex,
-                      previousHash,
-                      merkleRoot,
-                      difficulty: operation.difficulty,
-                      nonce,
-                      blockHash,
-                      minerId: operation.minerId,
-                      totalScientificValue: discovery.scientificValue,
-                      energyConsumed: discovery.computationalCost / 100000,
-                      knowledgeCreated: discovery.scientificValue
-                    });
-                  } else {
-                    newBlock = await storage.createBlock({
-                      index: blockIndex,
-                      previousHash,
-                      merkleRoot,
-                      difficulty: operation.difficulty,
-                      nonce,
-                      blockHash,
-                      minerId: operation.minerId,
-                      totalScientificValue: discovery.scientificValue,
-                      energyConsumed: discovery.computationalCost / 100000,
-                      knowledgeCreated: discovery.scientificValue
-                    });
-                  }
+                  const freshBlocks = await storage.getAllBlocks();
+                  const freshMaxIndex = freshBlocks.length > 0 ? Math.max(...freshBlocks.map(b => b.index)) : 0;
+                  const freshBlockIndex = freshMaxIndex + 1 + retries; // Add retries to avoid conflicts
+                  
+                  newBlock = await storage.createBlock({
+                    index: freshBlockIndex,
+                    previousHash,
+                    merkleRoot,
+                    difficulty: operation.difficulty,
+                    nonce,
+                    blockHash,
+                    minerId: operation.minerId,
+                    totalScientificValue: discovery.scientificValue,
+                    energyConsumed: discovery.computationalCost / 100000,
+                    knowledgeCreated: discovery.scientificValue
+                  });
                   break; // Success, exit retry loop
                 } catch (blockError: any) {
                   if (blockError.code === '23505' && retries < maxRetries - 1) {

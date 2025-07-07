@@ -8,10 +8,10 @@ import { workDistributionBalancer } from './work-distribution-balancer.js';
 
 export class ContinuousMiningEngine {
   private monitoringActive = false;
-  private minActiveMiners = 15; // Minimum miners to maintain
-  private targetActiveMiners = 25; // Target number of active miners
-  private maxActiveMiners = 50; // Maximum to prevent overload
-  private healthCheckInterval = 30000; // 30 seconds
+  private minActiveMiners = 3; // Minimum miners to maintain
+  private targetActiveMiners = 8; // Target number of active miners
+  private maxActiveMiners = 12; // Maximum to prevent overload
+  private healthCheckInterval = 60000; // 60 seconds
   private spawnCooldown = 60000; // 1 minute between spawns
   private lastSpawnTime = 0;
 
