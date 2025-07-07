@@ -10,7 +10,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import Dashboard from "@/pages/dashboard-new";
 import BlockExplorer from "@/pages/block-explorer";
-import MiningPage from "@/pages/mining-simple";
+import MiningPage from "@/pages/mining";
 import DiscoveriesPage from "@/pages/discoveries-clean";
 import SecurityDashboard from "@/pages/security-dashboard";
 import DataManagementPage from "@/pages/data-management";

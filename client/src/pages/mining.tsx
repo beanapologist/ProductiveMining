@@ -411,7 +411,6 @@ export default function MiningPage() {
             </CardContent>
           </Card>
         )}
-          </div>
         </TabsContent>
 
         <TabsContent value="validators" className="mt-6">

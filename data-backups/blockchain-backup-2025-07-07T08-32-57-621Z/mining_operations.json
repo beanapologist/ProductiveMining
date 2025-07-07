@@ -1,0 +1,160 @@
+[
+  {
+    "id": 5723,
+    "operationType": "goldbach_verification",
+    "minerId": "continuous_miner_1751877172684_0",
+    "startTime": "2025-07-07T08:32:52.684Z",
+    "estimatedCompletion": "2025-07-07T08:34:52.684Z",
+    "progress": 0.21517012,
+    "currentResult": {
+      "stage": "computation_1",
+      "status": "computing",
+      "progress": 18,
+      "workType": "goldbach_verification"
+    },
+    "difficulty": 50,
+    "status": "active"
+  },
+  {
+    "id": 5722,
+    "operationType": "goldbach_verification",
+    "minerId": "continuous_miner_1751877171226_5",
+    "startTime": "2025-07-07T08:32:51.226Z",
+    "estimatedCompletion": "2025-07-07T08:35:41.226Z",
+    "progress": 0.29106,
+    "currentResult": {
+      "status": "computing",
+      "workType": "goldbach_verification"
+    },
+    "difficulty": 55,
+    "status": "active"
+  },
+  {
+    "id": 5721,
+    "operationType": "birch_swinnerton_dyer",
+    "minerId": "continuous_miner_1751877171209_4",
+    "startTime": "2025-07-07T08:32:51.209Z",
+    "estimatedCompletion": "2025-07-07T08:35:31.209Z",
+    "progress": 0.18,
+    "currentResult": {
+      "stage": "computation_1",
+      "status": "computing",
+      "progress": 18,
+      "workType": "birch_swinnerton_dyer"
+    },
+    "difficulty": 62,
+    "status": "active"
+  },
+  {
+    "id": 5720,
+    "operationType": "lattice_crypto",
+    "minerId": "continuous_miner_1751877171192_3",
+    "startTime": "2025-07-07T08:32:51.192Z",
+    "estimatedCompletion": "2025-07-07T08:35:21.192Z",
+    "progress": 0.18,
+    "currentResult": {
+      "stage": "computation_1",
+      "status": "computing",
+      "progress": 18,
+      "workType": "lattice_crypto"
+    },
+    "difficulty": 70,
+    "status": "active"
+  },
+  {
+    "id": 5719,
+    "operationType": "elliptic_curve_crypto",
+    "minerId": "continuous_miner_1751877171175_2",
+    "startTime": "2025-07-07T08:32:51.175Z",
+    "estimatedCompletion": "2025-07-07T08:35:11.175Z",
+    "progress": 0.28058776,
+    "currentResult": {
+      "stage": "computation_1",
+      "status": "computing",
+      "progress": 18,
+      "workType": "elliptic_curve_crypto"
+    },
+    "difficulty": 55,
+    "status": "active"
+  },
+  {
+    "id": 5718,
+    "operationType": "birch_swinnerton_dyer",
+    "minerId": "continuous_miner_1751877171159_1",
+    "startTime": "2025-07-07T08:32:51.159Z",
+    "estimatedCompletion": "2025-07-07T08:35:01.159Z",
+    "progress": 0.26,
+    "currentResult": {
+      "stage": "computation_2",
+      "status": "computing",
+      "progress": 26,
+      "workType": "birch_swinnerton_dyer"
+    },
+    "difficulty": 63,
+    "status": "active"
+  },
+  {
+    "id": 5717,
+    "operationType": "birch_swinnerton_dyer",
+    "minerId": "continuous_miner_1751877171142_0",
+    "startTime": "2025-07-07T08:32:51.142Z",
+    "estimatedCompletion": "2025-07-07T08:34:51.142Z",
+    "progress": 0.26,
+    "currentResult": {
+      "stage": "computation_2",
+      "status": "computing",
+      "progress": 26,
+      "workType": "birch_swinnerton_dyer"
+    },
+    "difficulty": 70,
+    "status": "active"
+  },
+  {
+    "id": 5692,
+    "operationType": "poincare_conjecture",
+    "minerId": "continuous_miner_1751877135614_4",
+    "startTime": "2025-07-07T08:32:15.614Z",
+    "estimatedCompletion": "2025-07-07T08:34:55.614Z",
+    "progress": 0.9712732,
+    "currentResult": {
+      "stage": "computation_7",
+      "status": "computing",
+      "progress": 66,
+      "workType": "poincare_conjecture"
+    },
+    "difficulty": 68,
+    "status": "active"
+  },
+  {
+    "id": 5691,
+    "operationType": "elliptic_curve_crypto",
+    "minerId": "continuous_miner_1751877135547_3",
+    "startTime": "2025-07-07T08:32:15.547Z",
+    "estimatedCompletion": "2025-07-07T08:34:45.547Z",
+    "progress": 0.9377896,
+    "currentResult": {
+      "stage": "computation_7",
+      "status": "computing",
+      "progress": 66,
+      "workType": "elliptic_curve_crypto"
+    },
+    "difficulty": 57,
+    "status": "active"
+  },
+  {
+    "id": 5690,
+    "operationType": "yang_mills",
+    "minerId": "continuous_miner_1751877135468_2",
+    "startTime": "2025-07-07T08:32:15.468Z",
+    "estimatedCompletion": "2025-07-07T08:34:35.468Z",
+    "progress": 0.8791811,
+    "currentResult": {
+      "stage": "computation_8",
+      "status": "computing",
+      "progress": 74,
+      "workType": "yang_mills"
+    },
+    "difficulty": 55,
+    "status": "active"
+  }
+]

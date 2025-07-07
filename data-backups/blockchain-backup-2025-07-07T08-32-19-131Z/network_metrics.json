@@ -1,0 +1,12 @@
+[
+  {
+    "id": 6870,
+    "timestamp": "2025-07-07T08:32:20.668Z",
+    "totalMiners": 55,
+    "blocksPerHour": 12,
+    "energyEfficiency": -600,
+    "totalScientificValue": 58185,
+    "co2Saved": 178872.61,
+    "networkHealth": 0.9545393
+  }
+]
