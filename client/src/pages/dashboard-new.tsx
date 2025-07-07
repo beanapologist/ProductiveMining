@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PerformanceSparklineGrid, CompactSparklineRow } from "@/components/performance-sparklines";
+import { NavigationBreadcrumbs, QuickActions, CrossPageStatus, PageFooter, DiscoveryLink, BlockLink, MiningOperationLink } from "@/components/cross-page-integration";
 import { 
   BarChart3, 
   Brain, 
@@ -119,7 +120,16 @@ export default function Dashboard() {
     : 0;
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="page-container">
+      <NavigationBreadcrumbs 
+        currentPage="Dashboard" 
+        relatedPages={[
+          { name: "Mining", path: "/mining", description: "View active mining operations" },
+          { name: "Discoveries", path: "/discoveries", description: "Explore mathematical breakthroughs" },
+          { name: "AI Analytics", path: "/ai", description: "Advanced AI analysis systems" }
+        ]}
+      />
+      
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold flex items-center text-white">
@@ -130,6 +140,21 @@ export default function Dashboard() {
             Real-time mathematical discovery dashboard with blockchain mining operations
           </p>
         </div>
+      </div>
+
+      <QuickActions actions={[
+        { label: "Start Mining", icon: Pickaxe, path: "/mining", variant: "default" },
+        { label: "View Latest Discoveries", icon: Brain, path: "/discoveries" },
+        { label: "Check Security", icon: Shield, path: "/security" },
+        { label: "Explore Blocks", icon: Database, path: "/blocks" }
+      ]} />
+
+      {/* Real-time Status Indicators */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <CrossPageStatus type="mining" value={activeOperations.length} trend="up" linkTo="/mining" />
+        <CrossPageStatus type="discoveries" value={discoveries.length.toLocaleString()} trend="up" linkTo="/discoveries" />
+        <CrossPageStatus type="security" value="98.7%" trend="stable" linkTo="/security" />
+        <CrossPageStatus type="network" value={allBlocks.length.toLocaleString()} trend="up" linkTo="/blocks" />
       </div>
 
       {/* Key Metrics Overview */}
@@ -311,7 +336,7 @@ export default function Dashboard() {
             ) : (
               <div className="space-y-3">
                 {recentDiscoveries.map((discovery) => (
-                  <div key={discovery.id} className="p-3 bg-slate-900/30 rounded-lg border border-purple-500/20">
+                  <div key={discovery.id} className="integration-card p-3 bg-slate-900/30 rounded-lg border border-purple-500/20">
                     <div className="flex items-center justify-between mb-2">
                       <Badge variant="outline" className="text-purple-400 border-purple-400 text-xs">
                         {getWorkTypeLabel(discovery.workType)}
@@ -323,6 +348,12 @@ export default function Dashboard() {
                     <div className="text-sm font-mono text-purple-300 mb-1">
                       {getFormulaDisplay(discovery.workType, discovery.result)}
                     </div>
+                    <DiscoveryLink 
+                      discoveryId={discovery.id} 
+                      workType={discovery.workType} 
+                      scientificValue={discovery.scientificValue || 0}
+                      showDetails={false}
+                    />
                     <div className="text-xs text-slate-400">
                       Difficulty: {discovery.difficulty} • {new Date(discovery.timestamp).toLocaleTimeString()}
                     </div>
@@ -433,6 +464,17 @@ export default function Dashboard() {
           </div>
         </CardContent>
       </Card>
+
+      <PageFooter relatedPages={[
+        { name: "Mining Operations", path: "/mining", description: "Active mathematical mining operations" },
+        { name: "Mathematical Discoveries", path: "/discoveries", description: "Scientific breakthroughs and patterns" },
+        { name: "AI Analytics", path: "/ai", description: "Advanced AI analysis and insights" },
+        { name: "Security Dashboard", path: "/security", description: "Network security and validation" },
+        { name: "Block Explorer", path: "/blocks", description: "Blockchain explorer and block details" },
+        { name: "Database Analytics", path: "/database", description: "Data management and analytics" },
+        { name: "Research Vault", path: "/wallet", description: "Portfolio and asset management" },
+        { name: "API Documentation", path: "/about", description: "Technical specifications and endpoints" }
+      ]} />
     </div>
   );
 }

@@ -48,6 +48,81 @@ body {
 }
 
 /* Modern interface components */
+
+/* Seamless Page Integration Styles */
+.page-transition {
+  transition: all 0.2s ease-in-out;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cross-page consistent layouts */
+.page-container {
+  @apply container mx-auto p-6 space-y-6 page-transition;
+}
+
+.section-header {
+  @apply mb-6;
+}
+
+.section-title {
+  @apply text-2xl font-bold text-white mb-2;
+}
+
+.section-description {
+  @apply text-gray-400 text-sm;
+}
+
+/* Unified card styling */
+.integration-card {
+  @apply bg-slate-800 border-slate-700 border rounded-lg p-6;
+  transition: all 0.2s ease-in-out;
+}
+
+.integration-card:hover {
+  @apply border-slate-600 transform scale-[1.02];
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Cross-page navigation links */
+.cross-page-link {
+  @apply text-blue-400 hover:text-blue-300 transition-colors duration-200 cursor-pointer;
+  text-decoration: none;
+}
+
+.cross-page-link:hover {
+  text-decoration: underline;
+}
+
+/* Consistent metric displays */
+.metric-display {
+  @apply bg-gradient-to-r from-slate-700 to-slate-600 p-4 rounded-lg;
+}
+
+.metric-value {
+  @apply text-2xl font-bold text-white;
+}
+
+.metric-label {
+  @apply text-sm text-gray-400 mt-1;
+}
+
+/* Status indicators */
+.status-active {
+  @apply bg-green-500 text-white px-2 py-1 rounded text-xs font-medium;
+}
+
+.status-pending {
+  @apply bg-yellow-500 text-black px-2 py-1 rounded text-xs font-medium;
+}
+
+.status-error {
+  @apply bg-red-500 text-white px-2 py-1 rounded text-xs font-medium;
+}
 .modern-container {
   max-width: 1400px;
   margin: 0 auto;
