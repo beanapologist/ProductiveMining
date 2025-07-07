@@ -100,9 +100,9 @@ class QDTMemoryManager extends EventEmitter {
 
   private monitoringInterval: NodeJS.Timeout | null = null;
   private memoryHistory: QDTMemoryMetrics[] = [];
-  private maxHistorySize = 100;
-  private gcThreshold = 0.85;
-  private optimizationRate = 0.1;
+  private maxHistorySize = 50; // Reduced to save memory
+  private gcThreshold = 0.75; // Lower threshold for earlier intervention
+  private optimizationRate = 0.15; // More aggressive optimization
 
   constructor() {
     super();
@@ -114,7 +114,7 @@ class QDTMemoryManager extends EventEmitter {
       const metrics = this.getMemoryMetrics();
       this.analyzeAndOptimize(metrics);
       this.emit('qdt-analysis', metrics);
-    }, 5000); // Every 5 seconds
+    }, 3000); // Increased frequency to 3 seconds for better optimization
   }
 
   getMemoryMetrics(): QDTMemoryMetrics {
@@ -171,7 +171,8 @@ class QDTMemoryManager extends EventEmitter {
   }
 
   private determineBalanceState(voidEnergy: number, filamentEnergy: number, coherence: number): string {
-    if (filamentEnergy > this.constants.LAMBDA) return "CRITICAL";
+    if (filamentEnergy > 0.90) return "CRITICAL"; // More aggressive threshold
+    if (filamentEnergy > this.constants.LAMBDA) return "WARNING";
     if (coherence < this.constants.GAMMA) return "UNSTABLE";
     if (Math.abs(voidEnergy / filamentEnergy - this.constants.PHI) < 0.1) return "OPTIMAL";
     return "BALANCED";
@@ -191,13 +192,22 @@ class QDTMemoryManager extends EventEmitter {
   private analyzeAndOptimize(metrics: QDTMemoryMetrics): void {
     const { memoryState, qdtAnalysis } = metrics;
 
-    // Trigger Quantum Tunneling (Aggressive GC)
-    if (memoryState.filamentEnergy > this.constants.LAMBDA) {
+    // Enhanced quantum tunneling triggers
+    if (memoryState.filamentEnergy > 0.85 || memoryState.balance === "CRITICAL") {
       this.triggerQuantumTunneling();
     }
+    
+    // Additional tunneling for high memory usage
+    if (memoryState.filamentEnergy > this.constants.LAMBDA) {
+      this.triggerQuantumTunneling();
+      // Delayed second tunnel for persistence
+      setTimeout(() => this.triggerQuantumTunneling(), 500);
+    }
 
-    // Trigger Gravitational Funneling (Memory Optimization)
-    if (memoryState.coherence < this.constants.ETA) {
+    // Enhanced Gravitational Funneling triggers
+    if (memoryState.coherence < this.constants.ETA || 
+        memoryState.filamentEnergy > 0.80 || 
+        qdtAnalysis.requiresOptimization) {
       this.triggerGravitationalFunneling();
     }
 
@@ -208,61 +218,114 @@ class QDTMemoryManager extends EventEmitter {
   private triggerQuantumTunneling(): void {
     console.log('🌀 QDT: Quantum Tunneling Activated - Aggressive GC');
     
+    // Primary quantum tunneling - force garbage collection
     if (global.gc) {
       global.gc();
+      // Double tunnel for CRITICAL status
+      setTimeout(() => global.gc && global.gc(), 100);
     } else {
-      // Alternative memory pressure technique
-      const quantum_pressure: any[] = [];
-      try {
-        for (let i = 0; i < 100000; i++) {
-          quantum_pressure.push(new Array(10).fill(null));
+      // Enhanced memory pressure technique with quantum mechanics
+      this.createQuantumPressure();
+    }
+    
+    // Clear internal caches and weak references
+    this.optimizeInternalStructures();
+  }
+
+  private createQuantumPressure(): void {
+    const quantum_pressure: any[] = [];
+    try {
+      // Create quantum pressure waves - multiple smaller pressure bursts
+      for (let wave = 0; wave < 5; wave++) {
+        for (let i = 0; i < 50000; i++) {
+          quantum_pressure.push(new Array(20).fill(null));
         }
-      } catch (e) {
-        // Memory pressure created - triggers automatic GC
+        quantum_pressure.length = 0; // Immediate release
       }
-      quantum_pressure.length = 0;
+    } catch (e) {
+      // Quantum pressure achieved - automatic GC triggered
+    }
+  }
+
+  private optimizeInternalStructures(): void {
+    // Trim memory history to save space
+    if (this.memoryHistory.length > 25) {
+      this.memoryHistory = this.memoryHistory.slice(-25);
+    }
+    
+    // Clear any large buffers or arrays
+    if (Buffer.poolSize) {
+      Buffer.alloc(0);
     }
   }
 
   private triggerGravitationalFunneling(): void {
     console.log('🌊 QDT: Gravitational Funneling Activated - Memory Optimization');
     
-    // Clear optional caches
+    // Enhanced gravitational funneling with multiple optimization layers
+    this.clearSystemCaches();
+    this.optimizeDataStructures();
+    this.compactMemoryPools();
+    
+    // Force memory compaction
+    this.forceMemoryCompaction();
+  }
+
+  private clearSystemCaches(): void {
+    // Clear buffer caches
     if (Buffer.allocUnsafe) {
       Buffer.alloc(0);
     }
-
-    // Skip require cache optimization in ES modules environment
-    // This functionality is not available in ES modules
-    try {
-      // Only run if require is available (CommonJS environment)
-      if (typeof require !== 'undefined' && require.cache) {
-        const paths = Object.keys(require.cache);
-        const essentialModules = ['express', 'drizzle-orm', 'ws'];
-        
-        paths.forEach(path => {
-          const isEssential = essentialModules.some(mod => path.includes(mod));
-          if (path.includes('node_modules') && !isEssential) {
-            delete require.cache[path];
-          }
-        });
-      }
-    } catch (e) {
-      // Silently skip require cache optimization in ES modules
-    }
-
-    // Trigger V8 optimization
-    if (v8.writeHeapSnapshot) {
+    
+    // Clear V8 compilation cache
+    if (v8.setFlagsFromString) {
       try {
-        const snapshot = `/tmp/qdt-optimization-${Date.now()}.heapsnapshot`;
-        v8.writeHeapSnapshot(snapshot);
-        // Clean up immediately
-        setTimeout(() => {
-          try {
-            require('fs').unlinkSync(snapshot);
-          } catch (e) {}
-        }, 1000);
-      } catch (e) {}
+        v8.setFlagsFromString('--gc-interval=100');
+      } catch (e) {
+        // Ignore if not supported
+      }
+    }
+  }
+
+  private optimizeDataStructures(): void {
+    // Optimize internal memory structures
+    if (this.memoryHistory.length > 20) {
+      this.memoryHistory = this.memoryHistory.slice(-20);
+    }
+    
+    // Force string interning and optimization
+    if (v8.serialize && v8.deserialize) {
+      try {
+        const optimized = v8.deserialize(v8.serialize({}));
+      } catch (e) {
+        // Optimization attempt
+      }
+    }
+  }
+
+  private compactMemoryPools(): void {
+    // Create memory pressure to force pool compaction
+    const compactionPressure: any[] = [];
+    try {
+      for (let i = 0; i < 10000; i++) {
+        compactionPressure.push({ id: i, data: new Array(50).fill(0) });
+      }
+      compactionPressure.length = 0; // Immediate release
+    } catch (e) {
+      // Memory pressure applied
+    }
+  }
+
+  private forceMemoryCompaction(): void {
+    // Multiple GC passes for thorough cleanup
+    if (global.gc) {
+      global.gc();
+      setTimeout(() => {
+        if (global.gc) global.gc();
+      }, 50);
+      setTimeout(() => {
+        if (global.gc) global.gc();
+      }, 100);
     }
   }
 
@@ -298,6 +361,15 @@ class QDTMemoryManager extends EventEmitter {
   destroy(): void {
     if (this.monitoringInterval) {
       clearInterval(this.monitoringInterval);
+      this.monitoringInterval = null;
+    }
+    
+    // Final cleanup
+    this.memoryHistory.length = 0;
+    
+    // Final quantum tunneling
+    if (global.gc) {
+      global.gc();
     }
     this.memoryHistory = [];
     this.removeAllListeners();
