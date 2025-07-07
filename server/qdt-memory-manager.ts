@@ -232,16 +232,24 @@ class QDTMemoryManager extends EventEmitter {
       Buffer.alloc(0);
     }
 
-    // Optimize require cache (keep essential modules)
-    const paths = Object.keys(require.cache);
-    const essentialModules = ['express', 'drizzle-orm', 'ws'];
-    
-    paths.forEach(path => {
-      const isEssential = essentialModules.some(mod => path.includes(mod));
-      if (path.includes('node_modules') && !isEssential) {
-        delete require.cache[path];
+    // Skip require cache optimization in ES modules environment
+    // This functionality is not available in ES modules
+    try {
+      // Only run if require is available (CommonJS environment)
+      if (typeof require !== 'undefined' && require.cache) {
+        const paths = Object.keys(require.cache);
+        const essentialModules = ['express', 'drizzle-orm', 'ws'];
+        
+        paths.forEach(path => {
+          const isEssential = essentialModules.some(mod => path.includes(mod));
+          if (path.includes('node_modules') && !isEssential) {
+            delete require.cache[path];
+          }
+        });
       }
-    });
+    } catch (e) {
+      // Silently skip require cache optimization in ES modules
+    }
 
     // Trigger V8 optimization
     if (v8.writeHeapSnapshot) {
