@@ -14,6 +14,8 @@ import MiningPage from "@/pages/mining-simple";
 import DiscoveriesPage from "@/pages/discoveries-clean";
 import SecurityDashboard from "@/pages/security-dashboard";
 import DataManagementPage from "@/pages/data-management";
+import AIAnalyticsPage from "@/pages/ai-analytics";
+import CommunityCollaborationPage from "@/pages/community-collaboration";
 
 import WalletPage from "@/pages/wallet";
 import ApiPage from "@/pages/about";
@@ -28,6 +30,10 @@ function Router() {
         <Route path="/" component={Dashboard} />
         <Route path="/mining" component={MiningPage} />
         <Route path="/discoveries" component={DiscoveriesPage} />
+        <Route path="/ai" component={AIAnalyticsPage} />
+        <Route path="/ai-analytics" component={AIAnalyticsPage} />
+        <Route path="/community" component={CommunityCollaborationPage} />
+        <Route path="/collaboration" component={CommunityCollaborationPage} />
         <Route path="/security" component={SecurityDashboard} />
         <Route path="/blocks" component={BlockExplorer} />
         <Route path="/block-explorer" component={BlockExplorer} />
@@ -108,7 +114,9 @@ function Navigation() {
   const navItems = [
     { path: '/', title: 'Dashboard', icon: BarChart3 },
     { path: '/mining', title: 'Mining', icon: Pickaxe },
-    { path: '/discoveries', title: 'Discoveries', icon: Brain },
+    { path: '/discoveries', title: 'Discoveries', icon: Beaker },
+    { path: '/ai', title: 'AI Analytics', icon: Brain },
+    { path: '/community', title: 'Community', icon: Users },
     { path: '/security', title: 'Security', icon: Shield },
     { path: '/blocks', title: 'Explorer', icon: Layers },
     { path: '/database', title: 'Database', icon: Database },
