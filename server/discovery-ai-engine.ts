@@ -1085,10 +1085,7 @@ class DiscoveryAIEngine {
     return `${Math.ceil(analysis.applications.length * 2)} expert reviewers, ${analysis.patterns.length} pattern analysts`;
   }
 
-  private estimateTimeline(analysis: DiscoveryAnalysis): string {
-    const baseTime = analysis.significance === 'breakthrough' ? 6 : analysis.significance === 'major' ? 4 : 2;
-    return `${baseTime}-${baseTime + 2} months for comprehensive validation`;
-  }
+
 }
 
 export const discoveryAIEngine = DiscoveryAIEngine.getInstance();

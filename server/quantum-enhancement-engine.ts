@@ -299,7 +299,7 @@ export class QuantumEnhancementEngine extends EventEmitter {
     this.coherenceLevel = stateQuality * timeDecay * 0.95 + Math.random() * 0.05;
     
     if (this.coherenceLevel < 0.7) {
-      this.performQuantumError correction();
+      this.performQuantumErrorCorrection();
     }
   }
 

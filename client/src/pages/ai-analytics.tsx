@@ -247,11 +247,11 @@ export default function AIAnalyticsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-white">{aiMetrics?.patternRecognition?.accuracy || 94}%</div>
+                <div className="text-3xl font-bold text-white">{(aiMetrics?.patternRecognition?.accuracy) || 94}%</div>
                 <div className="text-sm text-slate-400">Recognition accuracy</div>
                 <div className="mt-2">
                   <Progress 
-                    value={aiMetrics?.patternRecognition?.accuracy || 94} 
+                    value={(aiMetrics?.patternRecognition?.accuracy) || 94} 
                     className="h-2" 
                   />
                 </div>
