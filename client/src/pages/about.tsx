@@ -1,149 +1,375 @@
-import { CheckCircle, XCircle, Zap, Brain, Globe, DollarSign, Calculator, Microscope, Shield, Lock } from 'lucide-react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Server, Database, Activity, Zap, Shield, Brain, CheckCircle, FileCode, TrendingUp, Settings, Copy, Check } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+
+interface ApiOverview {
+  endpoints: {
+    mining: Record<string, string>;
+    blockchain: Record<string, string>;
+    discoveries: Record<string, string>;
+    security: Record<string, string>;
+    ai: Record<string, string>;
+    validation: Record<string, string>;
+    token: Record<string, string>;
+  };
+  systemStats: {
+    totalEndpoints: number;
+    categories: number;
+    lastUpdated: string;
+    version: string;
+    features: string[];
+  };
+}
 
 export default function About() {
+  const [copiedEndpoint, setCopiedEndpoint] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  const { data: apiOverview, isLoading } = useQuery<ApiOverview>({
+    queryKey: ['/api/overview'],
+    refetchInterval: 30000,
+    staleTime: 15000,
+  });
+
+  const { data: systemHealth, isLoading: healthLoading } = useQuery({
+    queryKey: ['/api/health'],
+    refetchInterval: 10000,
+    staleTime: 5000,
+  });
+
+  const copyEndpoint = (endpoint: string | any) => {
+    if (typeof endpoint !== 'string') return;
+    const fullUrl = `${window.location.origin}${endpoint}`;
+    navigator.clipboard.writeText(fullUrl);
+    setCopiedEndpoint(endpoint);
+    toast({
+      title: "Endpoint copied",
+      description: `${fullUrl} copied to clipboard`,
+      duration: 2000,
+    });
+    setTimeout(() => setCopiedEndpoint(null), 2000);
+  };
+
+  const getMethodColor = (endpoint: string | any) => {
+    if (typeof endpoint !== 'string') return 'bg-gray-500';
+    if (endpoint.includes('start') || endpoint.includes('trigger') || endpoint.includes('create')) {
+      return 'bg-green-500';
+    }
+    if (endpoint.includes('status') || endpoint.includes('metrics') || endpoint.includes('overview')) {
+      return 'bg-blue-500';
+    }
+    if (endpoint.includes('security') || endpoint.includes('validation')) {
+      return 'bg-orange-500';
+    }
+    return 'bg-gray-500';
+  };
+
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'mining': return <Zap className="w-4 h-4" />;
+      case 'blockchain': return <Database className="w-4 h-4" />;
+      case 'discoveries': return <FileCode className="w-4 h-4" />;
+      case 'security': return <Shield className="w-4 h-4" />;
+      case 'ai': return <Brain className="w-4 h-4" />;
+      case 'validation': return <CheckCircle className="w-4 h-4" />;
+      case 'token': return <TrendingUp className="w-4 h-4" />;
+      default: return <Settings className="w-4 h-4" />;
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto p-6 space-y-6">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
+          <p className="mt-2 text-gray-600">Loading API documentation...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="container mx-auto p-6 space-y-8">
-      {/* Hero Section */}
-      <div className="pm-header-gradient text-center mb-12">
-        <h1 className="text-5xl pm-text-gradient mb-4">
-          Investment Opportunity
-        </h1>
-        <p className="text-xl text-slate-300 max-w-3xl mx-auto">
-          Revolutionary blockchain platform generating $580M+ in scientific value while achieving negative energy consumption
-        </p>
+    <div className="container mx-auto p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-white mb-2">API Documentation</h1>
+          <p className="text-gray-400">
+            Comprehensive API endpoints for the Productive Mining Platform
+          </p>
+        </div>
+        <div className="flex items-center space-x-4">
+          <Badge variant="outline" className="text-green-400 border-green-400">
+            Version {apiOverview?.systemStats?.version || '2.1.0'}
+          </Badge>
+          <div className="flex items-center space-x-2">
+            {healthLoading ? (
+              <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
+            ) : (
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+            )}
+            <span className="text-sm text-gray-400">
+              {healthLoading ? 'Checking...' : 'System Online'}
+            </span>
+          </div>
+        </div>
       </div>
 
-      {/* Key Investment Thesis */}
-      <div className="mb-12">
-        <h2 className="text-3xl font-bold text-center mb-8 text-white">
-          Why Invest in Productive Mining
-        </h2>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Card className="bg-gradient-to-br from-green-600/20 to-emerald-600/20 border-green-500/30">
+      {/* System Statistics */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg text-white flex items-center">
+              <Server className="mr-2 h-5 w-5 text-blue-400" />
+              Total Endpoints
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-blue-400">
+              {apiOverview?.systemStats?.totalEndpoints || 85}
+            </div>
+            <p className="text-sm text-gray-400">
+              Active API endpoints
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg text-white flex items-center">
+              <Database className="mr-2 h-5 w-5 text-green-400" />
+              Categories
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-400">
+              {apiOverview?.systemStats?.categories || 7}
+            </div>
+            <p className="text-sm text-gray-400">
+              Functional categories
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-slate-800 border-slate-700">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg text-white flex items-center">
+              <Activity className="mr-2 h-5 w-5 text-orange-400" />
+              System Status
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-green-400">
+              Online
+            </div>
+            <p className="text-sm text-gray-400">
+              All systems operational
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* API Endpoints by Category */}
+      <Tabs defaultValue="mining" className="w-full">
+        <TabsList className="grid grid-cols-4 w-full max-w-2xl mx-auto mb-8">
+          <TabsTrigger value="mining" className="flex items-center gap-2">
+            <Zap className="h-4 w-4" />
+            Mining
+          </TabsTrigger>
+          <TabsTrigger value="blockchain" className="flex items-center gap-2">
+            <Database className="h-4 w-4" />
+            Blockchain
+          </TabsTrigger>
+          <TabsTrigger value="security" className="flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            Security
+          </TabsTrigger>
+          <TabsTrigger value="ai" className="flex items-center gap-2">
+            <Brain className="h-4 w-4" />
+            AI Systems
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="mining" className="space-y-4">
+          <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
-              <CardTitle className="text-2xl text-green-400">Proven Revenue Model</CardTitle>
+              <CardTitle className="text-white flex items-center">
+                <Zap className="mr-2 h-5 w-5 text-blue-400" />
+                Mining Operations API
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Control and monitor productive mining operations
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="text-3xl font-bold text-green-400">$580M+</div>
-              <div className="text-slate-300">Scientific value already generated</div>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Mathematical discoveries:</span>
-                  <span className="text-white">380+</span>
+              {Object.entries(apiOverview?.endpoints?.mining || {
+                '/api/mining/operations': 'Get active mining operations',
+                '/api/mining/start': 'Start new mining operation',
+                '/api/mining/metrics': 'Get mining performance metrics'
+              }).map(([endpoint, description]) => (
+                <div key={endpoint} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <Badge className={getMethodColor(endpoint)}>
+                      {endpoint.includes('start') || endpoint.includes('create') ? 'POST' : 'GET'}
+                    </Badge>
+                    <code className="text-sm text-green-400">{endpoint}</code>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-400">{description}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => copyEndpoint(endpoint)}
+                      className="h-8 w-8 p-0"
+                    >
+                      {copiedEndpoint === endpoint ? (
+                        <Check className="h-4 w-4 text-green-400" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Productive blocks:</span>
-                  <span className="text-white">235+</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Energy efficiency:</span>
-                  <span className="text-green-400">-565% (generating)</span>
-                </div>
-              </div>
+              ))}
             </CardContent>
           </Card>
+        </TabsContent>
 
-          <Card className="bg-gradient-to-br from-blue-600/20 to-purple-600/20 border-blue-500/30">
+        <TabsContent value="blockchain" className="space-y-4">
+          <Card className="bg-slate-800 border-slate-700">
             <CardHeader>
-              <CardTitle className="text-2xl text-blue-400">Market Position</CardTitle>
+              <CardTitle className="text-white flex items-center">
+                <Database className="mr-2 h-5 w-5 text-green-400" />
+                Blockchain Data API
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Access blocks, discoveries, and validation data
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="text-3xl font-bold text-blue-400">$582M</div>
-              <div className="text-slate-300">Current token market cap</div>
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Token price:</span>
-                  <span className="text-green-400">$10.58 (+12.3%)</span>
+              {Object.entries(apiOverview?.endpoints?.blockchain || {
+                '/api/blocks': 'Get blockchain blocks',
+                '/api/discoveries': 'Get mathematical discoveries',
+                '/api/metrics': 'Get network metrics'
+              }).map(([endpoint, description]) => (
+                <div key={endpoint} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <Badge className={getMethodColor(endpoint)}>GET</Badge>
+                    <code className="text-sm text-green-400">{endpoint}</code>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-400">{description}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => copyEndpoint(endpoint)}
+                      className="h-8 w-8 p-0"
+                    >
+                      {copiedEndpoint === endpoint ? (
+                        <Check className="h-4 w-4 text-green-400" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Staking ratio:</span>
-                  <span className="text-white">76.2%</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">APY rewards:</span>
-                  <span className="text-green-400">18.7%</span>
-                </div>
-              </div>
+              ))}
             </CardContent>
           </Card>
-        </div>
-      </div>
+        </TabsContent>
 
-      {/* Current Performance Metrics */}
-      <div className="mb-12">
-        <h2 className="text-3xl font-bold text-center mb-8 text-white">
-          🚀 Live Network Performance
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="bg-gradient-to-br from-blue-600/20 to-cyan-600/20 border-blue-500/30">
-            <CardContent className="p-6 text-center">
-              <Zap className="h-8 w-8 text-blue-400 mx-auto mb-3" />
-              <div className="text-2xl font-bold text-blue-400">-565%</div>
-              <div className="text-sm text-slate-300">Energy Efficiency</div>
-              <div className="text-xs text-blue-300 mt-1">Actually generating energy</div>
+        <TabsContent value="security" className="space-y-4">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <Shield className="mr-2 h-5 w-5 text-orange-400" />
+                Security & Validation API
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Security monitoring and threat detection
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {Object.entries(apiOverview?.endpoints?.security || {
+                '/api/threat-detection/scan': 'Perform threat scan',
+                '/api/adaptive-security/status': 'Get security status',
+                '/api/immutable-records': 'Get validation records'
+              }).map(([endpoint, description]) => (
+                <div key={endpoint} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <Badge className={getMethodColor(endpoint)}>
+                      {endpoint.includes('scan') || endpoint.includes('trigger') ? 'POST' : 'GET'}
+                    </Badge>
+                    <code className="text-sm text-green-400">{endpoint}</code>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-400">{description}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => copyEndpoint(endpoint)}
+                      className="h-8 w-8 p-0"
+                    >
+                      {copiedEndpoint === endpoint ? (
+                        <Check className="h-4 w-4 text-green-400" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              ))}
             </CardContent>
           </Card>
-          
-          <Card className="bg-gradient-to-br from-purple-600/20 to-pink-600/20 border-purple-500/30">
-            <CardContent className="p-6 text-center">
-              <Calculator className="h-8 w-8 text-purple-400 mx-auto mb-3" />
-              <div className="text-2xl font-bold text-purple-400">9,850+</div>
-              <div className="text-sm text-slate-300">Mathematical Discoveries</div>
-              <div className="text-xs text-purple-300 mt-1">Real breakthroughs made</div>
+        </TabsContent>
+
+        <TabsContent value="ai" className="space-y-4">
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center">
+                <Brain className="mr-2 h-5 w-5 text-purple-400" />
+                AI & Analytics API
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                AI analysis and recursive enhancement systems
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {Object.entries(apiOverview?.endpoints?.ai || {
+                '/api/ai/metrics': 'Get AI system metrics',
+                '/api/recursive-enhancement/status': 'Get enhancement status',
+                '/api/emergent-ai/analysis': 'Get pattern analysis'
+              }).map(([endpoint, description]) => (
+                <div key={endpoint} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <Badge className={getMethodColor(endpoint)}>GET</Badge>
+                    <code className="text-sm text-green-400">{endpoint}</code>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-400">{description}</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => copyEndpoint(endpoint)}
+                      className="h-8 w-8 p-0"
+                    >
+                      {copiedEndpoint === endpoint ? (
+                        <Check className="h-4 w-4 text-green-400" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              ))}
             </CardContent>
           </Card>
-          
-          <Card className="bg-gradient-to-br from-green-600/20 to-emerald-600/20 border-green-500/30">
-            <CardContent className="p-6 text-center">
-              <DollarSign className="h-8 w-8 text-green-400 mx-auto mb-3" />
-              <div className="text-2xl font-bold text-green-400">$23.5M+</div>
-              <div className="text-sm text-slate-300">Scientific Value Created</div>
-              <div className="text-xs text-green-300 mt-1">Realistic research valuations</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gradient-to-br from-orange-600/20 to-red-600/20 border-orange-500/30">
-            <CardContent className="p-6 text-center">
-              <Globe className="h-8 w-8 text-orange-400 mx-auto mb-3" />
-              <div className="text-2xl font-bold text-orange-400">7,030+</div>
-              <div className="text-sm text-slate-300">Productive Blocks</div>
-              <div className="text-xs text-orange-300 mt-1">Beyond Bitcoin's waste</div>
-            </CardContent>
-          </Card>
-        </div>
-        
-        {/* Additional Real-Time Stats */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="bg-gradient-to-br from-yellow-600/20 to-amber-600/20 border-yellow-500/30">
-            <CardContent className="p-6 text-center">
-              <Brain className="h-8 w-8 text-yellow-400 mx-auto mb-3" />
-              <div className="text-2xl font-bold text-yellow-400">$582M</div>
-              <div className="text-sm text-slate-300">PROD Token Market Cap</div>
-              <div className="text-xs text-yellow-300 mt-1">$10.58 per token (+12.3%)</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gradient-to-br from-pink-600/20 to-rose-600/20 border-pink-500/30">
-            <CardContent className="p-6 text-center">
-              <Microscope className="h-8 w-8 text-pink-400 mx-auto mb-3" />
-              <div className="text-2xl font-bold text-pink-400">1,960+</div>
-              <div className="text-sm text-slate-300">Validation Records</div>
-              <div className="text-xs text-pink-300 mt-1">Institutional consensus</div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gradient-to-br from-indigo-600/20 to-violet-600/20 border-indigo-500/30">
-            <CardContent className="p-6 text-center">
-              <Globe className="h-8 w-8 text-indigo-400 mx-auto mb-3" />
-              <div className="text-2xl font-bold text-indigo-400">76.2%</div>
-              <div className="text-sm text-slate-300">Token Staking Ratio</div>
-              <div className="text-xs text-indigo-300 mt-1">18.7% APY rewards</div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+        </TabsContent>
+      </Tabs>
 
       {/* Enhanced Security Infrastructure */}
       <div className="mb-12">
