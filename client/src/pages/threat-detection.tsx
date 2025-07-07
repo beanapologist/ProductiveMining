@@ -81,7 +81,7 @@ export default function ThreatDetectionPage() {
   // Real-time monitoring data
   const { data: monitoringData } = useQuery<MonitoringData>({
     queryKey: ['/api/threat-detection/monitoring'],
-    refetchInterval: 5000,
+    refetchInterval: 20000, // Reduced from 5s to 20s
     staleTime: 2000,
   });
 

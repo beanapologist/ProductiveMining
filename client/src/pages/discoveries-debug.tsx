@@ -25,7 +25,7 @@ export default function DiscoveriesDebug() {
       console.log(`🔍 Received ${data.length} discoveries:`, data.slice(0, 3));
       return data;
     },
-    refetchInterval: 5000,
+    refetchInterval: 25000, // Reduced from 5s to 25s
   });
 
   console.log("🔍 Component rendered with:", { 

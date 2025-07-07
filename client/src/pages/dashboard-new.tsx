@@ -63,25 +63,25 @@ export default function Dashboard() {
 
   const { data: metrics } = useQuery<NetworkMetrics>({
     queryKey: ['/api/metrics'],
-    refetchInterval: 3000,
+    refetchInterval: 15000, // Reduced from 3s to 15s
   });
 
   const { data: allBlocks = [] } = useQuery({
     queryKey: ['/api/blocks'],
     queryFn: () => fetch('/api/blocks?limit=10000').then(res => res.json()),
-    refetchInterval: 5000,
+    refetchInterval: 20000, // Reduced from 5s to 20s
   });
 
   const { data: discoveries = [] } = useQuery<MathematicalWork[]>({
     queryKey: ['/api/discoveries', 'limit-50000'],
     queryFn: () => fetch('/api/discoveries?limit=50000').then(res => res.json()),
-    refetchInterval: 5000,
-    staleTime: 0, // Force fresh data
+    refetchInterval: 25000, // Reduced from 5s to 25s
+    staleTime: 10000, // Allow some staleness
   });
 
   const { data: miningOperations = [] } = useQuery<MiningOperationData[]>({
     queryKey: ['/api/mining/operations'],
-    refetchInterval: 2000,
+    refetchInterval: 12000, // Reduced from 2s to 12s
   });
 
   const getWorkTypeLabel = (workType: string) => {

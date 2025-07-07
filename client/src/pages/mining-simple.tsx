@@ -28,7 +28,7 @@ export default function MiningPage() {
 
   const { data: currentOperations = [], isLoading } = useQuery<MiningOperation[]>({
     queryKey: ['/api/mining/operations'],
-    refetchInterval: 2000,
+    refetchInterval: 8000, // Reduced from 2s to 8s
   });
 
   const { data: currentDiscoveries = [] } = useQuery({

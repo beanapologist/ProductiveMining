@@ -80,14 +80,14 @@ export default function AIAnalyticsPage() {
   const { data: aiMetrics, isLoading: metricsLoading } = useQuery<AIMetrics>({
     queryKey: ['/api/ai/metrics'],
     queryFn: () => fetch('/api/ai/metrics').then(res => res.json()),
-    refetchInterval: 5000, // Real-time updates every 5 seconds
+    refetchInterval: 15000, // Reduced from 5s to 15s
   });
 
   // Fetch Analysis Reports
   const { data: analysisReports = [], isLoading: reportsLoading } = useQuery<AnalysisReport[]>({
     queryKey: ['/api/ai/analysis-reports'],
     queryFn: () => fetch('/api/ai/analysis-reports').then(res => res.json()),
-    refetchInterval: 10000,
+    refetchInterval: 30000, // Reduced from 10s to 30s
   });
 
   // Fetch Enhancement History

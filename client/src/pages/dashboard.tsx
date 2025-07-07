@@ -95,22 +95,22 @@ export default function Dashboard() {
   const { data: allDiscoveries = [] } = useQuery({
     queryKey: ["/api/discoveries"],
     queryFn: () => fetch("/api/discoveries?limit=1000").then(res => res.json()),
-    refetchInterval: 5000,
+    refetchInterval: 20000, // Reduced from 5s to 20s for discoveries
   });
 
   const { data: allBlocks = [] } = useQuery({
     queryKey: ["/api/blocks"],
-    refetchInterval: 5000,
+    refetchInterval: 15000, // Reduced from 5s to 15s
   });
 
   const { data: allMetrics } = useQuery({
     queryKey: ["/api/metrics"],
-    refetchInterval: 2000,
+    refetchInterval: 10000, // Reduced from 2s to 10s
   });
 
   const { data: miningOperations = [] } = useQuery<MiningOperationData[]>({
     queryKey: ["/api/mining/operations"],
-    refetchInterval: 2000,
+    refetchInterval: 10000, // Reduced from 2s to 10s
   });
 
   // Calculate computed statistics

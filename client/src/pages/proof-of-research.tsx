@@ -75,7 +75,7 @@ export default function ProofOfResearchPage() {
   // Fetch PoR status
   const { data: porStatus } = useQuery<PoRStatus>({
     queryKey: ['/api/proof-of-research/status'],
-    refetchInterval: 5000,
+    refetchInterval: 20000, // Reduced from 5s to 20s
   });
 
   // Fetch research validators
