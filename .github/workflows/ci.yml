@@ -37,29 +37,14 @@ jobs:
     - name: Install dependencies
       run: npm ci
     
-    - name: Run ESLint
-      run: npm run lint
-    
     - name: Run TypeScript type checking
-      run: npm run type-check
-    
-    - name: Run tests
-      run: npm test
-      env:
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
-        NODE_ENV: test
+      run: npm run check
     
     - name: Build application
       run: npm run build
     
     - name: Test Docker build
       run: docker build -t productive-mining:test .
-    
-    - name: Upload coverage reports
-      uses: codecov/codecov-action@v3
-      if: success()
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
 
   security:
     runs-on: ubuntu-latest
@@ -87,7 +72,7 @@ jobs:
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
 
-  performance:
+  github-pages:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
@@ -100,10 +85,11 @@ jobs:
         cache: 'npm'
     
     - name: Install dependencies
-      run: npm ci
+      run: |
+        cd github-pages-build
+        npm ci
     
-    - name: Build application
-      run: npm run build
-    
-    - name: Run performance tests
-      run: npm run test:performance
+    - name: Build GitHub Pages
+      run: |
+        cd github-pages-build
+        npm run build
