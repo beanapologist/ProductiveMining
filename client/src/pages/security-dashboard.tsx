@@ -953,306 +953,9 @@ export default function SecurityDashboard() {
         </Card>
       )}
 
-      {/* AI Discovery Security Integration */}
-      <Card className="bg-slate-800 border-slate-700">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center justify-between">
-            <div className="flex items-center">
-              <Brain className="mr-2 h-5 w-5 text-purple-400" />
-              AI Discovery Security Integration
-            </div>
-            <Button
-              onClick={() => window.open('/discoveries', '_blank')}
-              variant="outline"
-              className="border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-white"
-              size="sm"
-            >
-              <ExternalLink className="mr-2 h-4 w-4" />
-              View Analysis
-            </Button>
-          </CardTitle>
-          <CardDescription className="text-gray-400">
-            AI-powered analysis of mathematical discoveries for cryptographic security enhancement
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {loadingInsights ? (
-            <div className="flex items-center justify-center py-8">
-              <Brain className="h-6 w-6 animate-pulse text-purple-400 mr-2" />
-              <span className="text-gray-400">Loading AI insights...</span>
-            </div>
-          ) : securityInsights ? (
-            <div className="space-y-6">
-              {/* Security Discovery Metrics */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="text-center p-3 bg-purple-900/20 rounded-lg border border-purple-500/20">
-                  <div className="text-2xl font-bold text-purple-400">
-                    {securityInsights.totalSecurityDiscoveries}
-                  </div>
-                  <div className="text-sm text-gray-400">Security Discoveries</div>
-                </div>
-                <div className="text-center p-3 bg-blue-900/20 rounded-lg border border-blue-500/20">
-                  <div className="text-2xl font-bold text-blue-400">
-                    {securityInsights.quantumResistant}
-                  </div>
-                  <div className="text-sm text-gray-400">Quantum Resistant</div>
-                </div>
-                <div className="text-center p-3 bg-green-900/20 rounded-lg border border-green-500/20">
-                  <div className="text-2xl font-bold text-green-400">
-                    {securityInsights.cryptographicBreakthroughs}
-                  </div>
-                  <div className="text-sm text-gray-400">Crypto Breakthroughs</div>
-                </div>
-                <div className="text-center p-3 bg-orange-900/20 rounded-lg border border-orange-500/20">
-                  <div className="text-2xl font-bold text-orange-400">
-                    {Math.round(securityInsights.averageSecurityScore)}
-                  </div>
-                  <div className="text-sm text-gray-400">Avg Security Score</div>
-                </div>
-              </div>
 
-              {/* Top Security Enhancements */}
-              <div className="space-y-3">
-                <h4 className="text-white font-medium flex items-center">
-                  <Target className="mr-2 h-4 w-4 text-green-400" />
-                  Top Security Enhancements
-                </h4>
-                <div className="space-y-2 max-h-48 overflow-y-auto">
-                  {securityInsights.topSecurityEnhancements?.slice(0, 5).map((enhancement, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <Badge className={`${
-                          enhancement.securityImpact === 'critical' ? 'bg-red-600' :
-                          enhancement.securityImpact === 'high' ? 'bg-orange-600' :
-                          enhancement.securityImpact === 'medium' ? 'bg-yellow-600' : 'bg-gray-600'
-                        } text-white`}>
-                          {enhancement.securityImpact}
-                        </Badge>
-                        <div>
-                          <div className="text-sm text-white font-medium">
-                            {enhancement.cryptographicEnhancement}
-                          </div>
-                          <div className="text-xs text-gray-400">
-                            Discovery #{enhancement.discoveryId} • {enhancement.workType.replace('_', ' ')}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm font-bold text-blue-400">
-                          {enhancement.securityScore}
-                        </div>
-                        <div className="text-xs text-gray-400">
-                          {enhancement.aiAnalysis?.confidence.toFixed(1)}% confidence
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
 
-              {/* Emerging Threats */}
-              <div className="space-y-3">
-                <h4 className="text-white font-medium flex items-center">
-                  <AlertTriangle className="mr-2 h-4 w-4 text-red-400" />
-                  Emerging Threats & Mitigations
-                </h4>
-                <div className="space-y-2">
-                  {securityInsights.emergingThreats?.map((threat, index) => (
-                    <div key={index} className="p-3 bg-red-900/10 border border-red-500/20 rounded-lg">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-red-400 font-medium">{threat.threat}</span>
-                        <Badge variant="outline" className="text-red-400 border-red-400">
-                          {threat.relatedDiscoveries?.length || 0} discoveries
-                        </Badge>
-                      </div>
-                      <div className="text-sm text-gray-300">
-                        <span className="text-green-400 font-medium">Mitigation:</span> {threat.mitigation}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <Brain className="h-12 w-12 mx-auto mb-3 text-gray-500" />
-              <p className="text-gray-400">AI security insights will appear here</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
 
-      {/* AI-Powered Threat Detection */}
-      <Card className="bg-slate-800 border-slate-700">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center justify-between">
-            <div className="flex items-center">
-              <AlertTriangle className="mr-2 h-5 w-5 text-red-400" />
-              AI Threat Detection & Mitigation
-            </div>
-            <div className="flex space-x-2">
-              <Button
-                onClick={() => threatScanMutation.mutate()}
-                disabled={isScanning}
-                variant="outline"
-                className="border-red-400 text-red-400 hover:bg-red-400 hover:text-white"
-                size="sm"
-              >
-                {isScanning ? (
-                  <>
-                    <Search className="mr-2 h-4 w-4 animate-pulse" />
-                    Scanning...
-                  </>
-                ) : (
-                  <>
-                    <Search className="mr-2 h-4 w-4" />
-                    Threat Scan
-                  </>
-                )}
-              </Button>
-            </div>
-          </CardTitle>
-          <CardDescription className="text-gray-400">
-            Advanced AI-powered threat detection using mathematical discovery patterns
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            {/* Threat Intelligence Overview */}
-            {threatIntelligence && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="text-center p-3 bg-red-900/20 rounded-lg border border-red-500/20">
-                  <div className="text-2xl font-bold text-red-400">
-                    {threatIntelligence.threatIntelligence.globalThreats.quantumAttacks}
-                  </div>
-                  <div className="text-sm text-gray-400">Quantum Attacks</div>
-                </div>
-                <div className="text-center p-3 bg-purple-900/20 rounded-lg border border-purple-500/20">
-                  <div className="text-2xl font-bold text-purple-400">
-                    {threatIntelligence.threatIntelligence.globalThreats.aiAdversarial}
-                  </div>
-                  <div className="text-sm text-gray-400">AI Adversarial</div>
-                </div>
-                <div className="text-center p-3 bg-orange-900/20 rounded-lg border border-orange-500/20">
-                  <div className="text-2xl font-bold text-orange-400">
-                    {threatIntelligence.threatIntelligence.globalThreats.networkIntrusions}
-                  </div>
-                  <div className="text-sm text-gray-400">Network Threats</div>
-                </div>
-                <div className="text-center p-3 bg-yellow-900/20 rounded-lg border border-yellow-500/20">
-                  <div className="text-2xl font-bold text-yellow-400">
-                    {threatIntelligence.threatIntelligence.globalThreats.validationAttacks}
-                  </div>
-                  <div className="text-sm text-gray-400">Validation Attacks</div>
-                </div>
-              </div>
-            )}
-
-            {/* Active Threats */}
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="text-white font-medium flex items-center">
-                  <AlertTriangle className="mr-2 h-4 w-4 text-red-400" />
-                  Active Threats ({threats.filter(t => !t.resolved).length})
-                </h4>
-                <div className="flex space-x-2">
-                  <select
-                    value={threatFilter}
-                    onChange={(e) => setThreatFilter(e.target.value)}
-                    className="bg-slate-700 text-white border border-slate-600 rounded px-3 py-1 text-sm"
-                  >
-                    <option value="all">All Threats</option>
-                    <option value="critical">Critical Only</option>
-                    <option value="high">High Priority</option>
-                    <option value="medium">Medium Priority</option>
-                    <option value="low">Low Priority</option>
-                  </select>
-                </div>
-              </div>
-              
-              {loadingThreats ? (
-                <div className="text-center py-8">
-                  <div className="animate-pulse text-gray-400">Loading threat data...</div>
-                </div>
-              ) : threats.length > 0 ? (
-                <div className="space-y-3 max-h-64 overflow-y-auto">
-                  {threats.filter(t => !t.resolved).slice(0, 10).map((threat) => (
-                    <div key={threat.id} className="p-4 bg-slate-700/50 rounded-lg border border-slate-600">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center space-x-3">
-                          <Badge className={`${
-                            threat.severity === 'critical' ? 'bg-red-600' :
-                            threat.severity === 'high' ? 'bg-orange-600' :
-                            threat.severity === 'medium' ? 'bg-yellow-600' : 'bg-gray-600'
-                          } text-white`}>
-                            {threat.severity}
-                          </Badge>
-                          <span className="text-white font-medium">
-                            {threat.threatType.replace('_', ' ').toUpperCase()}
-                          </span>
-                          <Badge variant="outline" className="text-blue-400 border-blue-400">
-                            {threat.confidence.toFixed(1)}% confidence
-                          </Badge>
-                        </div>
-                        <Button
-                          onClick={() => handleMitigateThreat(threat.id)}
-                          disabled={mitigateThreatMutation.isPending}
-                          size="sm"
-                          className="bg-green-600 hover:bg-green-700 text-white"
-                        >
-                          {mitigateThreatMutation.isPending ? 'Deploying...' : 'Mitigate'}
-                        </Button>
-                      </div>
-                      <p className="text-sm text-gray-300 mb-2">{threat.description}</p>
-                      <div className="text-xs text-gray-400">
-                        <div>Detection: {threat.detectionMethod}</div>
-                        <div>AI Analysis: {threat.aiAnalysis.riskAssessment} (Score: {threat.aiAnalysis.anomalyScore.toFixed(2)})</div>
-                        <div>Affected Systems: {threat.affectedSystems.join(', ')}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <CheckCircle className="h-12 w-12 mx-auto mb-3 text-green-400" />
-                  <p className="text-gray-400">No active threats detected</p>
-                  <p className="text-sm text-gray-500">All systems secure</p>
-                </div>
-              )}
-            </div>
-
-            {/* AI Recommendations */}
-            {aiRecommendations.length > 0 && (
-              <div>
-                <h4 className="text-white font-medium flex items-center mb-3">
-                  <Brain className="mr-2 h-4 w-4 text-purple-400" />
-                  AI Security Recommendations
-                </h4>
-                <div className="space-y-2">
-                  {aiRecommendations.slice(0, 3).map((rec, index) => (
-                    <div key={index} className="p-3 bg-purple-900/10 border border-purple-500/20 rounded-lg">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-purple-400 font-medium text-sm">{rec.type?.replace('_', ' ')}</span>
-                        <Badge variant="outline" className={`text-xs ${
-                          rec.priority === 'high' ? 'text-red-400 border-red-400' :
-                          rec.priority === 'medium' ? 'text-yellow-400 border-yellow-400' :
-                          'text-gray-400 border-gray-400'
-                        }`}>
-                          {rec.priority} priority
-                        </Badge>
-                      </div>
-                      <div className="text-sm text-gray-300">{rec.description}</div>
-                      <div className="text-xs text-gray-400 mt-1">
-                        Confidence: {rec.confidence?.toFixed(1)}% • Related Discovery: #{rec.relatedDiscovery}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Security Comparison */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -1718,6 +1421,307 @@ export default function SecurityDashboard() {
               </CardContent>
             </Card>
           )}
+
+          {/* AI Discovery Security Integration */}
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center justify-between">
+                <div className="flex items-center">
+                  <Brain className="mr-2 h-5 w-5 text-purple-400" />
+                  AI Discovery Security Integration
+                </div>
+                <Button
+                  onClick={() => window.open('/discoveries', '_blank')}
+                  variant="outline"
+                  className="border-purple-400 text-purple-400 hover:bg-purple-400 hover:text-white"
+                  size="sm"
+                >
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  View Analysis
+                </Button>
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                AI-powered analysis of mathematical discoveries for cryptographic security enhancement
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {loadingInsights ? (
+                <div className="flex items-center justify-center py-8">
+                  <Brain className="h-6 w-6 animate-pulse text-purple-400 mr-2" />
+                  <span className="text-gray-400">Loading AI insights...</span>
+                </div>
+              ) : securityInsights ? (
+                <div className="space-y-6">
+                  {/* Security Discovery Metrics */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="text-center p-3 bg-purple-900/20 rounded-lg border border-purple-500/20">
+                      <div className="text-2xl font-bold text-purple-400">
+                        {securityInsights.totalSecurityDiscoveries}
+                      </div>
+                      <div className="text-sm text-gray-400">Security Discoveries</div>
+                    </div>
+                    <div className="text-center p-3 bg-blue-900/20 rounded-lg border border-blue-500/20">
+                      <div className="text-2xl font-bold text-blue-400">
+                        {securityInsights.quantumResistant}
+                      </div>
+                      <div className="text-sm text-gray-400">Quantum Resistant</div>
+                    </div>
+                    <div className="text-center p-3 bg-green-900/20 rounded-lg border border-green-500/20">
+                      <div className="text-2xl font-bold text-green-400">
+                        {securityInsights.cryptographicBreakthroughs}
+                      </div>
+                      <div className="text-sm text-gray-400">Crypto Breakthroughs</div>
+                    </div>
+                    <div className="text-center p-3 bg-orange-900/20 rounded-lg border border-orange-500/20">
+                      <div className="text-2xl font-bold text-orange-400">
+                        {Math.round(securityInsights.averageSecurityScore)}
+                      </div>
+                      <div className="text-sm text-gray-400">Avg Security Score</div>
+                    </div>
+                  </div>
+
+                  {/* Top Security Enhancements */}
+                  <div className="space-y-3">
+                    <h4 className="text-white font-medium flex items-center">
+                      <Target className="mr-2 h-4 w-4 text-green-400" />
+                      Top Security Enhancements
+                    </h4>
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                      {securityInsights.topSecurityEnhancements?.slice(0, 5).map((enhancement, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-slate-700/50 rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <Badge className={`${
+                              enhancement.securityImpact === 'critical' ? 'bg-red-600' :
+                              enhancement.securityImpact === 'high' ? 'bg-orange-600' :
+                              enhancement.securityImpact === 'medium' ? 'bg-yellow-600' : 'bg-gray-600'
+                            } text-white`}>
+                              {enhancement.securityImpact}
+                            </Badge>
+                            <div>
+                              <div className="text-sm text-white font-medium">
+                                {enhancement.cryptographicEnhancement}
+                              </div>
+                              <div className="text-xs text-gray-400">
+                                Discovery #{enhancement.discoveryId} • {enhancement.workType.replace('_', ' ')}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-sm font-bold text-blue-400">
+                              {enhancement.securityScore}
+                            </div>
+                            <div className="text-xs text-gray-400">
+                              {enhancement.aiAnalysis?.confidence.toFixed(1)}% confidence
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Emerging Threats */}
+                  <div className="space-y-3">
+                    <h4 className="text-white font-medium flex items-center">
+                      <AlertTriangle className="mr-2 h-4 w-4 text-red-400" />
+                      Emerging Threats & Mitigations
+                    </h4>
+                    <div className="space-y-2">
+                      {securityInsights.emergingThreats?.map((threat, index) => (
+                        <div key={index} className="p-3 bg-red-900/10 border border-red-500/20 rounded-lg">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-red-400 font-medium">{threat.threat}</span>
+                            <Badge variant="outline" className="text-red-400 border-red-400">
+                              {threat.relatedDiscoveries?.length || 0} discoveries
+                            </Badge>
+                          </div>
+                          <div className="text-sm text-gray-300">
+                            <span className="text-green-400 font-medium">Mitigation:</span> {threat.mitigation}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Brain className="h-12 w-12 mx-auto mb-3 text-gray-500" />
+                  <p className="text-gray-400">AI security insights will appear here</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Enhanced AI Threat Detection & Mitigation */}
+          <Card className="bg-slate-800 border-slate-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center justify-between">
+                <div className="flex items-center">
+                  <AlertTriangle className="mr-2 h-5 w-5 text-red-400" />
+                  Enhanced AI Threat Detection & Mitigation
+                </div>
+                <div className="flex space-x-2">
+                  <Button
+                    onClick={() => threatScanMutation.mutate()}
+                    disabled={isScanning}
+                    variant="outline"
+                    className="border-red-400 text-red-400 hover:bg-red-400 hover:text-white"
+                    size="sm"
+                  >
+                    {isScanning ? (
+                      <>
+                        <Search className="mr-2 h-4 w-4 animate-pulse" />
+                        Scanning...
+                      </>
+                    ) : (
+                      <>
+                        <Search className="mr-2 h-4 w-4" />
+                        Threat Scan
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Advanced AI-powered threat detection using mathematical discovery patterns
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {/* Threat Intelligence Overview */}
+                {threatIntelligence && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="text-center p-3 bg-red-900/20 rounded-lg border border-red-500/20">
+                      <div className="text-2xl font-bold text-red-400">
+                        {threatIntelligence.threatIntelligence.globalThreats.quantumAttacks}
+                      </div>
+                      <div className="text-sm text-gray-400">Quantum Attacks</div>
+                    </div>
+                    <div className="text-center p-3 bg-purple-900/20 rounded-lg border border-purple-500/20">
+                      <div className="text-2xl font-bold text-purple-400">
+                        {threatIntelligence.threatIntelligence.globalThreats.aiAdversarial}
+                      </div>
+                      <div className="text-sm text-gray-400">AI Adversarial</div>
+                    </div>
+                    <div className="text-center p-3 bg-orange-900/20 rounded-lg border border-orange-500/20">
+                      <div className="text-2xl font-bold text-orange-400">
+                        {threatIntelligence.threatIntelligence.globalThreats.networkIntrusions}
+                      </div>
+                      <div className="text-sm text-gray-400">Network Threats</div>
+                    </div>
+                    <div className="text-center p-3 bg-yellow-900/20 rounded-lg border border-yellow-500/20">
+                      <div className="text-2xl font-bold text-yellow-400">
+                        {threatIntelligence.threatIntelligence.globalThreats.validationAttacks}
+                      </div>
+                      <div className="text-sm text-gray-400">Validation Attacks</div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Active Threats */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-white font-medium flex items-center">
+                      <AlertTriangle className="mr-2 h-4 w-4 text-red-400" />
+                      Active Threats ({threats.filter(t => !t.resolved).length})
+                    </h4>
+                    <div className="flex space-x-2">
+                      <select
+                        value={threatFilter}
+                        onChange={(e) => setThreatFilter(e.target.value)}
+                        className="bg-slate-700 text-white border border-slate-600 rounded px-3 py-1 text-sm"
+                      >
+                        <option value="all">All Threats</option>
+                        <option value="critical">Critical Only</option>
+                        <option value="high">High Priority</option>
+                        <option value="medium">Medium Priority</option>
+                        <option value="low">Low Priority</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  {loadingThreats ? (
+                    <div className="text-center py-8">
+                      <div className="animate-pulse text-gray-400">Loading threat data...</div>
+                    </div>
+                  ) : threats.length > 0 ? (
+                    <div className="space-y-3 max-h-64 overflow-y-auto">
+                      {threats.filter(t => !t.resolved).slice(0, 10).map((threat) => (
+                        <div key={threat.id} className="p-4 bg-slate-700/50 rounded-lg border border-slate-600">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center space-x-3">
+                              <Badge className={`${
+                                threat.severity === 'critical' ? 'bg-red-600' :
+                                threat.severity === 'high' ? 'bg-orange-600' :
+                                threat.severity === 'medium' ? 'bg-yellow-600' : 'bg-gray-600'
+                              } text-white`}>
+                                {threat.severity}
+                              </Badge>
+                              <span className="text-white font-medium">
+                                {threat.threatType.replace('_', ' ').toUpperCase()}
+                              </span>
+                              <Badge variant="outline" className="text-blue-400 border-blue-400">
+                                {threat.confidence.toFixed(1)}% confidence
+                              </Badge>
+                            </div>
+                            <Button
+                              onClick={() => handleMitigateThreat(threat.id)}
+                              disabled={mitigateThreatMutation.isPending}
+                              size="sm"
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                            >
+                              {mitigateThreatMutation.isPending ? 'Deploying...' : 'Mitigate'}
+                            </Button>
+                          </div>
+                          <p className="text-sm text-gray-300 mb-2">{threat.description}</p>
+                          <div className="text-xs text-gray-400">
+                            <div>Detection: {threat.detectionMethod}</div>
+                            <div>AI Analysis: {threat.aiAnalysis.riskAssessment} (Score: {threat.aiAnalysis.anomalyScore.toFixed(2)})</div>
+                            <div>Affected Systems: {threat.affectedSystems.join(', ')}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <CheckCircle className="h-12 w-12 mx-auto mb-3 text-green-400" />
+                      <p className="text-gray-400">No active threats detected</p>
+                      <p className="text-sm text-gray-500">All systems secure</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* AI Recommendations */}
+                {aiRecommendations.length > 0 && (
+                  <div>
+                    <h4 className="text-white font-medium flex items-center mb-3">
+                      <Brain className="mr-2 h-4 w-4 text-purple-400" />
+                      AI Security Recommendations
+                    </h4>
+                    <div className="space-y-2">
+                      {aiRecommendations.slice(0, 3).map((rec, index) => (
+                        <div key={index} className="p-3 bg-purple-900/10 border border-purple-500/20 rounded-lg">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-purple-400 font-medium text-sm">{rec.type?.replace('_', ' ')}</span>
+                            <Badge variant="outline" className={`text-xs ${
+                              rec.priority === 'high' ? 'text-red-400 border-red-400' :
+                              rec.priority === 'medium' ? 'text-yellow-400 border-yellow-400' :
+                              'text-gray-400 border-gray-400'
+                            }`}>
+                              {rec.priority} priority
+                            </Badge>
+                          </div>
+                          <div className="text-sm text-gray-300">{rec.description}</div>
+                          <div className="text-xs text-gray-400 mt-1">
+                            Confidence: {rec.confidence?.toFixed(1)}% • Related Discovery: #{rec.relatedDiscovery}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="validators" className="space-y-6">

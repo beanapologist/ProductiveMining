@@ -1,0 +1,32 @@
+[
+  {
+    "id": 2,
+    "stakerId": "validator_2",
+    "institutionName": "Computational Research Beta",
+    "stakeAmount": 800000,
+    "validationReputation": null,
+    "totalValidations": 0,
+    "correctValidations": 0,
+    "timestamp": "2025-07-06T18:53:06.626Z"
+  },
+  {
+    "id": 1,
+    "stakerId": "validator_1",
+    "institutionName": "Mathematical Institute Alpha",
+    "stakeAmount": 1000000,
+    "validationReputation": null,
+    "totalValidations": 0,
+    "correctValidations": 0,
+    "timestamp": "2025-07-06T18:53:06.558Z"
+  },
+  {
+    "id": 3,
+    "stakerId": "validator_3",
+    "institutionName": "Quantum Computing Gamma",
+    "stakeAmount": 1200000,
+    "validationReputation": null,
+    "totalValidations": 0,
+    "correctValidations": 0,
+    "timestamp": "2025-07-06T18:53:06.691Z"
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-07-07T16:30:07.262Z",
+  "version": "2.0.0",
+  "totalRecords": 78790,
+  "dataTypes": [
+    "productive_blocks",
+    "mathematical_discoveries",
+    "validation_records",
+    "stakers",
+    "mining_operations",
+    "network_metrics"
+  ],
+  "backupSize": 70750225,
+  "checksums": {}
+}
