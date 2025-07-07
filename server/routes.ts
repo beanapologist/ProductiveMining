@@ -4111,9 +4111,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
             
             // Create new productive block with mathematical discovery
             try {
+              // Use a more robust method to get the next block index
+              const allBlocks = await storage.getAllBlocks();
+              const maxIndex = allBlocks.length > 0 ? Math.max(...allBlocks.map(b => b.index)) : 1;
+              const blockIndex = maxIndex + 1;
+              
               const latestBlocks = await storage.getRecentBlocks(1);
               const previousHash = latestBlocks.length > 0 ? latestBlocks[0].blockHash : '0'.repeat(64);
-              const blockIndex = latestBlocks.length > 0 ? latestBlocks[0].index + 1 : 2;
 
               // Generate proper blockchain hash from mathematical content
               const workData = `${discovery.workType}${discovery.scientificValue}${discovery.signature}`;
@@ -4122,18 +4126,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
               const nonce = calculateProofOfWork(blockData, operation.difficulty);
               const blockHash = generateSimpleHash(`${blockData}${nonce}`).padStart(64, '0');
               
-              const newBlock = await storage.createBlock({
-                index: blockIndex,
-                previousHash,
-                merkleRoot,
-                difficulty: operation.difficulty,
-                nonce,
-                blockHash,
-                minerId: operation.minerId,
-                totalScientificValue: discovery.scientificValue,
-                energyConsumed: discovery.computationalCost / 100000,
-                knowledgeCreated: discovery.scientificValue
-              });
+              // Add timestamp and retry logic for race conditions
+              let newBlock;
+              let retries = 0;
+              const maxRetries = 3;
+              
+              while (retries < maxRetries) {
+                try {
+                  // Get fresh block index to handle race conditions
+                  if (retries > 0) {
+                    const freshBlocks = await storage.getAllBlocks();
+                    const freshMaxIndex = freshBlocks.length > 0 ? Math.max(...freshBlocks.map(b => b.index)) : 1;
+                    const freshBlockIndex = freshMaxIndex + 1 + retries; // Add retries to avoid conflicts
+                    
+                    newBlock = await storage.createBlock({
+                      index: freshBlockIndex,
+                      previousHash,
+                      merkleRoot,
+                      difficulty: operation.difficulty,
+                      nonce,
+                      blockHash,
+                      minerId: operation.minerId,
+                      totalScientificValue: discovery.scientificValue,
+                      energyConsumed: discovery.computationalCost / 100000,
+                      knowledgeCreated: discovery.scientificValue
+                    });
+                  } else {
+                    newBlock = await storage.createBlock({
+                      index: blockIndex,
+                      previousHash,
+                      merkleRoot,
+                      difficulty: operation.difficulty,
+                      nonce,
+                      blockHash,
+                      minerId: operation.minerId,
+                      totalScientificValue: discovery.scientificValue,
+                      energyConsumed: discovery.computationalCost / 100000,
+                      knowledgeCreated: discovery.scientificValue
+                    });
+                  }
+                  break; // Success, exit retry loop
+                } catch (blockError: any) {
+                  if (blockError.code === '23505' && retries < maxRetries - 1) {
+                    retries++;
+                    console.log(`🔄 Block creation conflict, retrying... (attempt ${retries + 1})`);
+                    await new Promise(resolve => setTimeout(resolve, 100 * retries)); // Small delay
+                    continue;
+                  } else {
+                    throw blockError; // Re-throw if not a constraint error or max retries reached
+                  }
+                }
+              }
 
               // Link mathematical work to block
               const { db } = await import('./db');

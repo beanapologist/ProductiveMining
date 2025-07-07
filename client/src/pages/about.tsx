@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Server, Database, Activity, Zap, Shield, Brain, CheckCircle, FileCode, TrendingUp, Settings, Copy, Check, Globe } from 'lucide-react';
+import { Server, Database, Activity, Zap, Shield, Brain, CheckCircle, FileCode, TrendingUp, Settings, Copy, Check } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface ApiOverview {

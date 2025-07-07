@@ -317,10 +317,10 @@ export default function AIAnalyticsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-white">Gen {aiMetrics?.recursiveEnhancement?.currentGeneration || 1}</div>
+                <div className="text-3xl font-bold text-white">Gen {aiMetrics?.recursiveEnhancement?.currentGeneration ?? 1}</div>
                 <div className="text-sm text-slate-400">Current generation</div>
                 <div className="text-xs text-green-400 mt-1">
-                  +{aiMetrics?.recursiveEnhancement?.performanceGains || 0}% performance
+                  +{aiMetrics?.recursiveEnhancement?.performanceGains ?? 0}% performance
                 </div>
               </CardContent>
             </Card>
@@ -333,10 +333,10 @@ export default function AIAnalyticsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-white">{aiMetrics?.discoveryAnalysis?.totalReports || analysisReports.length}</div>
+                <div className="text-3xl font-bold text-white">{aiMetrics?.discoveryAnalysis?.totalReports ?? analysisReports?.length ?? 0}</div>
                 <div className="text-sm text-slate-400">Generated reports</div>
                 <div className="text-xs text-blue-400 mt-1">
-                  {aiMetrics?.discoveryAnalysis?.accuracyRate || 88}% accuracy rate
+                  {aiMetrics?.discoveryAnalysis?.accuracyRate ?? 88}% accuracy rate
                 </div>
               </CardContent>
             </Card>
@@ -349,10 +349,10 @@ export default function AIAnalyticsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-white">{aiMetrics?.emergentAI?.systemIntelligence || 92}%</div>
+                <div className="text-3xl font-bold text-white">{aiMetrics?.emergentAI?.systemIntelligence ?? 92}%</div>
                 <div className="text-sm text-slate-400">System intelligence</div>
                 <div className="text-xs text-purple-400 mt-1">
-                  {emergentPatterns.length} patterns detected
+                  {emergentPatterns?.length ?? 0} patterns detected
                 </div>
               </CardContent>
             </Card>
@@ -752,7 +752,7 @@ export default function AIAnalyticsPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold text-white">{aiMetrics?.emergentAI?.systemIntelligence || 92}%</div>
+                <div className="text-3xl font-bold text-white">{aiMetrics?.emergentAI?.systemIntelligence ?? 92}%</div>
                 <div className="text-sm text-slate-400">Emergent AI intelligence</div>
                 <div className="text-xs text-orange-400 mt-1">
                   Self-evolving systems
@@ -865,7 +865,7 @@ export default function AIAnalyticsPage() {
                     Self-improving security protocols with 98.5% threat detection accuracy
                   </div>
                   <div className="text-xs text-blue-400">
-                    Current Gen: {aiMetrics?.recursiveEnhancement?.currentGeneration || 4}
+                    Current Gen: {aiMetrics?.recursiveEnhancement?.currentGeneration ?? 4}
                   </div>
                 </div>
                 <div className="p-4 bg-slate-700 rounded-lg">
@@ -877,7 +877,7 @@ export default function AIAnalyticsPage() {
                     4 self-improving algorithms achieving 95% pattern recognition accuracy
                   </div>
                   <div className="text-xs text-yellow-400">
-                    +{aiMetrics?.recursiveEnhancement?.performanceGains || 25}% performance gain
+                    +{aiMetrics?.recursiveEnhancement?.performanceGains ?? 25}% performance gain
                   </div>
                 </div>
                 <div className="p-4 bg-slate-700 rounded-lg">
@@ -889,7 +889,7 @@ export default function AIAnalyticsPage() {
                     Real-time pattern synthesis across mathematical domains with cross-disciplinary insights
                   </div>
                   <div className="text-xs text-green-400">
-                    {aiMetrics?.emergentAI?.emergentPatterns || 15} active patterns
+                    {aiMetrics?.emergentAI?.emergentPatterns ?? 15} active patterns
                   </div>
                 </div>
                 <div className="p-4 bg-slate-700 rounded-lg">
