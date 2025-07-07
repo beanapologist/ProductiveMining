@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  productive-mining:
+    build: .
+    container_name: productive-mining-app
+    ports:
+      - "3000:5000"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/productive_mining
+      - QDT_ENABLED=true
+      - QDT_HEAP_THRESHOLD=85
+      - MINING_DIFFICULTY_MIN=50
+      - MINING_DIFFICULTY_MAX=180
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - ./data-backups:/app/data-backups
+    networks:
+      - productive-mining-network
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: productive-mining-db
+    environment:
+      - POSTGRES_DB=productive_mining
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-productive_mining_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d productive_mining"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - productive-mining-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: productive-mining-cache
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - productive-mining-network
+
+networks:
+  productive-mining-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
