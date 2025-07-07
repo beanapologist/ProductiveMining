@@ -22,7 +22,7 @@ jobs:
         cache: 'npm'
     
     - name: Install dependencies
-      run: npm ci --only=production
+      run: npm ci
     
     - name: Run tests
       run: npm test
@@ -90,7 +90,7 @@ jobs:
           curl -f http://localhost:5000/api/system/health || exit 1
     
     - name: Notify deployment status
-      if: always()
+      if: always() && secrets.SLACK_WEBHOOK != ''
       uses: 8398a7/action-slack@v3
       with:
         status: ${{ job.status }}
