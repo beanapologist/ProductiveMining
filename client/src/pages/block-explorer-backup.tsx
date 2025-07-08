@@ -56,12 +56,11 @@ export default function BlockExplorerPage() {
   const { data: blockWork } = useQuery<BlockWorkData>({
     queryKey: [`/api/blocks/${selectedBlock?.id}/work`],
     enabled: !!selectedBlock,
-    staleTime: 0, // Always refetch
+    staleTime: 0,
   });
 
   // Automatically select the first block if none selected and blocks exist
   if (!selectedBlock && currentBlocks.length > 0) {
-    // Use useEffect to avoid infinite re-renders
     setTimeout(() => setSelectedBlock(currentBlocks[0]), 0);
   }
 
@@ -243,65 +242,65 @@ export default function BlockExplorerPage() {
                 />
               </div>
             </CardHeader>
-              <CardContent>
-                <div className="space-y-3 max-h-[600px] overflow-y-auto">
-                  {filteredBlocks.length === 0 ? (
-                    <div className="text-center py-8 text-slate-400">
-                      <Database className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                      <p>No blocks found</p>
-                      <p className="text-sm">Try adjusting your search</p>
-                    </div>
-                  ) : (
-                    filteredBlocks.map((block: ProductiveBlock) => (
-                      <div 
-                        key={block.id}
-                        className={`p-4 rounded-lg border cursor-pointer transition-all hover:border-blue-500/50 ${
-                          selectedBlock?.id === block.id 
-                            ? 'bg-blue-500/10 border-blue-500' 
-                            : 'bg-slate-800/30 border-slate-700'
-                        }`}
-                        onClick={() => setSelectedBlock(block)}
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <div className="flex items-center space-x-3">
-                            <Badge variant="outline" className="text-blue-400 border-blue-400">
-                              Block #{block.index}
-                            </Badge>
-                            <span className="text-sm text-slate-400">
-                              Difficulty {block.difficulty}
-                            </span>
-                          </div>
-                          <div className="text-sm text-slate-400">
-                            {formatTimestamp(block.timestamp)}
-                          </div>
+            <CardContent>
+              <div className="space-y-3 max-h-[600px] overflow-y-auto">
+                {filteredBlocks.length === 0 ? (
+                  <div className="text-center py-8 text-slate-400">
+                    <Database className="h-12 w-12 mx-auto mb-3 opacity-50" />
+                    <p>No blocks found</p>
+                    <p className="text-sm">Try adjusting your search</p>
+                  </div>
+                ) : (
+                  filteredBlocks.map((block: ProductiveBlock) => (
+                    <div 
+                      key={block.id}
+                      className={`p-4 rounded-lg border cursor-pointer transition-all hover:border-blue-500/50 ${
+                        selectedBlock?.id === block.id 
+                          ? 'bg-blue-500/10 border-blue-500' 
+                          : 'bg-slate-800/30 border-slate-700'
+                      }`}
+                      onClick={() => setSelectedBlock(block)}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center space-x-3">
+                          <Badge variant="outline" className="text-blue-400 border-blue-400">
+                            Block #{block.index}
+                          </Badge>
+                          <span className="text-sm text-slate-400">
+                            Difficulty {block.difficulty}
+                          </span>
                         </div>
-                        
-                        <div className="space-y-1 text-sm">
-                          <div className="flex items-center space-x-2">
-                            <Hash className="h-3 w-3 text-slate-500" />
-                            <span className="text-slate-300 font-mono">
-                              {formatHash(block.blockHash)}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-slate-400">Scientific Value:</span>
-                            <span className="text-purple-400 font-semibold">
-                              ${block.totalScientificValue?.toLocaleString() || 0}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-slate-400">Energy:</span>
-                            <span className="text-green-400">
-                              {block.energyConsumed?.toFixed(3) || 0} kWh
-                            </span>
-                          </div>
+                        <div className="text-sm text-slate-400">
+                          {formatTimestamp(block.timestamp)}
                         </div>
                       </div>
-                    ))
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                      
+                      <div className="space-y-1 text-sm">
+                        <div className="flex items-center space-x-2">
+                          <Hash className="h-3 w-3 text-slate-500" />
+                          <span className="text-slate-300 font-mono">
+                            {formatHash(block.blockHash)}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-slate-400">Scientific Value:</span>
+                          <span className="text-purple-400 font-semibold">
+                            ${block.totalScientificValue?.toLocaleString() || 0}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-slate-400">Energy:</span>
+                          <span className="text-green-400">
+                            {block.energyConsumed?.toFixed(3) || 0} kWh
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Block Details */}
@@ -322,164 +321,164 @@ export default function BlockExplorerPage() {
                   <Hash className="h-12 w-12 mx-auto mb-3 opacity-50" />
                   <p>Select a block to view details</p>
                 </div>
-                ) : (
-                  <div className="space-y-4">
-                    {/* Block Header */}
-                    <div className="p-4 bg-slate-800/50 rounded-lg">
-                      <h3 className="text-lg font-semibold text-white mb-3">
-                        Block #{selectedBlock.index}
-                      </h3>
-                      
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Timestamp:</span>
-                          <span className="text-white">{formatTimestamp(selectedBlock.timestamp)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Difficulty:</span>
-                          <span className="text-white">{selectedBlock.difficulty}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Nonce:</span>
-                          <span className="text-white font-mono">{selectedBlock.nonce}</span>
-                        </div>
+              ) : (
+                <div className="space-y-4">
+                  {/* Block Header */}
+                  <div className="p-4 bg-slate-800/50 rounded-lg">
+                    <h3 className="text-lg font-semibold text-white mb-3">
+                      Block #{selectedBlock.index}
+                    </h3>
+                    
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Timestamp:</span>
+                        <span className="text-white">{formatTimestamp(selectedBlock.timestamp)}</span>
                       </div>
-                    </div>
-
-                    {/* Hashes */}
-                    <div className="space-y-3">
-                      <div>
-                        <label className="text-sm font-medium text-slate-300 block mb-1">
-                          Block Hash
-                        </label>
-                        <div className="p-2 bg-slate-800 rounded font-mono text-sm text-blue-400 break-all">
-                          {selectedBlock.blockHash}
-                        </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Difficulty:</span>
+                        <span className="text-white">{selectedBlock.difficulty}</span>
                       </div>
-                      
-                      <div>
-                        <label className="text-sm font-medium text-slate-300 block mb-1">
-                          Previous Hash
-                        </label>
-                        <div className="p-2 bg-slate-800 rounded font-mono text-sm text-slate-400 break-all">
-                          {selectedBlock.previousHash}
-                        </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Nonce:</span>
+                        <span className="text-white font-mono">{selectedBlock.nonce}</span>
                       </div>
-                      
-                      <div>
-                        <label className="text-sm font-medium text-slate-300 block mb-1">
-                          Merkle Root
-                        </label>
-                        <div className="p-2 bg-slate-800 rounded font-mono text-sm text-purple-400 break-all">
-                          {selectedBlock.merkleRoot}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Scientific Metrics */}
-                    <div className="p-4 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-lg border border-purple-500/20">
-                      <h4 className="text-white font-semibold mb-3">Scientific Impact</h4>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-slate-300">Scientific Value:</span>
-                          <span className="text-purple-400 font-semibold">
-                            ${selectedBlock.totalScientificValue?.toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-300">Knowledge Created:</span>
-                          <span className="text-blue-400 font-semibold">
-                            {selectedBlock.knowledgeCreated?.toLocaleString()} units
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-300">Energy Consumed:</span>
-                          <span className="text-green-400 font-semibold">
-                            {selectedBlock.energyConsumed?.toFixed(3)} kWh
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Miner Info */}
-                    <div className="p-4 bg-slate-800/50 rounded-lg">
-                      <h4 className="text-white font-semibold mb-2">Miner Information</h4>
-                      <div className="text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Miner ID:</span>
-                          <span className="text-orange-400 font-mono">
-                            {formatHash(selectedBlock.minerId)}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Mathematical Discoveries */}
-                    <div className="p-4 bg-slate-800/50 rounded-lg">
-                      <h4 className="text-white font-semibold mb-3 flex items-center">
-                        <LinkIcon className="h-4 w-4 mr-2" />
-                        Mathematical Discoveries ({blockWork?.work?.length || 0})
-                        {!blockWork && selectedBlock && (
-                          <span className="ml-2 text-xs text-yellow-400">(Loading...)</span>
-                        )}
-                      </h4>
-                      {blockWork && blockWork.work && blockWork.work.length > 0 ? (
-                          <div className="space-y-3">
-                            {blockWork.work.map((work: any, index: number) => (
-                              <div key={index} className="p-3 bg-slate-700/50 rounded-lg border border-slate-600 hover:border-purple-500/50 transition-colors">
-                                <div className="flex items-center justify-between mb-2">
-                                  <div className="flex items-center space-x-2">
-                                    <span className="text-lg">{getWorkTypeIcon(work.workType)}</span>
-                                    <Badge variant="outline" className="text-purple-400 border-purple-400">
-                                      {formatWorkType(work.workType)}
-                                    </Badge>
-                                  </div>
-                                  <span className="text-green-400 font-semibold">
-                                    ${work.scientificValue?.toLocaleString()}
-                                  </span>
-                                </div>
-                                <div className="text-xs text-slate-400 space-y-1">
-                                  <div className="flex justify-between">
-                                    <span>Discovery ID:</span>
-                                    <span className="font-mono">#{work.id}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span>Difficulty:</span>
-                                    <span>{work.difficulty}</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span>Energy Efficiency:</span>
-                                    <span className="text-green-400">{work.energyEfficiency}x</span>
-                                  </div>
-                                  <div className="flex justify-between">
-                                    <span>Worker:</span>
-                                    <span className="font-mono text-orange-400">
-                                      {work.workerId?.slice(0, 12)}...
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                      ) : (
-                        <div className="text-center py-4 text-slate-400">
-                          <Brain className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                          <p className="text-sm">No mathematical discoveries linked to this block</p>
-                          {selectedBlock && (
-                            <p className="text-xs text-yellow-400 mt-1">
-                              Debug: Block ID {selectedBlock.id}, Query enabled: {String(!!selectedBlock)}
-                              <br />BlockWork: {blockWork ? 'loaded' : 'null'}, Work count: {blockWork?.work?.length || 'none'}
-                            </p>
-                          )}
-                        </div>
-                      )}
                     </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>
+
+                  {/* Hashes */}
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-sm font-medium text-slate-300 block mb-1">
+                        Block Hash
+                      </label>
+                      <div className="p-2 bg-slate-800 rounded font-mono text-sm text-blue-400 break-all">
+                        {selectedBlock.blockHash}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium text-slate-300 block mb-1">
+                        Previous Hash
+                      </label>
+                      <div className="p-2 bg-slate-800 rounded font-mono text-sm text-slate-400 break-all">
+                        {selectedBlock.previousHash}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <label className="text-sm font-medium text-slate-300 block mb-1">
+                        Merkle Root
+                      </label>
+                      <div className="p-2 bg-slate-800 rounded font-mono text-sm text-purple-400 break-all">
+                        {selectedBlock.merkleRoot}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Scientific Metrics */}
+                  <div className="p-4 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-lg border border-purple-500/20">
+                    <h4 className="text-white font-semibold mb-3">Scientific Impact</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-slate-300">Scientific Value:</span>
+                        <span className="text-purple-400 font-semibold">
+                          ${selectedBlock.totalScientificValue?.toLocaleString()}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-300">Knowledge Created:</span>
+                        <span className="text-blue-400 font-semibold">
+                          {selectedBlock.knowledgeCreated?.toLocaleString()} units
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-300">Energy Consumed:</span>
+                        <span className="text-green-400 font-semibold">
+                          {selectedBlock.energyConsumed?.toFixed(3)} kWh
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Miner Info */}
+                  <div className="p-4 bg-slate-800/50 rounded-lg">
+                    <h4 className="text-white font-semibold mb-2">Miner Information</h4>
+                    <div className="text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Miner ID:</span>
+                        <span className="text-orange-400 font-mono">
+                          {formatHash(selectedBlock.minerId)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Mathematical Discoveries */}
+                  <div className="p-4 bg-slate-800/50 rounded-lg">
+                    <h4 className="text-white font-semibold mb-3 flex items-center">
+                      <LinkIcon className="h-4 w-4 mr-2" />
+                      Mathematical Discoveries ({blockWork?.work?.length || 0})
+                      {!blockWork && selectedBlock && (
+                        <span className="ml-2 text-xs text-yellow-400">(Loading...)</span>
+                      )}
+                    </h4>
+                    {blockWork && blockWork.work && blockWork.work.length > 0 ? (
+                      <div className="space-y-3">
+                        {blockWork.work.map((work: any, index: number) => (
+                          <div key={index} className="p-3 bg-slate-700/50 rounded-lg border border-slate-600 hover:border-purple-500/50 transition-colors">
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center space-x-2">
+                                <span className="text-lg">{getWorkTypeIcon(work.workType)}</span>
+                                <Badge variant="outline" className="text-purple-400 border-purple-400">
+                                  {formatWorkType(work.workType)}
+                                </Badge>
+                              </div>
+                              <span className="text-green-400 font-semibold">
+                                ${work.scientificValue?.toLocaleString()}
+                              </span>
+                            </div>
+                            <div className="text-xs text-slate-400 space-y-1">
+                              <div className="flex justify-between">
+                                <span>Discovery ID:</span>
+                                <span className="font-mono">#{work.id}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Difficulty:</span>
+                                <span>{work.difficulty}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Energy Efficiency:</span>
+                                <span className="text-green-400">{work.energyEfficiency}x</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span>Worker:</span>
+                                <span className="font-mono text-orange-400">
+                                  {work.workerId?.slice(0, 12)}...
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-4 text-slate-400">
+                        <Brain className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">No mathematical discoveries linked to this block</p>
+                        {selectedBlock && (
+                          <p className="text-xs text-yellow-400 mt-1">
+                            Debug: Block ID {selectedBlock.id}, Query enabled: {String(!!selectedBlock)}
+                            <br />BlockWork: {blockWork ? 'loaded' : 'null'}, Work count: {blockWork?.work?.length || 'none'}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
   );
+} 
