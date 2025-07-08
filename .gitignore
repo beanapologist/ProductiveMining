@@ -1,5 +1,8 @@
 node_modules
-dist
+# Allow github-pages-build/dist for GitHub Pages deployment
+!github-pages-build/dist
+# Ignore all other dist folders
+/dist
 .DS_Store
 server/public
 vite.config.ts.*

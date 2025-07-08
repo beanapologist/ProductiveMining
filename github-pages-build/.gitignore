@@ -1,0 +1,3 @@
+# .gitignore for github-pages-build
+# Commented out dist/ so it can be committed for GitHub Pages deployment
+# dist/ 
