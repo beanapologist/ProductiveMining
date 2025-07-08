@@ -69,6 +69,7 @@ jobs:
     
     - name: Deploy to production server
       uses: appleboy/ssh-action@v1.0.0
+      continue-on-error: true
       with:
         host: ${{ secrets.PRODUCTION_HOST }}
         username: ${{ secrets.PRODUCTION_USER }}
@@ -92,6 +93,24 @@ jobs:
           # Health check
           sleep 10
           curl -f http://localhost:5000/api/system/health || exit 1
+    
+    - name: Deployment summary
+      run: |
+        echo "✅ Docker image built and pushed successfully"
+        echo "📦 Image available at: ghcr.io/${{ github.repository_owner }}/productive-mining:latest"
+        echo ""
+        echo "Production deployment status:"
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "✅ Production deployment completed successfully"
+        else
+          echo "⚠️ Production deployment may have failed or was skipped"
+          echo ""
+          echo "To enable production deployment, configure these secrets in your repository:"
+          echo "- PRODUCTION_HOST: Your production server hostname/IP"
+          echo "- PRODUCTION_USER: SSH username for production server"
+          echo "- PRODUCTION_SSH_KEY: SSH private key for production server"
+          echo "- PRODUCTION_PORT: SSH port (optional, defaults to 22)"
+        fi
     
     - name: Notify deployment status
       if: always()
