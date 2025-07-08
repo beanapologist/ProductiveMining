@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Revolutionary blockchain platform that replaces wasteful proof-of-work with productive mathematical computation",
-  "homepage": "https://yourusername.github.io/productive-mining-platform",
+  "homepage": "https://beanapologist.github.io/ProductiveMining",
   "scripts": {
     "build": "vite build",
     "preview": "vite preview",

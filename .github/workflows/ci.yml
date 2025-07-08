@@ -82,28 +82,6 @@ jobs:
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3
 
-  github-pages:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
-        cache: 'npm'
-    
-    - name: Install dependencies
-      run: |
-        cd github-pages-build
-        npm ci
-    
-    - name: Build GitHub Pages
-      run: |
-        cd github-pages-build
-        npm run build
-
   performance:
     runs-on: ubuntu-latest
     steps:
